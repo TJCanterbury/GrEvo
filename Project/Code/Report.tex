@@ -1,0 +1,147 @@
+\documentclass[fontsize=11pt]{scrartcl}\usepackage[]{graphicx}\usepackage[]{color}
+
+\usepackage[english]{babel}
+\linespread{1.5}
+\usepackage{array} %table
+\usepackage{pgfgantt} %gantt
+
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+
+\makeatletter							% Title
+\def\printtitle{%						
+    {\centering \@title\par}}
+\makeatother									
+
+\makeatletter							% Author
+\def\printauthor{%					
+    {\centering \large \@author}}				
+\makeatother							
+
+% --------------------------------------------------------------------
+% Metadata (Change this)
+% --------------------------------------------------------------------
+\title{	
+			\HRule{0.5pt} \\						% Upper rule
+			\LARGE \textbf{\uppercase{A Network Alignment Based Method for Phylogenetic Analysis of Interdependent Morphological Characters}}	% Title
+			\HRule{2pt} \\ [0.5cm]		% Lower rule + 0.5cm spacing
+			\normalsize \today			% Todays date
+		}
+
+\author{
+		Tristan J. Canterbury\\	
+    Supervisor: Dr. Martin D. Brazeau\\
+		Imperial College London\\	
+		MSc Computational Methods in Ecology and Evolution\\
+        \texttt{tjc19@ic.ac.uk} \\
+}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+    \thispagestyle{empty}		% Remove page numbering on this page
+
+  \printtitle					% Print the title data as defined above
+      \vfill
+  \printauthor				% Print the author data as defined above
+  \newpage
+  % ------------------------------------------------------------------------------
+  % Begin document
+  % ------------------------------------------------------------------------------
+  \setcounter{page}{1}
+
+  \section{Keywords}
+  \begin{enumerate}
+    \item Phylogenetics
+    \item Morphology
+    \item Software development
+    \item Hierarchical characters
+    \item Dynamic homology
+    \item Comparing networks
+  \end{enumerate}
+
+  \section{Introduction} 
+  Phylogenetic inference based on morphology allows us to corroborate proposed phylogenies of extant lineages with evidence from the fossil record for which we only have morphological evidence. 
+  As most species that have ever lived are extinct, few of which we have fossils for, the value of robust methods for inferring phylogenetic relationships from morphology becomes apparent.
+  In particular, problems that do rely heavily on morphological evidence, such as the long unresolved Arthropod head problem \cite{Budd2002,Rempel1975}, might benefit from fresh methods of phylogenetic inference. 
+  An issue that arises when we attempt to measure phylogenetic distances based on morphological similarities, from which homology is somewhat arbitrarily inferred, is that many morphological 
+  characters do not evolve independently and tend to form hierarchical structures \cite{Hopkins2021}. Taking a wide glance at biology we should expect morphological characters to be interdependent 
+  for many different reasons: All morphological characters grow from 
+  the same embryo, they are physically connected, most are polygenetic, most alleles that code for a particular character will also code 
+  for another (pleiotropy), and they all co-evolve and they may serve similar adaptive purposes and so may converge on similar features. Whilst many of these 
+  relationships are hard to ascertain, the physical relationships between these characters are often obvious but underutilised in current quantitative methods
+  of phylogenetic analysis as there has been no good way to codify them. \\
+  The aim of my project is to represent morphological interdependencies as a network/graph of characters, an anatomical network, and infer phylogenetic distance based on evidence of transformation events between the 
+  topologies of these networks, with the assumption that fewer graph transformations means greater parsimony \cite{Grant2004}. Further questions to 
+  explore would be to ask what other useful information can be gained from anatomical networks besides phylogenetic distance, how effective is this method in 
+  comparison to other methods and how can the software be further optimised. 
+  
+  \section{Proposed Methods}
+  With my goal being to reconstruct ancestral states without making prior assumptions of homology between particular characters, this method of comparing networks must work 
+  where there is an unknown node-correspondence (UNC). These node correspondences will instead be estimated using a alignment-based network comparison method. 
+  A measure of distance between networks is also needed so that I can infer the most likely phylogenetic relationships between nodes of the tree. 
+  Such methods generally belong to the GRAAL family as these algorithms estimate node correspondences based on the topology of the network and outputs a 
+  measure of distance between the trees \cite{Tantardini2019}.
+  Of the GRAAL family the Lagrangian graphlet-based network aligner (L-GRAAL) is currently the best candidate as it also allows for use of biological information and directional graphs \cite{Malod-Dognin2015}. 
+  The main draw back of these methods is that their computational efficiency scales quadratically or worse with the number of nodes. I may have to construct my own prototype of this software in python
+  for morphological data however as the C++ source code for the L-GRAAL programme is not available for me to adapt for these purposes.
+ 
+  \section{Anticipated Outputs and Outcomes}
+  \begin{itemize}
+    \item Development of a method for measuring phylogenetic distances between anatomical networks.
+    \item A prototype software package in python and C++ for implementing this new method for tree evaluation.
+    \item An analysis of the efficacy of this method for solving the problem of morphological character interdependencies through the example of the Arthropod head problem.
+  \end{itemize}
+
+  \section{Project Feasibility}
+
+  \newgantttimeslotformat{stardate}{%
+    \def\decomposestardate##1.##2\relax{%
+      \def\stardateyear{##1}\def\stardateday{##2}%
+    }%
+    \decomposestardate#1\relax%
+    \pgfcalendardatetojulian{\stardateyear-04-01}{#2}%
+    \advance#2 by-1\relax%
+    \advance#2 by\stardateday\relax%
+  }
+    
+  \begin{ganttchart}[
+    time slot format=stardate, 
+    bar/.append style={orange},
+    expand chart=\textwidth
+    ]{2021.1}{2021.152}
+    \gantttitlecalendar{month=name} \\
+    \ganttbar{Literature Review}{2021.7}{2021.37} \\
+    \ganttlinkedbar{Write Introduction}{2021.10}{2021.61} \\
+    \ganttlinkedbar{Write Methods}{2021.30}{2021.90} \\
+    \ganttlinkedbar{Data Structure}{2021.30}{2021.37} \\
+    \ganttlinkedbar{Develop Anatomical Network Comparison Method}{2021.38}{2021.70} \\
+    \ganttlinkedmilestone{Achieved Primary Goal}{2021.70} \\
+    \ganttlinkedbar{Write Tree Function}{2021.70}{2021.90} \\
+    \ganttlinkedbar{Test on Arthropod Head Problem}{2021.90}{2021.110} \\
+    \ganttlinkedbar{Write Results}{2021.70}{2021.110} \\
+    \ganttlinkedbar{Write Discussion}{2021.90}{2021.146}  \\
+    \ganttlinkedmilestone{Submission 26th August}{2021.146} 
+  \end{ganttchart}
+
+  \section{Budget}
+  \begin{center}
+    \begin{tabular}{ ||p{5cm}|p{2cm}|p{15em}|| } 
+     \hline
+     Item & Price (£) & Justification \\ 
+     \hline
+     4 TB External Hard Drive & 100 & Safe storage of project files. \\ 
+     \hline
+     Books & 300 & References and courses on set theory, graph theory, Information Theory, complex networks and phylogenetic analysis.  \\ 
+     \hline
+    \end{tabular}
+  \end{center}
+
+  \section{Supervisor Declaration}
+  \textbf{I have seen and approved the proposal and the budget.}\\
+  Primary Supervisor:  Dr Martin D. Brazeau \\
+  Signature:\\
+   \\
+  Date:  08/04/2021
+
+  \bibliographystyle{apalike}
+  \bibliography{Morph.bib}
+\end{document}
