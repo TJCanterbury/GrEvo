@@ -12,6 +12,7 @@ import sys # module to interface our program with the operating system
 import numpy as np
 import networkx as nx 
 import matplotlib.pyplot as plt
+from numpy import genfromtxt
 
 ## constants ##
 vertices = []
@@ -19,6 +20,9 @@ vertices_no = 0
 graph = []
 
 ## functions ##
+def unique_labels(np_array_data):
+    return np.unique(np_array_data)
+
 def add_vertex(v):
     global graph
     global vertices_no
@@ -37,6 +41,11 @@ def add_vertex(v):
             temp.append(0)
         graph.append(temp)
 
+def add_all_v(data):
+    Uniques = unique_labels(data)
+    for v in Uniques:
+        add_vertex(Uniques[v])
+
 def add_edge(v1, v2, e):
     global graph
     global vertices_no
@@ -49,6 +58,9 @@ def add_edge(v1, v2, e):
         index1 = vertices.index(v1)
         index2 = vertices.index(v2)
         graph[index1][index2] = e
+
+def add_all_e(data):
+    add_edge()
 
 def print_graph():
     global graph
@@ -69,52 +81,9 @@ def show_graph(adjacency_matrix):
     plt.show()
 
 def main(argv):
-    add_vertex("p")
-    add_vertex("o1")
-    add_vertex("o2")
-    add_vertex("g1")
-    add_vertex("g2")
-    add_vertex("v")
-    add_vertex("pi1")
-    add_vertex("pi2")
-    add_vertex("y1")
-    add_vertex("y2")
-    add_vertex("c1")
-    add_vertex("c2")
-    add_vertex("l1")
-    add_vertex("l2")
-
-    add_edge('p', 'o1', 1)
-    add_edge('p', 'o2', 1)
-    add_edge('p', 'v', 1)
-    add_edge('g1', 'o1', 1)
-    add_edge('g2', 'o2', 1)
-    add_edge('v', 'g1', 1)
-    add_edge('v', 'g2', 1)
-    add_edge('v', 'o1', 1)
-    add_edge('v', 'o2', 1)
-    add_edge('v', 'c1', 1)
-    add_edge('v', 'c2', 1)
-    add_edge('v', 'l1', 1)
-    add_edge('v', 'l2', 1)
-    add_edge('v', 'y1', 1)
-    add_edge('v', 'y2', 1)
-    add_edge('pi1', 'g1', 1)
-    add_edge('pi1', 'c1', 1)
-    add_edge('pi1', 'l1', 1)
-    add_edge('pi1', 'y1', 1)
-    add_edge('pi2', 'g2', 1)
-    add_edge('pi2', 'c2', 1)
-    add_edge('pi2', 'l2', 1)
-    add_edge('pi2', 'y2', 1)
-    add_edge('g1', 'c1', 1)
-    add_edge('g2', 'c2', 1)
-    add_edge('l1', 'c1', 1)
-    add_edge('l2', 'c2', 1)
-    add_edge('l1', 'y1', 1)
-    add_edge('l2', 'y2', 1)
-
-
+    my_data = genfromtxt(argv[1], delimiter=' ')
+    #add_all_v(my_data) 
+    
     print_graph()
     print(graph)
     graph1 = np.array(graph)
