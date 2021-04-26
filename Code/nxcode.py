@@ -25,9 +25,7 @@ def drawx(G):
 
 def main(argv):
     G1 = readx(argv[1])
-    G2 = readx(argv[2])
     drawx(G1)
-    drawx(G2)
 
     return 0
 
