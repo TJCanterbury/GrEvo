@@ -12,6 +12,10 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import csv
 
+## types ##
+class graph:
+    pass
+
 ## functions ##
 def readx(filex):
     with open(filex) as infile:

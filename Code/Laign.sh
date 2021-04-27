@@ -6,16 +6,7 @@
 # Date: 26 April 2021
 
 #### Generate degree signatures and character similarities
-#Rscript --vanilla char_dists.R ../Data/b.csv ../Data/a.csv ab
-#Rscript --vanilla char_dists.R ../Data/a.csv ../Data/c.csv ac
-#Rscript --vanilla char_dists.R ../Data/d.csv ../Data/a.csv ad
-#Rscript --vanilla char_dists.R ../Data/f.csv ../Data/a.csv af
-#Rscript --vanilla char_dists.R ../Data/b.csv ../Data/c.csv bc
-#Rscript --vanilla char_dists.R ../Data/d.csv ../Data/b.csv db
-#Rscript --vanilla char_dists.R ../Data/d.csv ../Data/c.csv dc
-#Rscript --vanilla char_dists.R ../Data/d.csv ../Data/f.csv df
-#Rscript --vanilla char_dists.R ../Data/f.csv ../Data/b.csv bf
-#Rscript --vanilla char_dists.R ../Data/f.csv ../Data/c.csv cf
+#Rscript --vanilla char_dists.R 
 #
 #./ncount4.exe ../Data/a.gw ../Data/a
 #./ncount4.exe ../Data/b.gw ../Data/b

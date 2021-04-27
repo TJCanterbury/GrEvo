@@ -6,16 +6,7 @@
 # Date: 25 April 2021
 
 #### Generate Similarity files for characters/nodes/vertices ####
-#Rscript --vanilla char_dists.R ../Data/b.csv ../Data/a.csv ab
-#Rscript --vanilla char_dists.R ../Data/a.csv ../Data/c.csv ac
-#Rscript --vanilla char_dists.R ../Data/d.csv ../Data/a.csv ad
-#Rscript --vanilla char_dists.R ../Data/f.csv ../Data/a.csv af
-#Rscript --vanilla char_dists.R ../Data/b.csv ../Data/c.csv bc
-#Rscript --vanilla char_dists.R ../Data/d.csv ../Data/b.csv db
-#Rscript --vanilla char_dists.R ../Data/d.csv ../Data/c.csv dc
-#Rscript --vanilla char_dists.R ../Data/d.csv ../Data/f.csv df
-#Rscript --vanilla char_dists.R ../Data/f.csv ../Data/b.csv bf
-#Rscript --vanilla char_dists.R ../Data/f.csv ../Data/c.csv cf
+Rscript --vanilla char_dists.R 
 
 #### Run MI-GRAAL for alignments and measuring distance ####
 ./MI-GRAALRunner.py ../Data/b.gw ../Data/a.gw ../Results/ba -p $1 -q ../Data/ab.txt
