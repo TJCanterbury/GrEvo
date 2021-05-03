@@ -11,6 +11,7 @@ import sys # module to interface our program with the operating system
 import networkx as nx 
 import matplotlib.pyplot as plt
 import csv
+import os
 
 ## types ##
 class graph:
@@ -23,13 +24,15 @@ def readx(filex):
         G = nx.Graph(csv_reader)
     return G
 
-def drawx(G):
+def drawx(G, fname):
     nx.draw_networkx(G, with_labels = True)
-    plt.show()
+    plt.savefig(fname)
 
 def main(argv):
+    fname = ["../Results/", os.path.basename(argv[1]), ".png"]
+    fname = "".join(fname)
     G1 = readx(argv[1])
-    drawx(G1)
+    drawx(G1, fname)
 
     return 0
 
