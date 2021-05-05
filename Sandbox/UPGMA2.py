@@ -1,5 +1,26 @@
-# A Quick Implementation of UPGMA (Unweighted Pair Group Method with Arithmetic Mean)
+#!/usr/bin/env python3
 
+""" A Quick Implementation of UPGMA (Unweighted Pair Group Method with Arithmetic Mean) """
+
+__appname__ = 'UPGMA.py'
+__author__ = 'Tristan JC (tjc19@ic.ac.uk)'
+__version__ = '0.0.1'
+
+## imports ##
+import sys
+import re
+import os
+import numpy as np
+import pandas as pd
+from Bio import Phylo
+from io import StringIO
+import matplotlib.pyplot as plt
+import networkx as nx 
+
+from Bio.Phylo.TreeConstruction import DistanceTreeConstructor
+from Bio.Phylo.TreeConstruction import _Matrix
+
+## Functions ##
 # lowest_cell:
 #   Locates the smallest cell in the table
 def lowest_cell(table):
@@ -77,28 +98,40 @@ def UPGMA(table, labels):
     # Return the final label
     return labels[0]
 
+def main(argv): 
+    # Test table data and corresponding labels
+    M_labels = ['Wuttagoonaspis', 'Romundina', 'Brindabellaspis', 'Eurycaraspis', 'Entelognathus']  
+    print(M_labels) #A through G
+    M = np.loadtxt(open(argv[1], "rb"), delimiter=",")
+    l = np.tril(M)
+    temp = np.ones((5,5))
+    u = np.triu(temp)
+    l += u
+    np.fill_diagonal(l, 0)
+
+    M = l.tolist()
+        
+    for j in range(0,5):
+        for i in range(0,5):
+            M[i] = list(filter(lambda a: a !=1, M[i]))
+
+    m = _Matrix(M_labels, M)
+    print(type(m))
+
+    constructor = DistanceTreeConstructor()
+    tree = constructor.upgma(m)
+    Phylo.draw(tree)
 
 
-## A test using an example calculation from http://www.nmsr.org/upgma.htm
+    #tree = UPGMA(M, M_labels)
+#
+    #handle = StringIO(tree)
+    #tree = Phylo.read(handle, "newick")
+    #print(tree)
+    #tree.ladderize()
+    #Phylo.draw(tree)
 
-# alpha_labels:
-#   Makes labels from a starting letter to an ending letter
-def alpha_labels(start, end):
-    labels = []
-    for i in range(ord(start), ord(end)+1):
-        labels.append(chr(i))
-    return labels
-
-# Test table data and corresponding labels
-M_labels = alpha_labels("A", "G")   #A through G
-M = [
-    [],                         #A
-    [19],                       #B
-    [27, 31],                   #C
-    [8, 18, 26],                #D
-    [33, 36, 41, 31],           #E
-    [18, 1, 32, 17, 35],        #F
-    [13, 13, 29, 14, 28, 12]    #G
-    ]
-
-# UPGMA(M, M_labels) should output: '((((A,D),((B,F),G)),C),E)'
+if __name__ == "__main__": 
+	"""Makes sure the "main" function is called from command line"""  
+	status = main(sys.argv)
+	sys.exit(status)

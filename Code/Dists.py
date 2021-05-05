@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" Uses generic networkx code to generate graphs from our data """
+""" Produce distance matrix from the MI-GRAAL edge correctness output from .results files, including all combinations """
 
 __appname__ = 'Dists.py'
 __author__ = 'Tristan JC (tjc19@ic.ac.uk)'
@@ -29,14 +29,16 @@ def get_s(file):
     return(f.strip('%'))
 
 def find_filenames( path_to_dir, suffix=".results" ):
+    """ collect filenames """
+
     filenames = os.listdir(path_to_dir)
     files = [ filename for filename in filenames if filename.endswith( suffix ) ]
     print(files)
     return files
 
 def list_vals(files):
-    """ make data structure for distances """
-    data = np.zeros((len(files), 3))
+    """ make data structure for distances and assign them """
+    data = np.ones((len(files), 3))
     data = pd.DataFrame(data)
     i = 1
     for file in files:
@@ -45,12 +47,14 @@ def list_vals(files):
         s = get_s(filep)
         data.loc[i-1, 0] = label[0]
         data.loc[i-1, 1] = label[1]
-        data.loc[i-1, 2] = (float(s) / 100)
+        data.loc[i-1, 2] = 1 - (float(s) / 100)
         i += 1
     print(data)
     return data
 
 def make_mat(data):
+    """ Turn list into adjacency matrix for use in UPGMA """
+
     letters = []
     for i in range(5):
         letter = ['a', 'b', 'c', 'd', 'f'][i]
@@ -66,6 +70,8 @@ def make_mat(data):
     return A
 
 def main(argv):
+    """ Produce distance matrix from the MI-GRAAL edge correctness """
+    
     path = '../Results/'
     files = find_filenames(path, '.results')
     data = list_vals(files)

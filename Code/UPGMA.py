@@ -17,8 +17,7 @@ from io import StringIO
 import matplotlib.pyplot as plt
 import networkx as nx 
 
-
-
+## Functions ##
 # lowest_cell:
 #   Locates the smallest cell in the table
 def lowest_cell(table):
@@ -95,18 +94,6 @@ def UPGMA(table, labels):
 
     # Return the final label
     return labels[0]
-
-
-
-## A test using an example calculation from http://www.nmsr.org/upgma.htm
-
-# alpha_labels:
-#   Makes labels from a starting letter to an ending letter
-def alpha_labels(start, end):
-    labels = []
-    for i in range(ord(start), ord(end)+1):
-        labels.append(chr(i))
-    return labels
 
 def main(argv): 
     # Test table data and corresponding labels

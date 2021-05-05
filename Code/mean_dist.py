@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" Uses generic networkx code to generate graphs from our data """
+""" Finds mean edge correctness across the distance matrices of the different batches of MI-GRAAL results """
 
 __appname__ = 'mean_dist.py'
 __author__ = 'Tristan JC (tjc19@ic.ac.uk)'
@@ -8,21 +8,14 @@ __version__ = '0.0.1'
 
 ## imports ##
 import sys
-import re
-import os
 import numpy as np
 from numpy import genfromtxt
-import pandas as pd
-import networkx
+from Dists import find_filenames
 
 ## functions ##
-def find_filenames( path_to_dir = "../Results/", suffix=".csv" ):
-    filenames = os.listdir(path_to_dir)
-    files = [ filename for filename in filenames if filename.endswith( suffix ) ]
-    print(files)
-    return files
-
 def mean_np(files, n, path = "../Results/"):
+    """ Finds mean edge correctness across the distance matrices of the files """
+    
     data = np.zeros((5, 5))
 
     for i in range(n):
@@ -35,8 +28,8 @@ def mean_np(files, n, path = "../Results/"):
     return data
 
 def main(argv):
-
-    files = find_filenames()
+    """ Feeds all fistance matrix files into mean_np and saves the resulting matrix """
+    files = find_filenames(path_to_dir = "../Results/", suffix=".csv")
     n = len(files)
     Data = mean_np(files, n)
 
