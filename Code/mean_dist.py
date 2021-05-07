@@ -13,10 +13,10 @@ from numpy import genfromtxt
 from Dists import find_filenames
 
 ## functions ##
-def mean_np(files, n, path = "../Results/"):
+def mean_np(files, n, dim = 6, path = "../Results/"):
     """ Finds mean edge correctness across the distance matrices of the files """
     
-    data = np.zeros((5, 5))
+    data = np.zeros((dim, dim))
 
     for i in range(n):
         file = path + files[i]
@@ -31,7 +31,7 @@ def main(argv):
     """ Feeds all fistance matrix files into mean_np and saves the resulting matrix """
     files = find_filenames(path_to_dir = "../Results/", suffix=".csv")
     n = len(files)
-    Data = mean_np(files, n)
+    Data = mean_np(files, n, dim=int(argv[1]))
 
     np.savetxt("../Results/mean_dist.csv", Data, delimiter=',')
 

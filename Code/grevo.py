@@ -20,10 +20,12 @@ import numpy as np
 import networkx as nx
 from nxcode import readx
 from nxcode import drawx
+import csv
+from time import time
 
 ## Functions ##
 ### General Graph Functions ###
-def num_edges(mean = 4):
+def num_edges(mean = 2.5):
     """ Returns from a normal distribution an integer for the
     number of edges to add """
     randomInts = np.random.normal(loc=mean, size=1).astype(int)
@@ -31,26 +33,125 @@ def num_edges(mean = 4):
         randomInts = np.random.normal(loc=mean, size=1).astype(int)
     return int(randomInts)
 
+def is_L_or_R(node):
+    """ returns 0 for middle, 1 for left, 2 for right """
+    if node[-1:] == 'l':
+        # If on left side add copy on right side
+        return 1
+    
+    # Check if on right side
+    elif node[-1:] == 'r':
+        # If on right side add copy on left side
+       return 2
+    
+    else:
+        return 0
+
+def reflect_n(node):
+    """ returns the reflected node label """
+
+    if is_L_or_R(node) == 1:
+        # If on left side add copy on right side
+        node = node[:-1] + 'r'
+    
+    # Check if on right side
+    elif is_L_or_R(node) == 2:
+        # If on right side add copy on left side
+        node = node[:-1] + 'l'
+    
+    return node
+
+def reflect_e(edgelist):
+    """ Make edge list for symmetrical grevo derived graph """
+    reflections = set()
+    G_set = set( frozenset(element) for element in edgelist if element[0]!=element[1])
+    # Iterate through nodes and add to list their reflections
+    for edge in edgelist:
+        reflection = []
+        for node in edge:
+
+            # Check if on left side
+            if is_L_or_R(node) == 1:
+                # If on left side add copy on right side
+                reflection.append(node[:-1] + 'r')
+            
+            # Check if on right side
+            elif is_L_or_R(node) == 2:
+                # If on right side add copy on left side
+                reflection.append(node[:-1] + 'l')
+
+            # add any middle nodes
+            else:
+                reflection.append(node)
+        if reflection[0] != reflection[1]:
+            # Add each reflection to the reflections set
+            reflections.add(frozenset(reflection))
+    
+    # Create set of symmetrical graph
+    G_set = G_set.union(reflections)
+    #convert to list for writing to file
+    reflected_elist = [ list(element) for element in G_set ]
+
+    return reflected_elist
+
 def add_n_edges_to_node(graph, n, node):
     """ adds n random edges to a given node """
     target = graph.degree(node) + n
-    a = set(graph.neighbors(node))
+    node2 = reflect_n(node)
+    
+    # Reflect all actions
+    a1 = set(graph.neighbors(node))
+    a2 = set(graph.neighbors(node2))
+    
     while graph.degree(node) < target:
         v = np.random.choice(list(nx.non_neighbors(graph, node)))
         graph.add_edge(node, str(v))
+        graph.add_edge(node2, reflect_n(str(v)))
+    
+    b1 = set(graph.neighbors(node))
+    b2 = set(graph.neighbors(node2))
+    
+    c1 = list(b1 - a1)
+    c2 = list(b2 - a2)
+    
+    return graph, c1, c2
 
-    b = set(graph.neighbors(node))
-    c = b - a
-    return graph, c
+def p_middle(nodes):
+    """ gives proportion of nodes that are in the middle """
+    total = len(nodes)
+    x = 0
+    for i in nodes:
+        if i[-1:] == 'l':
+            # If on left side add copy on right side
+            x += 1
+    return x/total
+
+def make_middle(nodes):
+    """ Returns True if character should be in middle """
+    p = p_middle(nodes)
+    roll = np.random.uniform()
+    
+    if roll <= p:
+        return True
+    
+    return False
 
 def add_ran_node(graph):
     """ Add node """
     al = list(graph.nodes())
-    numbers = [ int(x) for x in al ]
-    node = str(np.max(numbers) + 1)
-    graph.add_node(node)
 
-    return graph, node
+    node = str(graph.number_of_nodes() + 1)
+
+    if not make_middle(al):
+        node = node + "l"
+        graph.add_node(node)
+        
+        return graph, node
+
+    else:
+        graph.add_node(node)
+
+        return graph, node
 
 def Node_dif(a, b):
     """ Number of nodes difference """
@@ -64,59 +165,69 @@ def char_grows(graph, node = None):
     if node == None:
         node = np.random.choice(graph.nodes())
 
-    graph, b = add_n_edges_to_node(graph, 1, node)
+    node2 = reflect_n(node)
 
-    movement = "char_grows- node: " + node + " new edge: " + ''.join(list(b))
-    print(movement)
+    graph, b1, b2 = add_n_edges_to_node(graph, 1, node)
 
-    return graph
+    edges =  [node + ", " + ', '.join(b1), node2 + ", " +  ', '.join(b2)]
+    movement =  "char_grows- removed edges: " + edges[0] + "; " + edges[1]
+
+    return graph, movement
 
 def char_shrinks(graph, node = None):
     """plate shrinks, so loses edges. If leaf node remove """
     if node == None:
         node = np.random.choice(graph.nodes())
     
-    if graph.degree(node) == 1:
-        graph.remove_node(node)
-        
-        movement = "char_shrinks- node: " + node + " removed"
-        print(movement)
-
-        return graph
-
     v = np.random.choice(list(graph.neighbors(node)))
-    graph.remove_edge(node, v)
+    
+    nodes = [node, reflect_n(node)]
+    vs = [v, reflect_n(v)]
+    edges = [(nodes[0], vs[0]), (nodes[1], vs[1])]
 
-    movement = "char_shrinks- node: " + node + " removed adjacency: " + v
-    print(movement)
+    # if leaf node, nodes:
+    if graph.degree(node) == 1:
+        graph.remove_nodes_from(nodes)
 
-    return graph
+        movement = "char_shrinks- node: " + nodes + " removed"
+
+        return graph, movement
+
+    else:
+        # if not leaf node, remove all versions of edge from all versions of character:
+        graph.remove_edges_from(edges)
+        edges = [', '.join(list(elem)) for elem in edges]
+        movement =  "char_shrinks- removed edges: " + edges[0] + "; " + edges[1]
+
+        return graph, movement
 
 def char_moves(graph):
     """ plate moves so edges are replaced """
     node = np.random.choice(graph.nodes())
 
     movement = "char_moves- node: " + node
-    print(movement)
     
-    char_grows(graph, node)
-    char_shrinks(graph, node)
+    graph, m1 = char_grows(graph, node)
+    graph, m2 = char_shrinks(graph, node)
 
-    return graph
+    movement = "char_moves- node: " + m1 + " ---> " + m2
+
+    return graph, movement
 
 def char_gain(graph):
     """ New plate emerges, new node with mean edges of 3 """
-    # Add node
-    graph, node = add_ran_node(graph)
-
+    # Add node(s)
+    graph, node1 = add_ran_node(graph)
+    node2 = reflect_n(node1)
+    graph.add_node(node2)
     # Add typical number of edges to node based on a normal pdf mean = 3
     n = num_edges()
-    graph, b = add_n_edges_to_node(graph, n, node)
+    # reflected nodes
+    graph, b1, b2 = add_n_edges_to_node(graph, n, node1)
     
-    movement = "char_gain- node: " + node + " new edges: " + ', '.join((list(b))) + "."
-    print(movement)
-
-    return graph
+    movement = "char_gain- node1: " + node1 + " new edges: " + ', '.join(b1) 
+    
+    return graph, movement
 
 def char_loss(graph):
     """ plate lost, node lost along with edges, if not leaf node the node should be replaced with an edge """
@@ -129,68 +240,179 @@ def char_loss(graph):
                 graph.neighbors(node)
             )
         )
+    
+        graph.add_edges_from(
+            it.product(
+                graph.neighbors(reflect_n(node)),
+                graph.neighbors(reflect_n(node))
+            )
+        )
+    
+    if is_L_or_R(node):
+        graph.remove_node(reflect_n(node))
     graph.remove_node(node)
     
-    movement = "char_loss- node: " + node
-    print(movement)
+    movement = "char_loss- node: " + node + ", " + reflect_n(node) + "."
 
-    return graph
+    return graph, movement
 
 def char_merge(graph):
     """ 2 plates become one, 2 adjacent nodes become the same node, union of edges """
-    u = np.random.choice(graph.nodes())
-    v = np.random.choice(list(graph.neighbors(u)))
-    graph  = nx.contracted_nodes(graph, u, v, self_loops=False)
+    u = str(np.random.choice(graph.nodes()))
+    v = str(np.random.choice(list(graph.neighbors(u))))
+    graph = nx.contracted_nodes(graph, u, v)
     
-    movement = "char_merge- node1: " + u + " node2: " + v
-    print(movement)
+    if not is_L_or_R(u):
+        if not is_L_or_R(v):
+            print(1)
+            movement = "char_merge- Eater node: " + u + "." + " eaten node: " + v + "."
+            return graph, movement
 
-    return graph
+        else:
+            print(2)
+            graph = nx.contracted_nodes(graph, u, reflect_n(v))
+            movement = "char_merge- Eater node: " + u + "." + " eaten nodes: " + v + ', ' +\
+                 reflect_n(v) + "."
+            return graph, movement
+    else:    
+        if not is_L_or_R(v):
+            print(3)
+            graph = nx.contracted_nodes(graph, u, reflect_n(u))
+            movement = "char_merge- Eater node: " + v + ". " + \
+                "eaten nodes: " + u + ', ' + reflect_n(u) + "."
+            return graph, movement
+
+        else:
+            print(4)
+            graph = nx.contracted_nodes(graph, reflect_n(u), reflect_n(v))
+        
+            movement = \
+                "char_merge- Eater nodes: " + u + ", " + reflect_n(u) + \
+                ". Eaten nodes: " + v + ", " + reflect_n(v) + "."
+    
+            return graph, movement
 
 def char_split(graph):
     """ 0ne plate becomes 2, half the instances of a node 
     are replaced with new node that will be adjacent to old node """
-    u = np.random.choice(graph.nodes())
-    graph, v = add_ran_node(graph)
-    ud = int(graph.degree(u) / 2)
-    
+    u1 = str(np.random.choice(graph.nodes()))
+    u2 = str(reflect_n(u1))
+    graph, node = add_ran_node(graph)
+    v1 = str(node)
+    v2 = str(reflect_n(node))
+    ud = int(graph.degree(u1) / 2)
+
     if ud > 1:
         # Collect 50% of adjacencies
-        neighbs = set(np.random.choice(list(graph.neighbors(u)), size=ud))
-        
-        # Give adjacencies to new node
+        neighbs = set(np.random.choice(list(graph.neighbors(u1)), size=ud))
+        neighbs = list(neighbs)
         for a in neighbs:
-            graph.add_edge(v, a)
 
-        # Remove adjacencies from old node
-        for a in neighbs:
-            graph.remove_edge(u, a)
+            a2 = reflect_n(a)
+            # Give adjacencies to new node
+            graph.add_edge(v1, a)
+            graph.add_edge(v2, a2)
+
+            # Remove adjacencies from old node0
+            graph.remove_edge(u1, a)
+            if u1 == a2:
+                del a
+                continue
+            if is_L_or_R(u1):
+                if is_L_or_R(a):
+                    graph.remove_edge(u2, a2)
+                elif not is_L_or_R(a):
+                    graph.remove_edge(u2, a)
 
     # Add edge between split nodes
-    graph.add_edge(u, v)
+    graph.add_edge(u1, v1)
+    graph.add_edge(u2, v2)
     
-    movement = "char_split- from node: " + u + " new node: " + v
-    print(movement)
+    movement = "char_split- from node(s): " + u1 + ', ' + u2 + " new node(s): " + v1 + ", " + v2 + "."
 
-    return graph
+    return graph, movement
 
 ### Evo (hill climb) algorithm ###
+def perturber(G, move = None):
+    """ Make random move """
+    
+    if move == None:
+        move = np.random.choice(range(6))
+    if move == 0:
+        G, move = char_grows(G)
+    if move == 1:
+        G, move = char_shrinks(G)
+    if move == 2:
+        G, move = char_moves(G)
+    if move == 3:
+        G, move = char_gain(G)
+    if move == 4:
+        G, move = char_loss(G)
+    if move == 5:
+        G, move = char_merge(G)
+    if move == 6:
+        G, move = char_split(G)
+
+    return G, move 
+
+def intelligence(G1, G2):
+    """ Directs the perturber towards nodes and edges
+    that are most wrong and towards the moves that are
+    most likely to reduce the distance """
+
+    return 0
+
+def recorder(move):
+    """ Store moves that improve portrait divergence score for future optimisation """
+    return
+
+def measurer(G1, G2):
+    """ Measure Portrait divergeance (aiming for 0) """
+    return
+
+def climber(G1, G2, old_score = 1, start_time = None):
+    """ Apply perturber, if score improved record and recurse """
+    if start_time == None:
+        end_time = time() + (5 * 60)
+    morph, move = perturber(G1)
+    score = 0.5#measurer(morph, G2)
+    print(score)
+    if score == 0:
+        return morph
+    elif end_time == time():
+        #recorder(move)
+        return morph
+
+    elif score <= old_score:
+        #recorder(move)
+        climber(morph, G2, score, end_time)
 
 ### Business End ###
 def main(argv):
-    a = readx(argv[1])
-    G = "Nodes before: " + ', '.join(list(a.nodes)) + "."
-    print(G)
-    a = char_grows(a)
-    a = char_shrinks(a)
-    a = char_moves(a)
-    a = char_gain(a)
-    a = char_loss(a)
-    a = char_merge(a)
-    a = char_split(a)
-    G = "Nodes after: " + ', '.join(list(a.nodes)) + "."
-    print(G)
-    drawx(a, "../pond/ame.png")
+    
+    G = readx(argv[1])
+    G2 = readx(argv[2])
+    Nodess = "Nodes before: " + ', '.join(list(G.nodes)) + "."
+    print(Nodess)
+    if len(argv) == 4:
+        G, move = perturber(G, int(argv[3]))
+    else:
+        G = climber(G, G2)
+    print(move)
+    Nodess = "Nodes after: " + ', '.join(list(G.nodes)) + "."
+    print(Nodess)
+
+   # e_list = []
+   # for line in nx.generate_edgelist(G, data=False):
+   #     e_list.append(list(line.split()))
+
+   # SymG = reflect_e(e_list)
+
+   # with open(argv[2], "w") as f:
+   #     writer = csv.writer(f, delimiter=' ')
+   #     writer.writerows(SymG)
+   # G = readx(argv[3])
+    drawx(G, "../pond/ame.png")
     
 if __name__ == "__main__": 
 	"""Makes sure the "main" function is called from command line"""  

@@ -1,12 +1,12 @@
 Alpha used: 1
 The following parameter was used: 16
 Sequence information was used while building alignment
-Seed used for random number generator: 1620177637
-Graph1 has: 12 nodes.
-Graph2 has: 18 nodes.
+Seed used for random number generator: 1620582639
+Graph1 has: 19 nodes.
+Graph2 has: 32 nodes.
 
-Graph1 has: 21 edges.
-Graph2 has: 40 edges.
-Node Correctness is: 2; which is 16.6667% of nodes
-Edge Correctness is: 11; which is 52.381% of edges
-Interaction Correctness is: 1; which is 4.7619% of edges
+Graph1 has: 38 edges.
+Graph2 has: 77 edges.
+Node Correctness is: 1; which is 5.26316% of nodes
+Edge Correctness is: 21; which is 55.2632% of edges
+Interaction Correctness is: 0; which is 0% of edges

@@ -96,19 +96,25 @@ def UPGMA(table, labels):
     return labels[0]
 
 def main(argv): 
-    # Test table data and corresponding labels
-    M_labels = ['Wuttagoonaspis', 'Romundina', 'Brindabellaspis', 'Eurycaraspis', 'Entelognathus']  
-    print(M_labels) #A through G
+    # Gather labels
+    M_labels = ['Wuttagoonaspis', 'Romundina', 'Brindabellaspis', 'Eurycaraspis', 'Dicksonosteus', 'Entelognathus']  
+    dim = len(M_labels)
+    print(M_labels)
+
+    # Load distances:
     M = np.loadtxt(open(argv[1], "rb"), delimiter=",")
-    M = np.tril(M).tolist()
     
-    for j in range(0,5):
-        for i in range(0,5):
+    # Format matrix to lower triangular:
+    M = np.tril(M).tolist()
+    for j in range(0,dim):
+        for i in range(0,dim):
             M[i] = list(filter(lambda a: a !=0, M[i]))
     print(M)
 
+    # Build tree using UPGMA:
     tree = UPGMA(M, M_labels)
 
+    # Show tree:
     handle = StringIO(tree)
     tree = Phylo.read(handle, "newick")
     print(tree)

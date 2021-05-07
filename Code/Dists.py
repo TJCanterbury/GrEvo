@@ -56,8 +56,8 @@ def make_mat(data):
     """ Turn list into adjacency matrix for use in UPGMA """
 
     letters = []
-    for i in range(5):
-        letter = ['a', 'b', 'c', 'd', 'f'][i]
+    for i in range(6):
+        letter = ['a', 'b', 'c', 'd', 'e', 'f'][i]
         letters.append(letter)
     G = networkx.OrderedGraph()
     edgeList = data.values.tolist()

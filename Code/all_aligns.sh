@@ -6,7 +6,7 @@
 # Date: 25 April 2021
 
 #### Generate Similarity files for characters/nodes/vertices ####
-Rscript --vanilla char_dists.R 16
+Rscript --vanilla char_dists.R 16 $1
 
 rm ../Results/mean_dist.csv
 
@@ -20,5 +20,5 @@ do
 done
 cat GRAAL_it.sh
 rm GRAAL_it.sh
-python3 mean_dist.py
-python3 UPGMA.py ../Results/mean_dist.csv 
+python3 mean_dist.py 6
+python3 UPGMA.py ../Results/mean_dist.csv

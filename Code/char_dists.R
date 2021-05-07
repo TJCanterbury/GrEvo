@@ -44,7 +44,7 @@ Collect <- function(path = "../Data/"){
     return(list(pairs, myfiles))
 }
 
-dist_matrix <- function(a, b, names){
+dist_matrix <- function(a, b, names, path){
     x <- unique(a[,1])
     y <- unique(b[,1])
 
@@ -56,28 +56,34 @@ dist_matrix <- function(a, b, names){
         A <- match(data[i, 1], a[,1])
         B <- match(data[i, 2], b[,1])
         print(c(A,B))
-        if (a[A,4] && b[B, 4]) {
+        if (a[A,4] && b[B, 4]) { #Eyes
             data[i, 3] <- 10000
         }
-        else if (a[A,5] && b[B, 5]) {
+        else if (a[A, 5] && b[B, 5]) { #Body
             data[i, 3] <- 10000
         }
-        else if (a[A,3] && b[B, 3]) {
-            data[i, 3] <- 10
+        else if (a[A, 3] && b[B, 3]) { #Middle
+            data[i, 3] <- 100
         }
-        else if (a[A,2] == b[B, 2]) {
-            data[i, 3] <- 1
+        else if (a[A, 6] && b[B, 6]) { #Left
+            data[i, 3] <- 100
+        }
+        else if (a[A, 7] && b[B, 7]) { #right
+            data[i, 3] <- 100
+        }
+        if (a[A, 2] == b[B, 2]) { #Size
+            data[i, 3] <- data[i, 3] * 2
         }
     }
     print(names)
 
-    dist_string <- paste("../Data/", names[1], names[2], ".txt", sep = "")
+    dist_string <- paste(path, names[1], names[2], ".txt", sep = "")
     result_string <- paste("../Results/", names[1], names[2], sep = "")
     write.table(data, file = dist_string, sep = "\t", row.names = F, col.names = F)
     return(c(dist_string, result_string))
 }
 
-file_order <- function(data1, data2, names){
+file_order <- function(data1, data2, names, path){
     #reorder pair, smallest first
     Q <- names[1]
     T <- names[2]
@@ -86,14 +92,14 @@ file_order <- function(data1, data2, names){
         Q <- names[2]
         T <- names[1]
     }
-    Q_str <- paste("../Data/", list.files(path = "../Data/", pattern = paste(Q, ".gw", sep = "")), sep = "")
-    T_str <- paste("../Data/", list.files(path = "../Data/", pattern = paste(T, ".gw", sep = "")), sep = "")
+    Q_str <- paste(path, list.files(path = path, pattern = paste(Q, ".gw", sep = "")), sep = "")
+    T_str <- paste(path, list.files(path = path, pattern = paste(T, ".gw", sep = "")), sep = "")
     Q_T <- c(Q_str,T_str)
     print(Q_T)
     return(Q_T)
 }
 
-Generate <- function(data, arg){
+Generate <- function(data, arg, path = "../Data/"){
     pairs <- data[[1]]
     l <- nrow(pairs)
     for (i in 1:l){
@@ -101,8 +107,8 @@ Generate <- function(data, arg){
         data1 <- data[[2]][[names[1]]]
         data2 <- data[[2]][[names[2]]]
         
-        dist <- dist_matrix(data1, data2, names)
-        Graphs <- file_order(data1, data2, names)
+        dist <- dist_matrix(data1, data2, names, path)
+        Graphs <- file_order(data1, data2, names, path)
         
         # Generates appropriate bash file for running MI-GRAAL
         line <- paste("./MI-GRAALRunner.py", Graphs[1], Graphs[2], dist[2], "-p", arg, "-q", dist[1], sep = " ")
@@ -112,6 +118,6 @@ Generate <- function(data, arg){
 }
 
 ## Main ##
-Data <- Collect()
-Generate(Data, args[1])
+Data <- Collect(args[2])
+Generate(Data, args[1], args[2])
  
