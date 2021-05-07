@@ -4,6 +4,8 @@
 
 Sandbox is where all my junk code went and in the Data and pond directory you will find many graphs.  
 
+MI-GRAAL, MI-GRAALRunner.py, list2leda, ncount, portrait_divergence.py are not my own.
+
 ### In Code you shall find:
  
  File       | Description
