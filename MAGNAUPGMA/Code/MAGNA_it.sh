@@ -1,0 +1,15 @@
+./magnapp_cli_linux64 -G ../Data/b.txt -H ../Data/a.txt -o ../Results/ba -d ../Data/ba.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/a.txt -H ../Data/c.txt -o ../Results/ca -d ../Data/ca.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/d.txt -H ../Data/a.txt -o ../Results/da -d ../Data/da.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/a.txt -H ../Data/e.txt -o ../Results/ea -d ../Data/ea.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/f.txt -H ../Data/a.txt -o ../Results/fa -d ../Data/fa.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/b.txt -H ../Data/c.txt -o ../Results/cb -d ../Data/cb.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/d.txt -H ../Data/b.txt -o ../Results/db -d ../Data/db.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/b.txt -H ../Data/e.txt -o ../Results/eb -d ../Data/eb.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/f.txt -H ../Data/b.txt -o ../Results/fb -d ../Data/fb.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/d.txt -H ../Data/c.txt -o ../Results/dc -d ../Data/dc.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/e.txt -H ../Data/c.txt -o ../Results/ec -d ../Data/ec.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/f.txt -H ../Data/c.txt -o ../Results/fc -d ../Data/fc.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/d.txt -H ../Data/e.txt -o ../Results/ed -d ../Data/ed.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/d.txt -H ../Data/f.txt -o ../Results/fd -d ../Data/fd.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
+./magnapp_cli_linux64 -G ../Data/f.txt -H ../Data/e.txt -o ../Results/fe -d ../Data/fe.txt -m S3 -p 1000 -t 10 -a 0.5 -n 1000 -f 1
