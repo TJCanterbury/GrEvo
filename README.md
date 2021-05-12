@@ -7,8 +7,8 @@ MI-GRAAL, MI-GRAALRunner.py, list2leda, ncount, portrait_divergence.py, magnapp_
  
  Directory       | Description
  ------------- | -------------
- mi-graal_UPGMA | MI-GRAAL is run with 'bash all_aligns.sh ../pond/' to generate a distance matric and from this a UPGMA evaluated phylogeny is generated.
- magna_UPGMA | magna is run with 'bash all_aligns.sh ../pond/' to generate a distance matric and from this a UPGMA evaluated phylogeny is generated.
+ mi-graal_UPGMA | MI-GRAAL is used as a distance measure to generate a distance matrix and from this a UPGMA evaluated phylogeny is generated.
+ magna_UPGMA | magna is used as a distance measure to generate a distance matrix and from this a UPGMA evaluated phylogeny is generated.
  GrEvo | Used to randomize and evolve graphs from one topology to another. Will be used to measure parsimony.
 
 ## Requirements:
