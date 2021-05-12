@@ -9,9 +9,9 @@ estimated with MI-GRAAL -- to measure distance in isomorphism between the anatom
 how one species may be translated into another and so from there we can build a tree, where the most parsimonious translations are 
 Then I will build a phylogeny based on these events. """
 
-__appname__ = 'grevo.py'
+__appname__ = 'GrEvo2.py'
 __author__ = 'Tristan JC (tjc19@ic.ac.uk)'
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 ## imports ##
 import sys # module to interface our program with the operating system
@@ -24,6 +24,14 @@ from portrait_divergence import portrait_divergence
 
 ## Functions ##
 ### General Graph Functions ###
+def num_edges(mean = 1):
+    """ Returns from a normal distribution an integer for the
+    number of edges to add """
+    randomInts = np.random.normal(loc=mean, size=1).astype(int)
+    while randomInts < 0:
+        randomInts = np.random.normal(loc=mean, size=1).astype(int)
+    return int(randomInts)
+
 def is_L_or_R(node):
     """ returns 0 for middle, 1 for left, 2 for right """
     if node[0] == 'L':
@@ -53,9 +61,11 @@ def reflect_n(node):
 
 def add_n_edges_to_node(graph, n, node):
     """ adds n random edges to a given node """
+    
     target = graph.degree(node) + n
     c1 = list()
     c2 = list()
+
     if target > graph.number_of_nodes()-1:
         return graph, c1, c2
     node2 = reflect_n(node)
@@ -69,8 +79,11 @@ def add_n_edges_to_node(graph, n, node):
         neighbs = nx.single_source_shortest_path_length(graph, node, cutoff=2)
         second_neighbs = [k for k in neighbs if neighbs[k] == 2]
 
-        # pick one
-        v = np.random.choice(second_neighbs)
+        if not second_neighbs:
+            v = choose_ran_node(graph, exclude = [node, reflect_n(node)])
+        else:
+            # pick one
+            v = np.random.choice(second_neighbs)
 
         # add edge between target node and 2nd degree neighbour, and reflect
         graph.add_edge(node, str(v))
@@ -84,13 +97,11 @@ def add_n_edges_to_node(graph, n, node):
     
     return graph, c1, c2
 
-def add_ran_node(graph):
+def add_ran_node(graph, reflect=False):
     """ Add node """
-    al = list(graph.nodes())
+    node = str((graph.number_of_nodes() * 2) + 1)
 
-    node = str(graph.number_of_nodes() + 1)
-
-    if np.random.randint(0,2):
+    if np.random.randint(0,2) or reflect:
         node = "L" + node
         graph.add_node(node)
         
@@ -100,6 +111,15 @@ def add_ran_node(graph):
         graph.add_node(node)
 
         return graph, node
+
+def choose_ran_node(graph, exclude = ["body"]):
+    """ choose random node that is not of a list of excluded nodes """
+    v = exclude[0]
+
+    while v in exclude:
+        v = np.random.choice(graph.nodes())
+
+    return v
 
 ### Morph Functions ###
 def char_grows(graph, node = None):
@@ -123,7 +143,10 @@ def char_shrinks(graph, node = None):
     
     # Pick neighbours of node, symmetrically
     nodes = [node, reflect_n(node)]
-    v = np.random.choice(list(graph.neighbors(node)))
+
+    v = "body"
+    while v == 'body':
+        v = np.random.choice(list(graph.neighbors(node)))
     vs = [v, reflect_n(v)]
     edges = [(nodes[0], vs[0]), (nodes[1], vs[1])]
     
@@ -131,10 +154,6 @@ def char_shrinks(graph, node = None):
     graph.remove_edges_from(edges)
     edges = [' - '.join(list(elem)) for elem in edges]
     movement =  "char_shrinks- removed edges: " + edges[0] + "; " + edges[1]
-    
-    # If node no longer connected remove
-    if graph.degree(node) == 0:
-        graph.remove_nodes_from(nodes)
 
     return graph, movement
 
@@ -147,14 +166,19 @@ def char_moves(graph, node = None):
     graph, m2 = char_shrinks(graph, node)
 
     movement = "char_moves- node: " + node + \
-        ". Edge change:" + m2 + " ---> " + m1
+        ". Edge change: " + m2 + " ---> " + m1
 
     return graph, movement
 
 def char_gain(graph, Node = None):
     """ New plate emerges, new node with mean edges of 3 """
-    # Add node(s)
-    graph, node1 = add_ran_node(graph)
+    # Add node(s), if will be attached to a left or right node
+    # it is decidedly better to have the new node not be a middle node, 
+    # split can serve this purpose where this rare case is needed.
+    if is_L_or_R(Node):
+        graph, node1 = add_ran_node(graph, True)
+    else:
+        graph, node1 = add_ran_node(graph)
     node2 = reflect_n(node1)
     graph.add_node(node1)
     graph.add_node(node2)
@@ -162,13 +186,15 @@ def char_gain(graph, Node = None):
     graph.add_edge(node2, reflect_n(Node))
     
     if graph.number_of_nodes() > 2:
-        # Add typical number of edges to node based on a normal pdf mean = 3
-        n = np.random.randint(0, graph.number_of_nodes())
+        n = graph.number_of_nodes()
+        while n >= graph.number_of_nodes():
+            # Add typical number of edges to node based on a normal pdf mean = 3
+            n = num_edges()
         
         # reflected nodes
         graph, b1, b2 = add_n_edges_to_node(graph, n, node1)
         
-        Node += ', '.join(b1)
+        Node += ', '.join(b1) + ', '.join(b2)
     
     movement = "char_gain- node1: " + node1 + " new edge: " + Node + "."
     
@@ -176,9 +202,13 @@ def char_gain(graph, Node = None):
 
 def char_loss(graph, Node = None):
     """ plate lost, node lost along with edges, if not leaf node the node should be replaced with an edge """
-    if Node == None:
-        Node = str(np.random.choice(graph.nodes()))
     
+    neighbs = nx.single_source_shortest_path_length(graph, 'body')
+    neighbs = [k for k in neighbs if neighbs[k] > 1]
+    if neighbs:
+        Node = np.random.choice(neighbs)
+    else:
+        Node = np.random.choice(graph.nodes())
     degree = graph.degree(Node)
 
     if degree > 1:
@@ -192,7 +222,7 @@ def char_loss(graph, Node = None):
                 neighbs
             )
         )
-    
+
         graph.add_edges_from(
             it.product(
                 ref_neighbs,
@@ -214,8 +244,10 @@ def char_merge(graph, u = None):
     if u == None:
         u = str(np.random.choice(graph.nodes()))
     
-    v = str(np.random.choice(list(graph.neighbors(u))))
-
+    v = 'body'
+    while v == 'body':
+        v = str(np.random.choice(list(graph.neighbors(u))))
+    
     if u == reflect_n(v):
         node = u[1:]
         graph.add_node(node)
@@ -224,9 +256,8 @@ def char_merge(graph, u = None):
         
         movement = "char_merge- Eater node: " + node + "." + \
             " eaten node: " + u + ", " + v + "."
-    
 
-    if not is_L_or_R(u) and not is_L_or_R(v): # 2 middle nodes merge
+    elif not is_L_or_R(u) and not is_L_or_R(v): # 2 middle nodes merge
         graph = nx.contracted_nodes(graph, u, v)
         
         movement = "char_merge- Eater node: " + u + "." + " eaten node: " + v + "."
@@ -253,8 +284,7 @@ def char_merge(graph, u = None):
         movement = \
             "char_merge- Eater nodes: " + u + ", " + reflect_n(u) + \
             ". Eaten nodes: " + v + ", " + reflect_n(v) + "."
-    
-        
+            
     return graph, movement
 
 def char_split(graph, u1 = None):
@@ -262,6 +292,7 @@ def char_split(graph, u1 = None):
     are replaced with new node that will be adjacent to old node """
     if u1 == None:
         u1 = str(np.random.choice(graph.nodes()))
+    
     u2 = str(reflect_n(u1))
     graph, node = add_ran_node(graph)
     v1 = str(node)
@@ -281,6 +312,9 @@ def char_split(graph, u1 = None):
             # Remove adjacencies from old node0
             try:
                 graph.remove_edge(u1, a)
+            except:
+                pass
+            try:
                 graph.remove_edge(u2, a2)
             except:
                 pass
@@ -296,61 +330,65 @@ def char_split(graph, u1 = None):
 ### Evo (hill climb) algorithm ###
 def perturber(G1, move = None, Node = None):
     """ Make random move """
-    #Deep copy of graph:
-    G = G1.copy()
 
-    #Variables and Constraints
-    G_Size = G.number_of_nodes()
-    
-    if Node == None:
-        Node = str(np.random.choice(G.nodes()))
-    if Node[:4] == "body":
-        return G, move 
-    elif G_Size <= 2:              # G can only gain or split
-        move = np.random.choice([3, 6])
-    elif G_Size == G.degree(Node): # Node can't grow
-        move = np.random.choice([1, 3, 4, 5, 6])
-    elif G.degree(Node) == 0:      # Node must grow or be lost
-        move = np.random.choice([0, 4, 5])
-    elif move == None:
-        move = np.random.choice(range(6))
-    
-    if move == 0: # grows
-        G, move = char_grows(G, Node)
-    if move == 1: # shrinks
-        G, move = char_shrinks(G, Node)
-    if move == 2: # moves
-        G, move = char_moves(G, Node)
-    if move == 3: # gain
-        G, move = char_gain(G, Node)
-    if move == 4: # loss
-        G, move = char_loss(G, Node)
-    if move == 5: # merge
-        G, move = char_merge(G, Node)
-    if move == 6: # split
-        G, move = char_split(G, Node)
+    try_again = True
+    while try_again == True:
+        #Copy of graph:
+        G = G1.copy()
+
+        #Variables and Constraints
+        G_Size = G.number_of_nodes()
+
+        if Node == None:
+            neighbs = nx.single_source_shortest_path_length(G, 'body')
+            neighbs = [k for k in neighbs if neighbs[k] > 0]
+            Node = np.random.choice(neighbs)
+        if move == None:
+            move = np.random.choice(range(6))
+            if G_Size <= 2:              # G can only gain or split
+                move = np.random.choice([3, 6])
+            elif G_Size == G.degree(Node): # Node can't grow
+                move = np.random.choice([1, 3, 4, 5, 6])
+            elif G.degree(Node) == 0:      # Node must grow or be lost
+                move = np.random.choice([0, 4, 5])
+
+        if move == 0: # grows
+            G, move = char_grows(G, Node)
+        if move == 1: # shrinks
+            G, move = char_shrinks(G, Node)
+        if move == 2: # moves
+            G, move = char_moves(G, Node)
+        if move == 3: # gain
+            G, move = char_gain(G, Node)
+        if move == 4: # loss
+            G, move = char_loss(G, Node)
+        if move == 5: # merge
+            G, move = char_merge(G, Node)
+        if move == 6: # split
+            G, move = char_split(G, Node)
+
+        neighbs = nx.single_source_shortest_path_length(G, 'body')
+        neighbs = [k for k in neighbs]
+        
+        # Ensure still attached to body
+        if len(neighbs) > 1:
+            try_again = False
+        else:
+            G = G1.copy()
+            Node == None
+
+    try: # remove selfloops
+        G.remove_edges_from(nx.selfloop_edges(G))
+    except:
+        pass    
 
     try: # remove solitary nodes
-        G.remove_edges_from(nx.selfloop_edges(G)) 
         solitary=[ n for n,d in G.degree_iter(with_labels=True) if d==0 ]
         G.delete_nodes_from(solitary)
     except:
         pass
-
+    
     return G, move 
-
-def intelligence(G1, G2):
-    """ Directs the perturber towards nodes and edges
-    that are most wrong and towards the moves that are
-    most likely to reduce the distance """
-
-    morph, move = perturber(G1)
-    try:
-        score = portrait_divergence(morph, G2)
-    except:
-        pass
-
-    return 0
 
 def measurer(G1, G2):
     eg1 = nx.convert_node_labels_to_integers(G1)
@@ -366,7 +404,7 @@ def recorder(move, score, print_ = True):
         print(Line)
     return Line
 
-def climber(G1, G2, max_moves = 1000, sample_size = 100, file = "test.txt"):
+def climber(G1, G2, sample_size = 100, file = "test.txt", attempts = 10):
     """ Apply perturber, if score improved record and recurse """
     Generation = 0
     score = 1
@@ -376,55 +414,59 @@ def climber(G1, G2, max_moves = 1000, sample_size = 100, file = "test.txt"):
     move = "Start Distance"
     moves.append(recorder(move, old_score))
     size = sample_size
-    bad_directions = []
+    dead_end = []
     
-    while Generation < max_moves:
+    while old_score != 0:
         breadth = 0
-        best_G = None
+        best_G = 0
         best_move = None
         best_score = 1
+        stuck = 0
+        trying = 0
 
-        while breadth < size:
-            try:
-                morph, move = perturber(graphs[Generation])
-                score = portrait_divergence(morph, G2)
-                for i in bad_directions:
-                    if nx.is_isomorphic(morph, i):
-                        print("nope")
-                        morph, move = perturber(graphs[Generation])
-                        score = portrait_divergence(morph, G2)
-                
-                breadth += 1
-            except: 
-                pass   
+        while breadth < size or best_score >= old_score:
+            # Make a random move and measure the effect
+            morph, move = perturber(graphs[Generation])
+            score = portrait_divergence(morph, G2)
+            breadth += 1
 
-            if score < best_score:
+            # Escape dead end and record its graph
+            if stuck > attempts:    
+                dead_end.append(graphs[Generation])
+                print("backstep")
+                break
+            
+            # Check if graph is isomorphic with a previous dead end 
+            # and if so ignore this attempt
+            try_again = False 
+            for i in dead_end:
+                if nx.is_isomorphic(morph, i):
+                    try_again = True  
+            if try_again:
+                trying += 1
+                if trying < size:
+                    breadth -= 1
+                continue
+
+            # keep the latest best score/move/graph
+            if score < best_score and not move == None and not score == old_score:
                 best_score = score
                 best_G = morph
                 best_move = move
+                print("nice")
+            
+            # Record how stuck we are on this generation
+            if breadth > size * (stuck + 1) :
+                stuck += 1
+                print(stuck)
 
-        if best_score < old_score:
+        if score != 1:
             Generation += 1
-            size = sample_size * Generation
+            size = sample_size * ( Generation + 1 )
             drawx(best_G, "display.png")
             graphs.append(best_G.copy())
             moves.append(recorder(best_move, best_score))
             old_score = best_score
-        
-            if best_score == 0:
-                break
-
-        else:
-            
-            bad_directions.append(graphs[Generation-1])
-            size = sample_size
-            Generation = 0
-            score = 1
-            graphs = [G1]
-            old_score = portrait_divergence(G1, G2)
-            move = "Start Distance"
-            moves.append(recorder(move, old_score))
-
     
     return graphs, moves
 
@@ -432,22 +474,32 @@ def climber(G1, G2, max_moves = 1000, sample_size = 100, file = "test.txt"):
 def main(argv):
     G1 = readx(argv[1])
     G2 = readx(argv[2])
-
-    breadth = int(argv[3])
-    Results_file = argv[4]
     
-    G3, moves = climber(G1, G2, sample_size = breadth, file = Results_file)
+    if argv[3] == "manual":
+        morph, move = perturber(G1, move=int(argv[4]))
+        score = portrait_divergence(morph, G2)
+        recorder(move, score)
+        drawx(morph, fname="display_test.png")
+    
+    else:
+        breadth = int(argv[3])
+        Results_file = argv[4]
+        attempts = int(argv[5])
 
-    Gen= 0
-    for i in G3:
-        printer = "../nupond/" + "morphling_" + file[:-3] + \
-              "_" + str(Gen) + ".png"
-        drawx(i, printer)
-        Gen += 1
+        G3, moves = climber(G1, G2, sample_size=breadth, file=Results_file, attempts=attempts)
 
-    for i in moves:
-        with open(Results_file, "a") as myfile:
-            myfile.write(i)
+        Gen= 0
+        for i in G3:
+            printer = "../nupond/" + "morphling_" + Results_file[:3] + \
+                  "_" + str(Gen) + ".png"
+            drawx(i, printer)
+            Gen += 1
+
+        for i in moves:
+            with open(Results_file, "a") as myfile:
+                myfile.write(i)
+    
+    return 0
 
 if __name__ == "__main__": 
 	"""Makes sure the "main" function is called from command line"""  

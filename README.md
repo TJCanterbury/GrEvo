@@ -1,14 +1,33 @@
 # Welcome to Grevo (graph evolution) repository
 
+### Disclaimer 
+MI-GRAAL, MI-GRAALRunner.py, list2leda, ncount, portrait_divergence.py, magnapp_cli_linux64 and much of the UPGMA function are not my own but can be found online readily.
+
 ## Directory Structure:
-
-Sandbox is where all my junk code went and in the Data and pond directory you will find many graphs.  
-
-MI-GRAAL, MI-GRAALRunner.py, list2leda, ncount, portrait_divergence.py are not my own.
-
-### In Code you shall find:
  
- File       | Description
+ Directory       | Description
  ------------- | -------------
- all_aligns.sh | MI-GRAAL is run with 'bash all_aligns.sh ../pond/' to generate a distance matric and from this a UPGMA evaluated phylogeny.
- grevo.py | This python script is used with graphs (eg a.txt) in Data to randomize and evolve graphs. This shall be adapted with a hill climbing algorithm to evolve one graph into another, find the shortest path for this evolution and use the length of this path as a measure of parsimony in future tree evaluations. example usage: 'python3 grevo.py ../Data/a.txt ../Data/b.txt 10'
+ mi-graal_UPGMA | MI-GRAAL is run with 'bash all_aligns.sh ../pond/' to generate a distance matric and from this a UPGMA evaluated phylogeny is generated.
+ magna_UPGMA | magna is run with 'bash all_aligns.sh ../pond/' to generate a distance matric and from this a UPGMA evaluated phylogeny is generated.
+ GrEvo | Used to randomize and evolve graphs from one topology to another. Will be used to measure parsimony.
+
+## Requirements:
+### System:
+Tested on Ubuntu 20.04.2 LTS
+
+### Languages:
+- Python 3.8.5
+    Imports:
+    - Networkx
+    - NumPy
+    - Pandas
+    - itertools
+    - os
+    - Biopython
+    - matplotlib
+    - io
+    - re
+    - sys
+- R 3.6.3
+    Imports:
+    - tidyverse
