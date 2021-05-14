@@ -16,8 +16,8 @@ MI-GRAAL, MI-GRAALRunner.py, list2leda, ncount, portrait_divergence.py, magnapp_
 Tested on Ubuntu 20.04.2 LTS
 
 ### Languages:
-- Python 3.8.5
-    Imports:
+- Python 3.8.5  
+    Imports:  
     - Networkx
     - NumPy
     - Pandas
@@ -28,6 +28,6 @@ Tested on Ubuntu 20.04.2 LTS
     - io
     - re
     - sys
-- R 3.6.3
-    Imports:
+- R 3.6.3  
+    Imports:  
     - tidyverse

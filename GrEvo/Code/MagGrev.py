@@ -404,70 +404,82 @@ def recorder(move, score, print_ = True):
         print(Line)
     return Line
 
+def searcher(G1, G2, size, attempts, dead_ends):
+    old_score = portrait_divergence(G1, G2)
+    breadth = 0
+    best_G = 0
+    best_move = None
+    best_score = 1
+    stuck = 0
+    trying = 0
+
+    while breadth < size or best_score >= old_score:
+        
+        # Make a random move and measure the effect
+        morph, move = perturber(G1)
+        score = portrait_divergence(morph, G2)
+        breadth += 1
+
+        # Escape dead end and record its graph
+        if stuck > attempts:    
+            return old_score, None, G1
+        
+        # Check if graph is isomorphic with a previous dead end 
+        # and if so ignore this attempt
+        try_again = False 
+        for i in dead_ends:
+            if nx.is_isomorphic(morph, i):
+                try_again = True  
+        if try_again:
+            trying += 1
+            if trying < size:
+                breadth -= 1
+            continue
+
+        # keep the latest best score/move/graph
+        if score < best_score and not move == None:
+            best_score = score
+            best_G = morph
+            best_move = move
+        
+        # Record how stuck we are on this generation
+        if breadth > size * (stuck + 1) :
+            stuck += 1
+            print(stuck)
+    
+    return best_score, best_move, best_G
+
 def climber(G1, G2, sample_size = 100, file = "test.txt", attempts = 10):
     """ Apply perturber, if score improved record and recurse """
     Generation = 0
-    score = 1
-    moves = []
-    graphs = [G1]
+    moves1 = []
+    g1s = [G1]
     old_score = portrait_divergence(G1, G2)
     move = "Start Distance"
-    moves.append(recorder(move, old_score))
+    moves1.append("G1 " + recorder(move, old_score))
+    dead_end1 = []
     size = sample_size
-    dead_end = []
     
     while old_score != 0:
-        breadth = 0
-        best_G = 0
-        best_move = None
-        best_score = 1
-        stuck = 0
-        trying = 0
+        
+        best_score, best_move, best_G = searcher(g1s[Generation], G2, size, attempts, dead_end1)
 
-        while breadth < size or best_score >= old_score:
-            # Make a random move and measure the effect
-            morph, move = perturber(graphs[Generation])
-            score = portrait_divergence(morph, G2)
-            breadth += 1
-
-            # Escape dead end and record its graph
-            if stuck > attempts:    
-                dead_end.append(graphs[Generation])
-                print("backstep")
-                break
-            
-            # Check if graph is isomorphic with a previous dead end 
-            # and if so ignore this attempt
-            try_again = False 
-            for i in dead_end:
-                if nx.is_isomorphic(morph, i):
-                    try_again = True  
-            if try_again:
-                trying += 1
-                if trying < size:
-                    breadth -= 1
-                continue
-
-            # keep the latest best score/move/graph
-            if score < best_score and not move == None and not score == old_score:
-                best_score = score
-                best_G = morph
-                best_move = move
-            
-            # Record how stuck we are on this generation
-            if breadth > size * (stuck + 1) :
-                stuck += 1
-                print(stuck)
-
-        if score != 1:
+        if best_move:
             Generation += 1
             size = sample_size * ( Generation + 1 )
             drawx(best_G, "display.png")
-            graphs.append(best_G.copy())
-            moves.append(recorder(best_move, best_score))
-            old_score = best_score
-    
-    return graphs, moves
+            g1s.append(best_G.copy())
+            moves1.append("G1 " + recorder(best_move, best_score))
+        
+        else:
+            Generation = 0
+            g1s = [G1]
+            move = "Start Distance"
+            moves1.append("G1 " + recorder(move, old_score))
+            size = sample_size
+            dead_end1.append(best_G)
+        
+    return g1s, moves1
 
 ### Business End ###
 def main(argv):

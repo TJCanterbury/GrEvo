@@ -344,7 +344,7 @@ def perturber(G1, move = None, Node = None):
             neighbs = [k for k in neighbs if neighbs[k] > 0]
             Node = np.random.choice(neighbs)
         if move == None:
-            move = np.random.choice(range(6))
+            move = np.random.choice(range(7))
             if G_Size <= 2:              # G can only gain or split
                 move = np.random.choice([3, 6])
             elif G_Size == G.degree(Node): # Node can't grow

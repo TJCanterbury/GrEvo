@@ -18,18 +18,26 @@ import sys # module to interface our program with the operating system
 import itertools as it
 import numpy as np
 import networkx as nx
+from numpy.core.arrayprint import format_float_scientific
 from nxcode import readx
 from nxcode import drawx
 from portrait_divergence import portrait_divergence
 
 ## Functions ##
 ### General Graph Functions ###
-def num_edges(mean = 1):
+def num_edges(G):
     """ Returns from a normal distribution an integer for the
     number of edges to add """
+    my_degrees = G.degree()
+    degree_values = [v for k, v in my_degrees]
+    sum_G = sum(degree_values)
+
+    mean = (sum_G / G.number_of_nodes()) - 1 # minus one because this will be used after one edge has already been added!
     randomInts = np.random.normal(loc=mean, size=1).astype(int)
+    
     while randomInts < 0:
         randomInts = np.random.normal(loc=mean, size=1).astype(int)
+    
     return int(randomInts)
 
 def is_L_or_R(node):
@@ -172,13 +180,7 @@ def char_moves(graph, node = None):
 
 def char_gain(graph, Node = None):
     """ New plate emerges, new node with mean edges of 3 """
-    # Add node(s), if will be attached to a left or right node
-    # it is decidedly better to have the new node not be a middle node, 
-    # split can serve this purpose where this rare case is needed.
-    if is_L_or_R(Node):
-        graph, node1 = add_ran_node(graph, True)
-    else:
-        graph, node1 = add_ran_node(graph)
+    graph, node1 = add_ran_node(graph)
     node2 = reflect_n(node1)
     graph.add_node(node1)
     graph.add_node(node2)
@@ -189,7 +191,7 @@ def char_gain(graph, Node = None):
         n = graph.number_of_nodes()
         while n >= graph.number_of_nodes():
             # Add typical number of edges to node based on a normal pdf mean = 3
-            n = num_edges()
+            n = num_edges(graph)
         
         # reflected nodes
         graph, b1, b2 = add_n_edges_to_node(graph, n, node1)
@@ -291,13 +293,13 @@ def char_split(graph, u1 = None):
     """ 0ne plate becomes 2, half the instances of a node 
     are replaced with new node that will be adjacent to old node """
     if u1 == None:
-        u1 = str(np.random.choice(graph.nodes()))
+        u1 = np.random.choice(graph.nodes())
     
-    u2 = str(reflect_n(u1))
+    u2 = reflect_n(u1)
     graph, node = add_ran_node(graph)
-    v1 = str(node)
-    v2 = str(reflect_n(node))
-    ud = int(graph.degree(u1) / 2)
+    v1 = node
+    v2 = reflect_n(node)
+    ud = int(graph.degree(str(u1)))
 
     if ud > 1:
         # Collect 50% of adjacencies
@@ -318,10 +320,14 @@ def char_split(graph, u1 = None):
                 graph.remove_edge(u2, a2)
             except:
                 pass
-
-    # Add edge between split nodes
-    graph.add_edge(u1, v1)
-    graph.add_edge(u2, v2)
+    
+    if is_L_or_R(v1) and not is_L_or_R(u1):
+        graph.add_edge(v1, v2)
+        graph.remove_node(u1)
+    else:
+        # Add edge between split nodes
+        graph.add_edge(u1, v1)
+        graph.add_edge(u2, v2)
     
     movement = "char_split- from node(s): " + u1 + ', ' + u2 + " new node(s): " + v1 + ", " + v2 + "."
 
@@ -344,7 +350,7 @@ def perturber(G1, move = None, Node = None):
             neighbs = [k for k in neighbs if neighbs[k] > 0]
             Node = np.random.choice(neighbs)
         if move == None:
-            move = np.random.choice(range(6))
+            move = np.random.choice(range(7))
             if G_Size <= 2:              # G can only gain or split
                 move = np.random.choice([3, 6])
             elif G_Size == G.degree(Node): # Node can't grow
@@ -404,7 +410,7 @@ def recorder(move, score, print_ = True):
         print(Line)
     return Line
 
-def searcher(G1, G2, size, attempts, dead_ends):
+def searcher(G1, G2, size, attempts, dead_ends, Generation):
     old_score = portrait_divergence(G1, G2)
     breadth = 0
     best_G = 0
@@ -421,7 +427,7 @@ def searcher(G1, G2, size, attempts, dead_ends):
         breadth += 1
 
         # Escape dead end and record its graph
-        if stuck > attempts:    
+        if stuck >= attempts:    
             return old_score, None, G1
         
         # Check if graph is isomorphic with a previous dead end 
@@ -437,7 +443,7 @@ def searcher(G1, G2, size, attempts, dead_ends):
             continue
 
         # keep the latest best score/move/graph
-        if score < best_score and not move == None:
+        if score < best_score and not move == None and np.random.randint(0, Generation+2):
             best_score = score
             best_G = morph
             best_move = move
@@ -449,7 +455,7 @@ def searcher(G1, G2, size, attempts, dead_ends):
     
     return best_score, best_move, best_G
 
-def climber(G1, G2, sample_size = 100, file = "test.txt", attempts = 10):
+def climber(G1, G2, sample_size = 100, file = "test.txt", attempts = 10, goal = 4):
     """ Apply perturber, if score improved record and recurse """
     Generation = 0
     moves1 = []
@@ -459,17 +465,25 @@ def climber(G1, G2, sample_size = 100, file = "test.txt", attempts = 10):
     moves1.append("G1 " + recorder(move, old_score))
     dead_end1 = []
     size = sample_size
+    best_score = old_score
     
-    while old_score != 0:
+    while best_score != 0:
         
-        best_score, best_move, best_G = searcher(g1s[Generation], G2, size, attempts, dead_end1)
-
-        if best_move:
-            Generation += 1
-            size = sample_size * ( Generation + 1 )
+        best_score, best_move, best_G = searcher(g1s[Generation], G2, size, attempts, dead_end1, Generation)
+        
+        if best_score == 0:
+            size = sample_size * (Generation + 1)
             drawx(best_G, "display.png")
             g1s.append(best_G.copy())
-            moves1.append("G1 " + recorder(best_move, best_score))
+            moves1.append(recorder(best_move, best_score))
+            return g1s, moves1
+
+        elif best_move and (Generation + 1) < goal:
+            Generation += 1
+            size = sample_size * (Generation + 1)
+            drawx(best_G, "display.png")
+            g1s.append(best_G.copy())
+            moves1.append(recorder(best_move, best_score))
         
         else:
             Generation = 0
@@ -477,9 +491,7 @@ def climber(G1, G2, sample_size = 100, file = "test.txt", attempts = 10):
             move = "Start Distance"
             moves1.append("G1 " + recorder(move, old_score))
             size = sample_size
-            dead_end1.append(best_G)
-        
-    return g1s, moves1
+            dead_end1.append(best_G)     
 
 ### Business End ###
 def main(argv):
@@ -487,7 +499,11 @@ def main(argv):
     G2 = readx(argv[2])
     
     if argv[3] == "manual":
-        morph, move = perturber(G1, move=int(argv[4]))
+        if len(argv) == 6:
+            move=int(argv[5])
+        else:
+            move = None
+        morph, move = perturber(G1, Node=argv[4], move=move)
         score = portrait_divergence(morph, G2)
         recorder(move, score)
         drawx(morph, fname="display_test.png")
@@ -496,8 +512,9 @@ def main(argv):
         breadth = int(argv[3])
         Results_file = argv[4]
         attempts = int(argv[5])
+        goal = int(argv[6])
 
-        G3, moves = climber(G1, G2, sample_size=breadth, file=Results_file, attempts=attempts)
+        G3, moves = climber(G1, G2, sample_size=breadth, file=Results_file, attempts=attempts, goal=goal)
 
         Gen= 0
         for i in G3:
