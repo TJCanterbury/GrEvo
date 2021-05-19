@@ -11,7 +11,7 @@ Then I will build a phylogeny based on these events. """
 
 __appname__ = 'GrEvo2.py'
 __author__ = 'Tristan JC (tjc19@ic.ac.uk)'
-__version__ = '0.0.2'
+__version__ = '0.0.3S'
 
 ## imports ##
 import sys # module to interface our program with the operating system
@@ -22,6 +22,11 @@ from numpy.core.arrayprint import format_float_scientific
 from nxcode import readx
 from nxcode import drawx
 from portrait_divergence import portrait_divergence
+from numpy import genfromtxt
+import graph_tool.all as gt 
+import graph_tool.draw as dr 
+import graph_tool.generation as rg 
+import graph_tool.util as ug 
 
 ## Functions ##
 ### General Graph Functions ###
@@ -67,6 +72,20 @@ def reflect_n(node):
     
     return node
 
+def tool_reflect_n(graph, node):
+    """ Reflect_n for graph_tool network """
+    # Get name of node
+    name = graph.vp.names[node]
+
+    # Get name of reflection of node
+    name2 = reflect_n(name)
+
+    # Get node with that name
+    node2 = ug.find_vertex(graph, graph.vp.names, name2)
+
+    return node2
+
+
 def add_n_edges_to_node(graph, n, node):
     """ adds n random edges to a given node """
     
@@ -105,11 +124,11 @@ def add_n_edges_to_node(graph, n, node):
     
     return graph, c1, c2
 
-def add_ran_node(graph, reflect=False, middle=False):
+def add_ran_node(graph, reflect=False):
     """ Add node """
     node = str((graph.number_of_nodes() * 2) + 1)
 
-    if (np.random.randint(0,2) or reflect) and not middle:
+    if np.random.randint(0,2) or reflect:
         node = "L" + node
         graph.add_node(node)
         
@@ -303,7 +322,7 @@ def char_split(graph, u1 = None):
 
     if ud > 1:
         # Collect 50% of adjacencies
-        neighbs = set(np.random.choice(list(graph.neighbors(u1)), size=np.random.randint(1, ud)))
+        neighbs = set(np.random.choice(list(graph.neighbors(u1)), size=ud))
         neighbs = list(neighbs)
         for a in neighbs:
             a2 = reflect_n(a)
@@ -333,50 +352,6 @@ def char_split(graph, u1 = None):
 
     return graph, movement
 
-def char_expansion(graph, u1 = None):
-    """ Add node to edge """
-    u2 = reflect_n(u1)
-    # choose neighbour:
-    n1 = np.random.choice(list(graph.neighbors(u1)), size=1)[0]
-    n2 = reflect_n(n1)
-    
-    if is_L_or_R(n1) or is_L_or_R(u1):
-        # New nodes:
-        graph, v1 = add_ran_node(graph, reflect=True)
-        v2 = reflect_n(v1)
-        graph.add_node(v2)
-
-        graph.add_edge(u1, v1)
-        graph.add_edge(n1, v1)
-        graph.add_edge(u2, v2)
-        graph.add_edge(n2, v2)
-        movement = "char_expansion- from edge(s): " + u1 + "-" + n1 + ', ' + u2 +  "-" + n2 + \
-            " new node(s): " + v1 + ", " + v2 + "."
-    
-    else:
-        # New nodes:
-        graph, v1 = add_ran_node(graph, middle=True)
-
-        graph.add_edge(u1, v1)
-        graph.add_edge(n1, v1)
-
-        movement = "char_expansion- from edge(s): " + u1 + "-" + n1 + ', ' + u2 +  "-" + n2 + \
-            " new node(s): " + v1 + "."
-
-
-    # Remove old edges
-    try:
-        graph.remove_edge(u1, n1)
-    except:
-        pass
-    try:
-        graph.remove_edge(u2, n2)
-    except:
-        pass
-    
-
-    return graph, movement
-
 ### Evo (hill climb) algorithm ###
 def perturber(G1, move = None, Node = None):
     """ Make random move """
@@ -394,11 +369,11 @@ def perturber(G1, move = None, Node = None):
             neighbs = [k for k in neighbs if neighbs[k] > 0]
             Node = np.random.choice(neighbs)
         if move == None:
-            move = np.random.choice(range(8))
+            move = np.random.choice(range(7))
             if G_Size <= 2:              # G can only gain or split
-                move = np.random.choice([3, 6, 7])
+                move = np.random.choice([3, 6])
             elif G_Size == G.degree(Node): # Node can't grow
-                move = np.random.choice([1, 3, 4, 5, 6, 7])
+                move = np.random.choice([1, 3, 4, 5, 6])
             elif G.degree(Node) == 0:      # Node must grow or be lost
                 move = np.random.choice([0, 4, 5])
 
@@ -416,8 +391,6 @@ def perturber(G1, move = None, Node = None):
             G, move = char_merge(G, Node)
         if move == 6: # split
             G, move = char_split(G, Node)
-        if move == 7: # Graph expansion (replace edge with node)
-            G, move =char_expansion(G, Node)
 
         neighbs = nx.single_source_shortest_path_length(G, 'body')
         neighbs = [k for k in neighbs]
@@ -429,12 +402,16 @@ def perturber(G1, move = None, Node = None):
             G = G1.copy()
             Node == None
 
-    # remove selfloops
-    G.remove_edges_from(nx.selfloop_edges(G))   
+    try: # remove selfloops
+        G.remove_edges_from(nx.selfloop_edges(G))
+    except:
+        pass    
 
-    # remove solitary nodes
-    remove = [node for node,degree in dict(G.degree()).items() if degree == 0]
-    G.remove_nodes_from(remove)
+    try: # remove solitary nodes
+        solitary=[ n for n,d in G.degree_iter(with_labels=True) if d==0 ]
+        G.delete_nodes_from(solitary)
+    except:
+        pass
     
     return G, move 
 
@@ -560,14 +537,13 @@ def main(argv):
 
         Gen= 0
         for i in G3:
-            printer = "../Results/" + "morphling_" + Results_file + \
+            printer = "../nupond/" + "morphling_" + Results_file[:3] + \
                   "_" + str(Gen) + ".png"
             drawx(i, printer)
             Gen += 1
-        
-        moves_results = "../Results/" + Results_file + "_moves.txt"
+
         for i in moves:
-            with open(moves_results, "a") as myfile:
+            with open(Results_file, "a") as myfile:
                 myfile.write(i)
     
     return 0

@@ -1,0 +1,236 @@
+G1 Start Distance Score: 0.589203937729462
+char_merge- Eater node: 2. eaten nodes: L8, R8. Score: 0.4946285220373827
+char_moves- node: 2. Edge change: char_shrinks- removed edges: 2 - R21; 2 - L21 ---> char_grows- Added edges: 2 - body; 2 - body Score: 0.4336246527996246
+char_shrinks- removed edges: 2 - 3; 2 - 3 Score: 0.4269790633320294
+char_gain- node1: 23 new edge: L21. Score: 0.42645196482108927
+G1 Start Distance Score: 0.589203937729462
+char_shrinks- removed edges: 2 - R8; 2 - L8 Score: 0.4726013162793783
+char_loss- node: L8, R8. Score: 0.43550785207229004
+char_split- from node(s): L16, R16 new node(s): L21, R21. Score: 0.421728806562737
+char_gain- node1: 21 new edge: L21L16, R16L16, R16. Score: 0.4080473598114425
+G1 Start Distance Score: 0.589203937729462
+char_loss- node: R8, L8. Score: 0.43550785207229004
+char_grows- Added edges: L21 - L16; R21 - R16 Score: 0.421728806562737
+G1 Start Distance Score: 0.589203937729462
+char_expansion- from edge(s): L8-3, R8-3 new node(s): L27, R27. Score: 0.46759672094184956
+char_gain- node1: L31 new edge: L8R8, L21, L27, 33, R21, R27, L8. Score: 0.348971767067096
+char_shrinks- removed edges: L31 - R8; R31 - L8 Score: 0.2951434274597341
+char_grows- Added edges: L19 - L8; R19 - R8 Score: 0.22392721677048283
+char_grows- Added edges: R8 - 3; L8 - 3 Score: 0.18648916095006102
+char_merge- Eater node: 3. eaten nodes: R8, L8. Score: 0.1726786838648578
+char_grows- Added edges: L12 - R12; R12 - L12 Score: 0.11846038461476069
+char_gain- node1: 31 new edge: R27L31, R31L31, R31. Score: 0.07908071143957592
+char_grows- Added edges: R21 - L21; L21 - R21 Score: 0.049535085508509116
+G1 Start Distance Score: 0.589203937729462
+char_shrinks- removed edges: L21 - L12; R21 - R12 Score: 0.5141911194046981
+char_loss- node: 2, 2. Score: 0.48875638320126924
+char_grows- Added edges: L16 - body; R16 - body Score: 0.46824389016731527
+char_split- from node(s): L8, R8 new node(s): 25, 25. Score: 0.4304140334878062
+char_gain- node1: L27 new edge: R12R16, 3L16, 3. Score: 0.4009565840367202
+char_moves- node: R12. Edge change: char_shrinks- removed edges: R12 - 25; L12 - 25 ---> char_grows- Added edges: R12 - L12; L12 - R12 Score: 0.397695279199764
+char_merge- Eater node: 3. eaten nodes: R27, L27. Score: 0.34128770785630624
+G1 Start Distance Score: 0.589203937729462
+char_moves- node: L8. Edge change: char_shrinks- removed edges: L8 - L21; R8 - R21 ---> char_grows- Added edges: L8 - L16; R8 - R16 Score: 0.5775291851099057
+char_loss- node: R8, L8. Score: 0.43550785207229004
+char_expansion- from edge(s): L19-body, R19-body new node(s): L21, R21. Score: 0.43297399991117447
+char_shrinks- removed edges: R21 - R19; L21 - L19 Score: 0.42766085703313994
+char_gain- node1: 21 new edge: R19. Score: 0.4237501756588156
+G1 Start Distance Score: 0.589203937729462
+char_loss- node: 2, 2. Score: 0.4726013162793783
+char_loss- node: R8, L8. Score: 0.43550785207229004
+char_split- from node(s): L19, R19 new node(s): L21, R21. Score: 0.43297399991117447
+char_split- from node(s): R19, L19 new node(s): 21, 21. Score: 0.40790163549941716
+G1 Start Distance Score: 0.589203937729462
+char_loss- node: L8, R8. Score: 0.44281260432699576
+char_moves- node: 2. Edge change: char_shrinks- removed edges: 2 - R12; 2 - L12 ---> char_grows- Added edges: 2 - L21, R21; 2 - L21, R21 Score: 0.43845349853030124
+char_gain- node1: 23 new edge: 3R12, L12, bodyR12, L12, body. Score: 0.43218614175605663
+char_shrinks- removed edges: 3 - R19; 3 - L19 Score: 0.4306507567747724
+G1 Start Distance Score: 0.589203937729462
+char_loss- node: 2, 2. Score: 0.4726013162793783
+char_loss- node: L8, R8. Score: 0.43550785207229004
+char_gain- node1: 21 new edge: 3R12, L12, bodyR12, L12, body. Score: 0.4336246527996246
+char_shrinks- removed edges: 21 - 3; 21 - 3 Score: 0.4269790633320294
+char_moves- node: L16. Edge change: char_shrinks- removed edges: L16 - L12; R16 - R12 ---> char_grows- Added edges: L16 - L21; R16 - R21 Score: 0.41170537184808526
+G1 Start Distance Score: 0.589203937729462
+char_loss- node: L8, R8. Score: 0.43550785207229004
+char_split- from node(s): L16, R16 new node(s): L21, R21. Score: 0.4337393502386795
+char_grows- Added edges: R12 - L12; L12 - R12 Score: 0.4246428660005191
+G1 Start Distance Score: 0.589203937729462
+char_expansion- from edge(s): R8-3, L8-3 new node(s): L27, R27. Score: 0.46759672094184956
+char_gain- node1: L31 new edge: R273, L8R8, 3. Score: 0.3277226180624264
+char_moves- node: L27. Edge change: char_shrinks- removed edges: L27 - R31; R27 - L31 ---> char_grows- Added edges: L27 - body; R27 - body Score: 0.27706938647565904
+char_merge- Eater nodes: L21, R21. Eaten nodes: L12, R12. Score: 0.2503305408925196
+char_gain- node1: 31 new edge: L21R8, 3, L8R8, 3, L8. Score: 0.21354200713784616
+char_grows- Added edges: L8 - 3; R8 - 3 Score: 0.1989811071031335
+char_split- from node(s): L8, R8 new node(s): 33, 33. Score: 0.14902440946958923
+char_shrinks- removed edges: L8 - 31; R8 - 31 Score: 0.12019758520653745
+char_grows- Added edges: 33 - L27, R27; 33 - L27, R27 Score: 0.09643382897615685
+G1 Start Distance Score: 0.589203937729462
+char_merge- Eater node: 2. eaten nodes: L8, R8. Score: 0.4946285220373827
+char_shrinks- removed edges: R21 - 2; L21 - 2 Score: 0.45114149067128506
+char_grows- Added edges: 2 - body; 2 - body Score: 0.4336246527996246
+char_shrinks- removed edges: 2 - 3; 2 - 3 Score: 0.4269790633320294
+char_split- from node(s): L12, R12 new node(s): L23, R23. Score: 0.4214500731332314
+char_split- from node(s): L23, R23 new node(s): 27, 27. Score: 0.37755348451753157
+char_gain- node1: L29 new edge: R122727. Score: 0.1865188486794935
+char_moves- node: L29. Edge change: char_shrinks- removed edges: L29 - R12; R29 - L12 ---> char_grows- Added edges: L29 - R16; R29 - L16 Score: 0.1669824131340688
+char_grows- Added edges: R16 - R29; L16 - L29 Score: 0.16534176559973712
+G1 Start Distance Score: 0.589203937729462
+char_loss- node: R12, L12. Score: 0.5235881020583361
+char_moves- node: R8. Edge change: char_shrinks- removed edges: R8 - 2; L8 - 2 ---> char_grows- Added edges: R8 - L19; L8 - R19 Score: 0.468336732512298
+char_expansion- from edge(s): R21-R8, L21-L8 new node(s): L21, R21. Score: 0.4293325060204753
+char_split- from node(s): R16, L16 new node(s): 21, 21. Score: 0.41647168631408127
+G1 Start Distance Score: 0.589203937729462
+char_shrinks- removed edges: 2 - R8; 2 - L8 Score: 0.4726013162793783
+char_loss- node: L8, R8. Score: 0.43550785207229004
+char_split- from node(s): L16, R16 new node(s): L21, R21. Score: 0.4337393502386795
+char_gain- node1: 21 new edge: R12. Score: 0.427274929981294
+G1 Start Distance Score: 0.589203937729462
+char_loss- node: 2, 2. Score: 0.4726013162793783
+char_loss- node: L8, R8. Score: 0.43550785207229004
+char_expansion- from edge(s): L19-body, R19-body new node(s): L21, R21. Score: 0.43297399991117447
+char_shrinks- removed edges: L12 - L21; R12 - R21 Score: 0.42766085703313994
+G1 Start Distance Score: 0.589203937729462
+char_shrinks- removed edges: 2 - R8; 2 - L8 Score: 0.4726013162793783
+char_moves- node: L8. Edge change: char_shrinks- removed edges: L8 - L21; R8 - R21 ---> char_grows- Added edges: L8 - body; R8 - body Score: 0.4643529049491724
+char_split- from node(s): L12, R12 new node(s): 25, 25. Score: 0.4324604409534776
+char_gain- node1: L27 new edge: L16R8, R16, 25L16, 25, L8. Score: 0.245336770708462
+char_moves- node: L8. Edge change: char_shrinks- removed edges: L8 - R8; R8 - L8 ---> char_grows- Added edges: L8 - R21; R8 - L21 Score: 0.2008786138102118
+G1 Start Distance Score: 0.589203937729462
+char_loss- node: 2, 2. Score: 0.4726013162793783
+char_shrinks- removed edges: 3 - L19; 3 - R19 Score: 0.4676942600685765
+char_merge- Eater nodes: L16, R16. Eaten nodes: L12, R12. Score: 0.44034685903643844
+char_expansion- from edge(s): 3-R8, 3-L8 new node(s): L21, R21. Score: 0.4184826491688757
+G1 Start Distance Score: 0.589203937729462
+char_loss- node: R8, L8. Score: 0.43550785207229004
+char_moves- node: R16. Edge change: char_shrinks- removed edges: R16 - R12; L16 - L12 ---> char_grows- Added edges: R16 - R21; L16 - L21 Score: 0.4337393502386795
+G1 Start Distance Score: 0.589203937729462
+char_split- from node(s): 3, 3 new node(s): L27, R27. Score: 0.5426237854417786
+char_gain- node1: L29 new edge: R27L27R27. Score: 0.48144589367124
+char_split- from node(s): R27, L27 new node(s): 33, 33. Score: 0.45497159753974736
+char_merge- Eater node: 33. eaten nodes: R12, L12. Score: 0.3614380411971736
+char_gain- node1: L31 new edge: 33L27, R21, R31L21, L31, R27. Score: 0.09158732185020253
+char_grows- Added edges: R21 - R19; L21 - L19 Score: 0.051934915509139194
+char_moves- node: R31. Edge change: char_shrinks- removed edges: R31 - L21; L31 - R21 ---> char_grows- Added edges: R31 - R16; L31 - L16 Score: 0.0445045955971421
+char_moves- node: R8. Edge change: char_shrinks- removed edges: R8 - L8; L8 - R8 ---> char_grows- Added edges: R8 - R16; L8 - L16 Score: 0.03470853906702662
+G1 Start Distance Score: 0.589203937729462
+char_loss- node: L8, R8. Score: 0.44281260432699576
+char_loss- node: 2, 2. Score: 0.43550785207229004
+G1 Start Distance Score: 0.589203937729462
+char_expansion- from edge(s): L8-3, R8-3 new node(s): L27, R27. Score: 0.46759672094184956
+char_gain- node1: L31 new edge: L21L27, 3, L8R8, 3, R27. Score: 0.2951434274597341
+char_grows- Added edges: 3 - R8, L8; 3 - R8, L8 Score: 0.2171831331858149
+char_grows- Added edges: 3 - 2; 3 - 2 Score: 0.11014047363515136
+char_grows- Added edges: L27 - L21; R27 - R21 Score: 0.0906521587148215
+char_shrinks- removed edges: L8 - L27; R8 - R27 Score: 0.05750704652008587
+char_moves- node: 2. Edge change: char_shrinks- removed edges: 2 - L8; 2 - R8 ---> char_grows- Added edges: 2 - L27, R27; 2 - L27, R27 Score: 0.034508343873359035
+char_shrinks- removed edges: L8 - R8; R8 - L8 Score: 0.0
+G1 Start Distance Score: 0.5469088415103538
+char_gain- node1: L35 new edge: 5R14, R12L14, L12. Score: 0.44375726048118425
+char_gain- node1: L39 new edge: 54, L17, R39R17, L39, 4. Score: 0.3323669513782596
+char_shrinks- removed edges: L16 - L17; R16 - R17 Score: 0.2784467342993562
+char_moves- node: L8. Edge change: char_shrinks- removed edges: L8 - L14; R8 - R14 ---> char_grows- Added edges: L8 - R35; R8 - L35 Score: 0.2509794535066642
+char_moves- node: L14. Edge change: char_shrinks- removed edges: L14 - L17; R14 - R17 ---> char_grows- Added edges: L14 - L8; R14 - R8 Score: 0.20368955474181427
+G1 Start Distance Score: 0.5469088415103538
+char_split- from node(s): L17, R17 new node(s): 35, 35. Score: 0.33168070784153025
+char_grows- Added edges: L12 - L16; R12 - R16 Score: 0.23620399810768725
+char_grows- Added edges: 5 - R9, L9; 5 - R9, L9 Score: 0.21674987867523238
+char_merge- Eater node: 5. eaten nodes: R12, L12. Score: 0.17149906774320905
+char_grows- Added edges: L17 - L14; R17 - R14 Score: 0.16236676840288683
+char_moves- node: L16. Edge change: char_shrinks- removed edges: L16 - L14; R16 - R14 ---> char_grows- Added edges: L16 - L17; R16 - R17 Score: 0.1580478652169689
+char_split- from node(s): 35, 35 new node(s): L33, R33. Score: 0.07305171296193727
+char_shrinks- removed edges: R14 - R8; L14 - L8 Score: 0.043418225292474216
+char_moves- node: L8. Edge change: char_shrinks- removed edges: L8 - L6; R8 - R6 ---> char_grows- Added edges: L8 - R8; R8 - L8 Score: 0.027991946932654554
+G1 Start Distance Score: 0.5469088415103538
+char_gain- node1: L35 new edge: R174, L9, 54, R9, 5. Score: 0.4368661865952169
+char_moves- node: 5. Edge change: char_shrinks- removed edges: 5 - R12; 5 - L12 ---> char_grows- Added edges: 5 - L6, R6; 5 - L6, R6 Score: 0.27527101777460217
+char_grows- Added edges: R6 - L6; L6 - R6 Score: 0.26835078434303217
+char_shrinks- removed edges: R6 - R9; L6 - L9 Score: 0.25002087600226275
+char_loss- node: L12, R12. Score: 0.21782695290455933
+char_moves- node: L16. Edge change: char_shrinks- removed edges: L16 - L14; R16 - R14 ---> char_grows- Added edges: L16 - R16; R16 - L16 Score: 0.18385736463390712
+char_grows- Added edges: 4 - body; 4 - body Score: 0.1322871104852389
+char_expansion- from edge(s): R35-5, L35-5 new node(s): L35, R35. Score: 0.1216074105190307
+char_grows- Added edges: L6 - L14; R6 - R14 Score: 0.12144721550446329
+G1 Start Distance Score: 0.5469088415103538
+char_split- from node(s): 4, 4 new node(s): L35, R35. Score: 0.4724243097929882
+char_split- from node(s): L12, R12 new node(s): 37, 37. Score: 0.3924506779752672
+char_split- from node(s): R17, L17 new node(s): 39, 39. Score: 0.30884815110796726
+char_grows- Added edges: L14 - body; R14 - body Score: 0.26555111209650234
+char_moves- node: R17. Edge change: char_shrinks- removed edges: R17 - R12; L17 - L12 ---> char_grows- Added edges: R17 - R16; L17 - L16 Score: 0.23648687513899125
+char_moves- node: L6. Edge change: char_shrinks- removed edges: L6 - L35; R6 - R35 ---> char_grows- Added edges: L6 - 5; R6 - 5 Score: 0.23106993258354824
+char_merge- Eater node: 35. eaten node: L35, R35. Score: 0.1524374389425623
+char_moves- node: R16. Edge change: char_shrinks- removed edges: R16 - R17; L16 - L17 ---> char_grows- Added edges: R16 - L16; L16 - R16 Score: 0.15040369124192152
+G1 Start Distance Score: 0.5469088415103538
+char_grows- Added edges: R16 - R12; L16 - L12 Score: 0.5099505070601131
+char_expansion- from edge(s): 5-L12, 5-R12 new node(s): L35, R35. Score: 0.43940131681070116
+char_split- from node(s): L8, R8 new node(s): 39, 39. Score: 0.31241228392331666
+char_gain- node1: L41 new edge: L94, L35, 54, R35, 5. Score: 0.28857702452256084
+char_loss- node: L6, R6. Score: 0.23274129907219349
+char_loss- node: L12, R12. Score: 0.232345971059446
+char_grows- Added edges: L17 - 4; R17 - 4 Score: 0.2083479773042755
+char_shrinks- removed edges: 5 - L35; 5 - R35 Score: 0.1606482093625261
+G1 Start Distance Score: 0.5469088415103538
+char_merge- Eater node: 4. eaten nodes: L12, R12. Score: 0.365553456539089
+char_expansion- from edge(s): L9-4, R9-4 new node(s): L31, R31. Score: 0.2468700381060116
+char_grows- Added edges: R16 - L16; L16 - R16 Score: 0.18043544050199156
+char_merge- Eater node: 5. eaten node: 4. Score: 0.12226128162273464
+char_gain- node1: 33 new edge: R31L6, R6, 5L6, R6, 5. Score: 0.0862322424384435
+char_shrinks- removed edges: L9 - L8; R9 - R8 Score: 0.03818537652253889
+char_grows- Added edges: R31 - L31; L31 - R31 Score: 0.012649349284526207
+char_grows- Added edges: L17 - R17; R17 - L17 Score: 0.008452570074146203
+G1 Start Distance Score: 0.5469088415103538
+char_expansion- from edge(s): R12-5, L12-5 new node(s): L35, R35. Score: 0.48428563691205706
+char_gain- node1: L39 new edge: L35L14, R35, L12, 5R14, L35, 5, R12. Score: 0.3537968039008743
+char_grows- Added edges: R39 - L12; L39 - R12 Score: 0.2848395290479781
+char_grows- Added edges: L16 - R16; R16 - L16 Score: 0.23579195549663312
+G1 Start Distance Score: 0.5469088415103538
+char_gain- node1: L35 new edge: 5L12, bodyR12, body. Score: 0.4582126693339821
+char_gain- node1: 39 new edge: R6L16, R8, R16, R14, L8, L14L16, R8, R16, R14, L8, L14. Score: 0.3183256269366634
+char_merge- Eater nodes: L8, R8. Eaten nodes: L12, R12. Score: 0.2628132029640482
+char_moves- node: L6. Edge change: char_shrinks- removed edges: L6 - 4; R6 - 4 ---> char_grows- Added edges: L6 - R9; R6 - L9 Score: 0.23448474184048168
+char_moves- node: R16. Edge change: char_shrinks- removed edges: R16 - R14; L16 - L14 ---> char_grows- Added edges: R16 - L14; L16 - R14 Score: 0.2268419203216161
+char_merge- Eater node: 4. eaten nodes: R8, L8. Score: 0.21970583116359532
+char_moves- node: L14. Edge change: char_shrinks- removed edges: L14 - 39; R14 - 39 ---> char_grows- Added edges: L14 - R35; R14 - L35 Score: 0.15574247099739846
+G1 Start Distance Score: 0.5469088415103538
+char_gain- node1: L35 new edge: R145, R12L12, 5. Score: 0.44375726048118425
+char_merge- Eater node: 5. eaten nodes: L12, R12. Score: 0.11004750790838044
+char_grows- Added edges: L16 - R17; R16 - L17 Score: 0.0742444165769382
+char_split- from node(s): R8, L8 new node(s): L35, R35. Score: 0.06982051987867766
+char_shrinks- removed edges: R35 - L8; L35 - R8 Score: 0.03428291131176606
+char_moves- node: L9. Edge change: char_shrinks- removed edges: L9 - L6; R9 - R6 ---> char_grows- Added edges: L9 - R9; R9 - L9 Score: 0.020531463384302135
+char_moves- node: L14. Edge change: char_shrinks- removed edges: L14 - L17; R14 - R17 ---> char_grows- Added edges: L14 - L35; R14 - R35 Score: 0.013205165626782405
+char_moves- node: R9. Edge change: char_shrinks- removed edges: R9 - 4; L9 - 4 ---> char_grows- Added edges: R9 - L8; L9 - R8 Score: 0.006660951455254579
+G1 Start Distance Score: 0.5469088415103538
+char_gain- node1: L35 new edge: 5R35L35. Score: 0.4419322888705075
+char_grows- Added edges: L6 - 5; R6 - 5 Score: 0.32817842347176096
+char_grows- Added edges: 5 - R14, L14; 5 - R14, L14 Score: 0.15854185874153082
+char_shrinks- removed edges: R12 - R9; L12 - L9 Score: 0.15287404042558908
+char_shrinks- removed edges: R17 - R16; L17 - L16 Score: 0.1521448945943762
+char_grows- Added edges: R17 - L35; L17 - R35 Score: 0.13508799805644484
+char_moves- node: L14. Edge change: char_shrinks- removed edges: L14 - L12; R14 - R12 ---> char_grows- Added edges: L14 - L9; R14 - R9 Score: 0.13306750692208602
+char_grows- Added edges: L6 - L17; R6 - R17 Score: 0.12696345245318122
+char_moves- node: L17. Edge change: char_shrinks- removed edges: L17 - L14; R17 - R14 ---> char_grows- Added edges: L17 - R17; R17 - L17 Score: 0.12103423674229472
+G1 Start Distance Score: 0.5469088415103538
+char_shrinks- removed edges: L12 - L17; R12 - R17 Score: 0.508133364626306
+char_split- from node(s): R14, L14 new node(s): 35, 35. Score: 0.3922483623407548
+char_grows- Added edges: 4 - R17, L17; 4 - R17, L17 Score: 0.32363246967476567
+char_grows- Added edges: 4 - R16, L16; 4 - R16, L16 Score: 0.23038143910924386
+char_shrinks- removed edges: L12 - 4; R12 - 4 Score: 0.16693396023682233
+char_grows- Added edges: 5 - R14, L14; 5 - R14, L14 Score: 0.1587755876558481
+G1 Start Distance Score: 0.5469088415103538
+char_moves- node: L14. Edge change: char_shrinks- removed edges: L14 - L17; R14 - R17 ---> char_grows- Added edges: L14 - 4; R14 - 4 Score: 0.41593161811714724
+char_gain- node1: L35 new edge: L64, L14, 5, L84, R14, R8, 5. Score: 0.2808673132982642
+char_split- from node(s): L17, R17 new node(s): 39, 39. Score: 0.2300096667646715
+char_merge- Eater node: 5. eaten nodes: L12, R12. Score: 0.19830438780935422
+char_moves- node: R9. Edge change: char_shrinks- removed edges: R9 - 4; L9 - 4 ---> char_grows- Added edges: R9 - L35; L9 - R35 Score: 0.16916787982678885
+char_shrinks- removed edges: R14 - 4; L14 - 4 Score: 0.14610497838736297
+char_moves- node: 39. Edge change: char_shrinks- removed edges: 39 - L17; 39 - R17 ---> char_grows- Added edges: 39 - R16, L16; 39 - R16, L16 Score: 0.13176324981408505
+char_loss- node: L14, R14. Score: 0.11381667972570073
+char_split- from node(s): 39, 39 new node(s): L33, R33. Score: 0.01825564113566511
+G1 Start Distance Score: 0.5469088415103538
+char_merge- Eater node: 5. eaten nodes: L12, R12. Score: 0.5154983859880692
+char_gain- node1: L31 new edge: R955. Score: 0.11004750790838044
+char_shrinks- removed edges: R14 - R16; L14 - L16 Score: 0.059377742097810916
+char_moves- node: L31. Edge change: char_shrinks- removed edges: L31 - R9; R31 - L9 ---> char_grows- Added edges: L31 - R6; R31 - L6 Score: 0.01666071822573998
+char_grows- Added edges: L9 - R31; R9 - L31 Score: 0.011830490965721002
+char_moves- node: L8. Edge change: char_shrinks- removed edges: L8 - L9; R8 - R9 ---> char_grows- Added edges: L8 - R31; R8 - L31 Score: 0.0
