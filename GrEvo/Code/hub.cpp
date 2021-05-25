@@ -11,7 +11,7 @@ struct adjNode {
 
 // structure to store edges
 struct graphEdge {
-    int start_ver, end_ver, weight;
+    string start_ver, end_ver, weight;
 };
 
 class DiaGraph {
