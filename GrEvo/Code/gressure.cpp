@@ -16,7 +16,7 @@ struct graphEdge {
     string start_ver, end_ver;
 };
 
-py::object print_vector( list<string> &v) {
+py::object Reflect( std::list<string> &v) {
     
     for ( string &s : v){
         if (s[0] == 'L')
@@ -26,9 +26,8 @@ py::object print_vector( list<string> &v) {
             s[0] = 'L';
         }
     }
-
-    py::object obj = py::cast(v);
-    return v;
+    py::list v2 = py::cast(v);
+    return v2;
 }
 
 PYBIND11_MODULE(gressure, m)
@@ -36,5 +35,5 @@ PYBIND11_MODULE(gressure, m)
     m.doc() = "pybind11 example plugin"; // optional module docstring
 
     m.def("greet", &greet, "Says hello");
-    m.def("print_vector", &print_vector, "prints a given python list from C++");
+    m.def("Reflect", &Reflect, "prints a given python list from C++");
 }

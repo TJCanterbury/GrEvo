@@ -16,7 +16,6 @@ L17 5
 L17 L12
 L17 L16
 L8 L12
-L8 L6
 L8 L9
 L12 4
 L12 L9
@@ -26,13 +25,8 @@ body 5
 body L16
 body R16
 4 R9
-4 R6
 4 5
 4 L9
-4 L6
-R9 R6
 R9 R8
-R6 R8
 R17 5
 R17 R16
-L6 L9
