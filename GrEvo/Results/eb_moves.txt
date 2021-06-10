@@ -1,0 +1,6 @@
+G1 Start Distance Score: 0.3833333333333333
+char_gain- Node_1: L31 new edge(s): L22, body, R31, L15. Node_2: R31 new edge(s): R22, body, R15, L31. Score: 0.25163398692810457
+char_loss- node: L9, R9. Score: 0.07745098039215681
+char_squeeout- node: R16 squeezed out from between: 26-R16 and node:L16 squeezed out from between: 26-L16 Score: 0.0636363636363636
+char_grows- Added edges: 2 - 26; 2 - 26 Score: 0.048484848484848464
+char_expansion- from edge(s): L31-R31, R31-L31 new node(s): L31, R31. Score: 0

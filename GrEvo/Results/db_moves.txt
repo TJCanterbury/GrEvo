@@ -1,0 +1,6 @@
+G1 Start Distance Score: 0.321078431372549
+char_loss- node: L4, R4. Score: 0.19122807017543852
+char_moves- node: R9. Edge change: char_shrinks- removed edges: R9 - 3; L9 - 3 ---> char_grows- Added edges: R9 - R18; L9 - L18 Score: 0.14444444444444438
+char_grows- Added edges: L6 - L14; R6 - R14 Score: 0.1166666666666667
+char_shrinks- removed edges: R12 - R9; L12 - L9 Score: 0.09215686274509804
+char_moves- node: R12. Edge change: char_shrinks- removed edges: R12 - 3; L12 - 3 ---> char_grows- Added edges: R12 - body; L12 - body Score: 0

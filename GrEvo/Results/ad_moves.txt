@@ -153,3 +153,11 @@ char_shrinks- removed edges: L8 - R8; R8 - L8 Score: 0.05593457890856619
 char_moves- node: L31. Edge change: char_shrinks- removed edges: L31 - R31; R31 - L31 ---> char_grows- Added edges: L31 - L21; R31 - R21 Score: 0.028412883677531923
 char_moves- node: 2. Edge change: char_shrinks- removed edges: 2 - L8; 2 - R8 ---> char_grows- Added edges: 2 - R27, L27; 2 - R27, L27 Score: 0.013835098629719076
 char_moves- node: L31. Edge change: char_shrinks- removed edges: L31 - 2; R31 - 2 ---> char_grows- Added edges: L31 - L27; R31 - R27 Score: 0.0
+G1 Start Distance Score: 0.4660633484162896
+char_grows- Added edges: L19 - R19; R19 - L19 Score: 0.2669117647058823
+char_expansion- from edge(s): L19-L12, R19-R12 new node(s): L27, R27. Score: 0.19191176470588234
+char_expansion- from edge(s): L19-L27, R19-R27 new node(s): L31, R31. Score: 0.06888544891640869
+char_grows- Added edges: 3 - 2; 3 - 2 Score: 0.05572755417956654
+char_moves- node: L12. Edge change: char_shrinks- removed edges: L12 - L31; R12 - R31 ---> char_grows- Added edges: L12 - L31; R12 - R31 Score: 0.05572755417956654
+char_shrinks- removed edges: R8 - L8; L8 - R8 Score: 0.042925278219395846
+char_shrinks- removed edges: R19 - L19; L19 - R19 Score: 0

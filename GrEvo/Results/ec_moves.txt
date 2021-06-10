@@ -1,0 +1,11 @@
+G1 Start Distance Score: 0.3562834224598931
+char_merge- Eater node: 26. eaten nodes: R22, L22. Score: 0.26691176470588235
+char_gain- Node_1: L27 new edge(s): L15, L8, 26. Node_2: R27 new edge(s): R15, R8, 26. Score: 0.19191176470588234
+char_expansion- from edge(s): L15-L27, R15-R27 new node(s): L31, R31. Score: 0.1603641456582633
+char_squeeout- node: R9 squeezed out from between: 2-R16 and node:L9 squeezed out from between: 2-L16 Score: 0.1365546218487395
+char_shrinks- removed edges: L8 - L27; R8 - R27 Score: 0.11691176470588238
+char_squeein- node: 2 moved between nodes: L9-R16 and node:2 moved between nodes: R9-L16 Score: 0.09520123839009287
+char_grows- Added edges: 26 - 2; 26 - 2 Score: 0.08204334365325078
+char_shrinks- removed edges: L16 - R16; R16 - L16 Score: 0.06995230524642287
+char_shrinks- removed edges: R9 - L9; L9 - R9 Score: 0.05718954248366015
+char_grows- Added edges: L27 - body; R27 - body Score: 0

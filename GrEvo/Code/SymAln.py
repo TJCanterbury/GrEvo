@@ -123,114 +123,76 @@ def LCN2(G1, G2, aln = [["body", "body"]], stuck=0):
 	
 ### Align and measurer Similarity ###
 def LCN4(G1, G2, stuck=False, node="body"):
-	""" Build an alignment and score it by the largest common subgraph """
-	# Initiate variables
-	NumA = G1.number_of_edges() 
-	NumB = G2.number_of_edges()
-	radius = 0
-	neighbs_1 = nx.single_source_shortest_path_length(G1, "body")
-	neighbs_2 = nx.single_source_shortest_path_length(G2, "body")
-	max_radius_1 = max(neighbs_1.values())
-	max_radius_2 = max(neighbs_2.values())
+    """ Build an alignment and score it by the largest common subgraph """
+    # Initiate variables
+    NumA = G1.number_of_nodes() 
+    NumB = G2.number_of_nodes()
+    radius = 0
+    neighbs_1 = nx.single_source_shortest_path_length(G1, "body")
+    neighbs_2 = nx.single_source_shortest_path_length(G2, "body")
+    max_radius_1 = max(neighbs_1.values())
+    
+    if nx.is_isomorphic(G1, G2): # If solution found return score of 0
+        return 0, radius
 
-	if nx.is_isomorphic(G1, G2): # If solution found return score of 0
-		return 0, radius
+    while radius <= max_radius_1: # Else, start by matching ego_graph about the body
+        A = nx.ego_graph(G1, node, radius=radius, undirected= True)
+        B = nx.ego_graph(G2, node, radius=radius, undirected= True)
+        
+        if nx.is_isomorphic(A, B):
+            As = list(A.nodes())
+            Bs = list(B.nodes())
+            save_rad = radius
+            radius += 1
+        else:
+            break
+    
+    # extend the common connected subgraph as much as possible 
+    done = False
+    while not done:
+        old = As.copy()
+        As, Bs = extend_light(G1, G2, radius, As, Bs, neighbs_1, neighbs_2)
+        radius += 1
 
-	while True: # Else, start by matching ego_graph about the body
-		A = nx.ego_graph(G1, node, radius=radius, undirected= True)
-		B = nx.ego_graph(G2, node, radius=radius, undirected= True)
-		
-		if nx.is_isomorphic(A, B):
-			Asp = list(A.nodes())
-			Bsp = list(B.nodes())
-			radius += 1
-		else:
-			save_rad = (radius - 1)
-			break
-	
-	while radius != max_radius_1:
-		Asp, Bsp = extend_pos(G1, G2, radius, Asp, Bsp, neighbs_1, neighbs_2)
-		radius += 1
+        if old == As:
+            done = True
 
-	# Negative direction subgraph alignment
-	rad1, rad2 = max_radius_1, max_radius_2
-	Asn = []
-	Bsn = []
-	while rad1 >= 0 and rad2 >= 0:
-		Asn, Bsn = extend_neg(G1, G2, rad1, rad2, Asn, Bsn, neighbs_1, neighbs_2)
-		rad1 -= 1
-		rad2 -= 1
-	
-	neg_size = len(set(Asp))
-	pos_size = len(set(Asn))
+    # Score as proportion of nodes aligned 
+    # against the number of nodes in the biggest of the 2 graphs
+    Sub_n = len(set(As))
+    if NumB >= NumA: 
+        score = abs(1 - (Sub_n / NumB))
+    else:
+        score = abs(1 - (Sub_n / NumA))
 
-	if neg_size >= pos_size: # which method gave largest common subgraph?
-		Sub_n = neg_size
-		Bs = Bsp
-	else:
-		Sub_n = pos_size
-		Bs = Bsn
-	
-	# Score as proportion of most nodes aligned 
-	# against the number of nodes in the biggest of the 2 graphs
-	if NumB >= NumA: 
-		score = abs(1 - (Sub_n / NumB))
-	else:
-		score = abs(1 - (Sub_n / NumA))
+    return score, G1.subgraph(As)
 
-	return score, G2.subgraph(set(Bs)) #, save_rad
+def extend_light(G1, G2, radius, As, Bs, n1, n2):
+    """ attempt to add nodes to outer perimeter of subgraphs that 
+    maintain isomorphism between these subgraphs and so building 
+    the largest common subgraph """
 
-def extend_pos(G1, G2, radius, As, Bs, n1, n2):
-	""" attempt to add nodes to outer perimeter of subgraphs that 
-	maintain isomorphism between these subgraphs and so building 
-	the largest common subgraph """
+    A_neighbs = [k for k in n1 if n1[k] == radius]
+    B_neighbs = [k for k in n2 if n2[k] == radius]
+    old_As = As.copy()
+    old_Bs = Bs.copy()
 
-	A_neighbs = [k for k in n1 if n1[k] == radius]
-	B_neighbs = [k for k in n2 if n2[k] == radius]
-	old_As = As.copy()
-	old_Bs = Bs.copy()
+    for node_A in set(A_neighbs):
+        for node_B in set(B_neighbs):
+                
+            old_As.append(node_A)
+            old_As.append(reflect_n(node_A))
+            old_Bs.append(node_B)
+            old_Bs.append(reflect_n(node_B))
+            
+            A0 = G1.subgraph( set(old_As) )
+            B0 = G2.subgraph( set(old_Bs) )
 
-	for node_A in set(A_neighbs):
-		for node_B in set(B_neighbs):
-			old_As.append(node_A)
-			old_As.append(reflect_n(node_A))
-			old_Bs.append(node_B)
-			old_Bs.append(reflect_n(node_B))
+            if nx.is_isomorphic(A0, B0):
+                As += node_A + reflect_n(node_A)
+                Bs += node_B + reflect_n(node_B)
 
-			A0 = G1.subgraph( set(old_As) )
-			B0 = G2.subgraph( set(old_Bs) )
-
-			if nx.is_isomorphic(A0, B0):
-				As += node_A + reflect_n(node_A)
-				Bs += node_B + reflect_n(node_B)
-
-	return As, Bs
-
-def extend_neg(G1, G2, rad1, rad2, As, Bs, n1, n2):
-	""" attempt to add nodes to outer perimeter of subgraphs that 
-	maintain isomorphism between these subgraphs and so building 
-	the largest common subgraph """
-
-	A_neighbs = [k for k in n1 if n1[k] == rad1]
-	B_neighbs = [k for k in n2 if n2[k] == rad2]
-	old_As = As.copy()
-	old_Bs = Bs.copy()
-
-	for node_A in set(A_neighbs):
-		for node_B in set(B_neighbs):
-			old_As.append(node_A)
-			old_As.append(reflect_n(node_A))
-			old_Bs.append(node_B)
-			old_Bs.append(reflect_n(node_B))
-
-			A0 = G1.subgraph( set(old_As) )
-			B0 = G2.subgraph( set(old_Bs) )
-
-			if nx.is_isomorphic(A0, B0):
-				As += node_A + reflect_n(node_A)
-				Bs += node_B + reflect_n(node_B)
-
-	return As, Bs
+    return As, Bs
 
 def main(argv):
 	G1 = readx(argv[1])
