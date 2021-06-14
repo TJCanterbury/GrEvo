@@ -9,3 +9,10 @@ char_grows- Added edges: 26 - 2; 26 - 2 Score: 0.08204334365325078
 char_shrinks- removed edges: L16 - R16; R16 - L16 Score: 0.06995230524642287
 char_shrinks- removed edges: R9 - L9; L9 - R9 Score: 0.05718954248366015
 char_grows- Added edges: L27 - body; R27 - body Score: 0
+G1 Start Distance Score: 0.6379084967320261
+char_merge- Eater node: 26. eaten nodes: R16, L16. Score: 0.5046439628482973
+char_squeein- node: 2 moved between nodes: L9-R9 and node:2 moved between nodes: R9-L9 Score: 0.3431372549019608
+char_gain- Node_1: L14 new edge(s): R5, R9, 2. Node_2: R14 new edge(s): L5, L9, 2. Score: 0.14215686274509803
+char_split- from node(s): R14, L14 new node(s): L16, R16. Score: 0.08496732026143794
+char_squeeout- node: R16 squeezed out from between: L14-R5 and node:L16 squeezed out from between: R14-L5 Score: 0.05718954248366015
+char_squeeout- node: R8 squeezed out from between: R5-R15 and node:L8 squeezed out from between: L5-L15 Score: 0

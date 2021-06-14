@@ -16,7 +16,6 @@ __version__ = '0.0.2'
 ## imports ##
 import sys # module to interface our program with the operating system
 import itertools as it
-from networkx.classes.function import neighbors
 import numpy as np
 import networkx as nx
 import gressure as gr
@@ -103,7 +102,9 @@ class Morphling(nx.Graph):
 			while n >= graph.number_of_nodes():
 				# Add typical number of edges
 				n = num_edges(graph)
-			
+			if not is_L_or_R(node1):
+				n /= 2
+				n = int(n)
 			# reflected nodes
 			graph, b1, b2 = add_n_edges_to_node(graph, n, node1)
 			
@@ -340,7 +341,8 @@ class Morphling(nx.Graph):
 			if not neighbs2:
 				return graph, "boop"
 			neighb2 = np.random.choice(list(neighbs2))
-
+		
+		co_neighbs = set(graph.neighbors(neighb1)) & set(graph.neighbors(neighb2))
 		graph.add_edge(node, neighb1)
 		graph.add_edge(node, neighb2)
 		graph.remove_edge(neighb1, neighb2)
@@ -351,19 +353,17 @@ class Morphling(nx.Graph):
 		r_neighb2 = reflect_n(neighb2)
 		graph.add_edge(r_node, r_neighb1)
 		graph.add_edge(r_node, r_neighb2)
+
+		if co_neighbs:
+			co_neighb = np.random.choice(list(co_neighbs))
+			graph.add_edge(node, co_neighb)
+			graph.add_edge(r_node, reflect_n(co_neighb))
+		
 		try:
 			graph.remove_edge(r_neighb1, r_neighb2)
 		except:
 			pass
 		
-		# add edge between node and common neighbour of 2 nodes squeezed between, to show that the node ius separating them
-		co_neighbs = neighbs & neighbs2 - set(node)
-		if co_neighbs:
-			co_neighb = np.random.choice(list(co_neighbs))
-			graph.add_edge(co_neighb, node)
-			r_co_neighb = reflect_n(co_neighb)
-			graph.add_edge(r_co_neighb, r_node)
-
 		movement = "char_squeein- node: " + node + " moved between nodes: " + neighb1 + "-" + neighb2 + " and node:"  + r_node + " moved between nodes: " + r_neighb1 + "-" + r_neighb2 
 
 		return graph, movement
@@ -412,7 +412,7 @@ def num_edges(G):
 	degree_values = [v for k, v in my_degrees]
 	sum_G = sum(degree_values)
 
-	mean = (sum_G / G.number_of_nodes()) - 1 # minus one because this will be used after one edge has already been added!
+	mean = (sum_G / G.number_of_nodes())
 	randomInts = np.random.normal(loc=mean, size=1).astype(int)
 	
 	while randomInts < 0:
@@ -682,6 +682,10 @@ def searcher(G1, G2, size, attempts, dead_ends, Generation, old_score):
 		
 		# Make a random move and measurer the effect
 		morph, move = perturber(G1)
+
+		if nx.is_isomorphic(morph, G2):
+			return 0, move, morph
+		
 		score = measurer(G1=morph, G2=G2)
 		breadth += 1
 
@@ -707,18 +711,6 @@ def searcher(G1, G2, size, attempts, dead_ends, Generation, old_score):
 			best_G = morph
 			best_move = move
 
-		
-		#elif stuck:
-		#            # Make a random move and measurer the effect
-		#    morph2, move2 = perturber(morph)
-		#    score2 = measurer(G1=morph2, G2=G2)
-		#    
-		#    if score2 < best_score and not move2 == None:# and np.random.randint(0, Generation+2):
-		#        best_score = score2
-		#        best_G = morph2
-		#        best_move = move + move2
-
-
 		# Record how stuck we are on this generation
 		if breadth > size:
 			stuck += 1
@@ -740,6 +732,15 @@ def climber(G1, G2, sample_size = 100, file = "test.txt", attempts = 10, goal = 
 	best_score = old_score
 	
 	while best_score != 0:
+		if Generation + 1 == goal:
+			dead_ends.append(best_G) 
+			Generation = 0
+			g1s = [G1]
+			move = "Start Distance"
+			moves1.append("G1 " + recorder(move, old_score))
+			size = sample_size
+			best_score = old_score
+
 		best_score, best_move, best_G = searcher(G1=g1s[Generation], 
 			G2=G2, size=size, attempts=attempts, dead_ends=dead_ends, 
 			Generation=Generation, old_score = best_score)
@@ -751,7 +752,7 @@ def climber(G1, G2, sample_size = 100, file = "test.txt", attempts = 10, goal = 
 			moves1.append(recorder(best_move, best_score))
 			return g1s, moves1
 
-		elif best_move and (Generation + 1) < goal:
+		elif best_move:
 			Generation += 1
 			size = sample_size * (Generation + 1)
 			best_G.__str__()

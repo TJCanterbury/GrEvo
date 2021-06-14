@@ -161,3 +161,10 @@ char_grows- Added edges: 3 - 2; 3 - 2 Score: 0.05572755417956654
 char_moves- node: L12. Edge change: char_shrinks- removed edges: L12 - L31; R12 - R31 ---> char_grows- Added edges: L12 - L31; R12 - R31 Score: 0.05572755417956654
 char_shrinks- removed edges: R8 - L8; L8 - R8 Score: 0.042925278219395846
 char_shrinks- removed edges: R19 - L19; L19 - R19 Score: 0
+G1 Start Distance Score: 0.6846785225718194
+char_shrinks- removed edges: L8 - R8; R8 - L8 Score: 0.5178018575851393
+char_split- from node(s): 2, 2 new node(s): L14, R14. Score: 0.4660633484162896
+char_expansion- from edge(s): L12-L19, R12-R19 new node(s): L15, R15. Score: 0.3891402714932127
+char_expansion- from edge(s): L12-L15, R12-R15 new node(s): L17, R17. Score: 0.3269230769230769
+char_gain- Node_1: 19 new edge(s): 3, R8, L8. Node_2: 19 new edge(s): 3, R8, L8. Score: 0.10714285714285715
+char_loss- node: L14, R14. Score: 0

@@ -25,7 +25,9 @@ def readx(filex):
     return G
 
 def drawx(G, fname):
-    nx.draw_networkx(G, with_labels = True)
+
+    d = dict(G.degree)
+    nx.draw_networkx(G, with_labels = True, node_color="#d9ffb3", edgecolors='black', node_size=[v * 100 for v in d.values()])
     plt.savefig(fname)
     plt.close()
 
