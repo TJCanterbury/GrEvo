@@ -1,0 +1,3 @@
+G1 Start Distance Score: 0.32352941176470584
+char_loss- node: L9, R9. Score: 0.1428571428571429
+char_squeein- node: R15 moved between nodes: R16-R22 and node:L15 moved between nodes: L16-L22 Score: 0

@@ -26,3 +26,30 @@ char_merge- Eater node: 2. eaten nodes: R8, L8. Score: 0.5882352941176471
 char_gain- Node_1: L23 new edge(s): R16, R19, body. Node_2: R23 new edge(s): L16, L19, body. Score: 0.3529411764705882
 char_gain- Node_1: L27 new edge(s): R12, R21, R16. Node_2: R27 new edge(s): L12, L16, L21. Score: 0.17647058823529416
 char_gain- Node_1: L31 new edge(s): R21, L27, 2. Node_2: R31 new edge(s): L21, 2, R27. Score: 0
+G1 Start Distance Score: 0.6666666666666667
+char_loss- node: L13, R13. Score: 0.49056603773584906
+char_loss- node: L16, R16. Score: 0.3913043478260869
+char_shrinks- removed edges: 1 - R5; 1 - L5 Score: 0.19999999999999996
+char_grows- Added edges: R8 - R19; L8 - L19 Score: 0.15000000000000002
+char_shrinks- removed edges: R12 - 3; L12 - 3 Score: 0.10526315789473684
+char_grows- Added edges: R5 - L8; L5 - R8 Score: 0.052631578947368474
+char_shrinks- removed edges: R8 - L8; L8 - R8 Score: 0.027027027027026973
+char_grows- Added edges: R9 - L5; L9 - R5 Score: -0.027027027027026973
+G1 Start Distance Score: 0.6666666666666667
+char_loss- node: R16, L16. Score: 0.4528301886792453
+char_merge- Eater nodes: R12, L12. Eaten nodes: R13, L13. Score: 0.375
+char_loss- node: 2, 2. Score: 0.2666666666666667
+char_moves- node: R5. Edge change: char_shrinks- removed edges: R5 - L5; L5 - R5 ---> char_grows- Added edges: R5 - L9; L5 - R9 Score: 0.20454545454545459
+char_grows- Added edges: R8 - R19; L8 - L19 Score: 0.15909090909090906
+char_shrinks- removed edges: R9 - R12; L9 - L12 Score: 0.11904761904761907
+char_shrinks- removed edges: R12 - 3; L12 - 3 Score: 0.07499999999999996
+char_squeein- node: R12 moved between nodes: R5-R12 and node:L12 moved between nodes: L5-L12 Score: 0.02631578947368418
+char_shrinks- removed edges: R8 - L8; L8 - R8 Score: 0.0
+G1 Start Distance Score: 0.3529411764705882
+char_moves- node: R8. Edge change: char_shrinks- removed edges: R8 - L8; L8 - R8 ---> char_grows- Added edges: R8 - R16; L8 - L16 Score: 0.32352941176470584
+char_expansion- from edge(s): 3-L19, 3-R19 new node(s): L14, R14. Score: 0.25
+char_grows- Added edges: R14 - R16; L14 - L16 Score: 0.19444444444444442
+char_squeein- node: R16 moved between nodes: R12-R19 and node:L16 moved between nodes: L12-L19 Score: 0.1470588235294118
+char_grows- Added edges: R12 - 2; L12 - 2 Score: 0.1428571428571429
+char_moves- node: 3. Edge change: char_shrinks- removed edges: 3 - L8; 3 - R8 ---> char_grows- Added edges: 3 - 2; 3 - 2 Score: 0.11764705882352944
+char_moves- node: R16. Edge change: char_shrinks- removed edges: R16 - R8; L16 - L8 ---> char_grows- Added edges: R16 - R21; L16 - L21 Score: 0

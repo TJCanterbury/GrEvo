@@ -2,60 +2,86 @@
 
 """ Align 2 networks where symmetry has been encoded in node alnmes """
 
-__appalnme__ = 'Glob.py'
+__appalnme__ = 'Glob4.py'
 __author__ = 'Tristan JC (tjc19@ic.ac.uk)'
-__version__ = '0.0.1'
+__version__ = '0.0.4'
 
 ## imports ##
 import sys # module to interface our program with the operating system
 import networkx as nx
-from Morphlings import Plates
+from nxcode import readx
+import numpy as np
 import random
-import pprint
+
+### Align and Measure Similarity ###
+def reflect_n(node):
+	""" returns the reflected node label """
+
+	if node[0] == 'L':
+		# If on left side add copy on right side
+		node = 'R' + node[1:]
+	
+	elif node[0] == 'R':
+		# If on right side add copy on left side
+		node = 'L' + node[1:] 
+	
+	return node
+
+def is_L_or_R(node):
+	""" returns 0 for middle, 1 for left, 2 for right """
+	if node[0] == 'L':
+		# If on left side add copy on right side
+		return 1
+	
+	# Check if on right side
+	elif node[0] == 'R':
+		# If on right side add copy on left side
+	   return 2
+	
+	else:
+		return 0
+
+def add_ran_node(graph, reflect=False, middle=False):
+	""" Add node """
+	node = str(graph.number_of_nodes() + 1)
+	while graph.has_node(node):
+		node = str(int(node) + 1)
+		
+	if (np.random.randint(0,2) or reflect) and not middle:
+		node = "L" + node
+		graph.add_node(node)
+		
+		return graph, node
+
+	else:
+		graph.add_node(node)
+
+		return graph, node
 
 ### Align ###
 def S3(G1, G2, aln):
-	""" Calculate symmetric substructure score described by Saraph and Milenković
-	(Saraph V. Milenković T. (2014) MAGNA: maximizing accuracy in global network alignment. Bioinformatics, 30, 2931–2940.) """
 	edges_1 = set(G1.edges())
 	edges_2 = set(G2.edges())
 	c = 0
-
+	d = 0
 	for e in edges_1:
 		if G2.has_edge(aln[e[0]], aln[e[1]]):
 			c += 1
-		elif G2.has_edge(aln[e[1]], aln[e[0]]):
-			c += 1
+	for f in edges_2:
+		if G1.has_edge(f[0], f[1]):
+			d += 1
 
 	score = c / ( len(edges_1) - c + len(edges_2))
-	
+
 	return score
 
 def Node_sim(G1, G2, node1, node2, aln):
-	""" Determine node similairty based on symmetry,
-	and alignment """
-	D_1 = G1.degree(node1)
-	D_2 = G2.degree(node2)
-	N_1 = G1.neighbors(node1)
-	N_2 = G2.neighbors(node2)
-	Sym_1 = G1.is_L_or_R(node1)
-	Sym_2 = G2.is_L_or_R(node2)
-
-	if Sym_1 == Sym_2:
-		score = 0.5
-	else:
-		score = 0
-
-	if not D_1 or not D_2:
-		score = 0.5
-		if Sym_1 == Sym_2:
-			score += 0.25
-		return score
-	Aligned_neighbs = [ neighb for neighb in N_1 if neighb in aln and aln[neighb] in N_2 ]
-	score += len( Aligned_neighbs ) / D_1
+	test_aln = aln.copy()
+	test_aln[node1] = node2
+	score = S3(G1, G2, aln)
 	return score
 
-def extend_aln(G1, G2, aln, n1, n2, leftovers=False):
+def extend_aln(G1, G2, aln, n1, n2):
 	""" attempt to add nodes to outer perimeter of subgraphs that 
 	maintain isomorphism between these subgraphs and so building 
 	the largest common subgraph """
@@ -65,30 +91,32 @@ def extend_aln(G1, G2, aln, n1, n2, leftovers=False):
 		# build dictionary of similairites between node and all available 
 		# nodes in the opposing graph
 		if aln[node]:
-			continue
+			break
 		Similarities = { node2: Node_sim(G1, G2, node, node2, aln) for node2 in n2 }
-
 		if Similarities:
 			# Assign alignment of first best node based on similarity scores
 			aln[node] = max(Similarities, key=Similarities.get)
+			aln[reflect_n(node)] = reflect_n(aln[node])
 
 			# remove aligned nodes from subset that are unaligned
-			n2.remove(aln[node])
-			
-			if G1.is_L_or_R(node) and G2.is_L_or_R(aln[node]) and not leftovers:
-				aln[G1.reflect_n(node)] = G1.reflect_n(aln[node])
-				try: # if node has a reflection it will be removed too
-					n2.remove(G2.reflect_n(aln[node]))
-				except:
-					pass
+			n1.remove(node)
+			try: # if node has a reflection it will be removed too
+				n2.remove(aln[node])
+			except:
+				pass
+			try: # if node has a reflection it will be removed too
+				n1.remove(reflect_n(node))
+			except:
+				pass
+			try: # if node has a reflection it will be removed too
+				n2.remove(reflect_n(aln[node]))
+			except:
+				pass
 	return aln
 
-def ran_align(G1, G2, source=[["body", "body"]]):
-	""" Randomly realign some nodes and check for improvement """
-	# start alignment with the known node correspondance(s) from source
-	aln = dict.fromkeys(G1.nodes())
-	for i in source:
-		aln[i[0]] = i[1]
+def ran_align(G1, G2, source, aln):
+	""" randomly align nodes, with preference for those similar and within
+	the same shortest path distance from the source/body """
 	
 	# make independent alignment from each node in source
 	n1 = nx.single_source_shortest_path_length(G1, source[0][0])
@@ -107,15 +135,12 @@ def ran_align(G1, G2, source=[["body", "body"]]):
 	
 	n1 = [node for node in G1.nodes() if not aln[node]]
 	n2 = [node for node in G2.nodes() if node not in aln.values()]
-
-	aln = extend_aln(G1, G2, aln, n1, n2, leftovers=True)
-	n1 = [node for node in G1.nodes() if not aln[node]]
-	n2 = [node for node in G2.nodes() if node not in aln.values()]
+	aln = extend_aln(G1, G2, aln, n1, n2)
 
 	# choose alignment with best symmetric substructure score
 	return S3(G1, G2, aln), aln
 
-def GrEvAl(Graph1, Graph2, repeat = 10, source=[["body", "body"]]):
+def GrEvAl(Graph1, Graph2, source=[["body", "body"]]):
 	""" Grow an alignment from source, 
 	the known node correspondance such as the body """
 
@@ -124,27 +149,25 @@ def GrEvAl(Graph1, Graph2, repeat = 10, source=[["body", "body"]]):
 	# Make the graphs the same size so that a global alignment can be made
 	if G1.number_of_nodes() > G2.number_of_nodes():
 		G1, G2 = G2, G1
-		
+	while G1.number_of_nodes() < G2.number_of_nodes():
+		G1, node = add_ran_node(G1, middle=True)
 	
-	best_score = 0
-	best_aln = None
 	
-	for i in range(repeat):
-		score, aln = ran_align(G1.copy(), G2.copy(), source)
-		if score > best_score:
-			best_score = score
-			best_aln = aln
+	# start alignment with the known node correspondance(s) from source
+	aln = dict.fromkeys(G1.nodes())
+	for i in source:
+		aln[i[0]] = i[1]
 	
-	return best_score, best_aln
+	score, aln = ran_align(G1.copy(), G2.copy(), source, aln)
+
+	return score, aln
 
 ### Main ###
 def main(argv):
-	G1 = Plates.from_edgelist(argv[1])
-	G2 = Plates.from_edgelist(argv[2])
-
-	score, aln = GrEvAl(G1, G2, repeat=int(argv[3]))
-	
-	pprint.pprint(aln)
+	G1 = readx(argv[1])
+	G2 = readx(argv[2])
+	score, aln = Align(G1, G2, repeats=int(argv[3]), ret_aln=True)
+	print(aln)
 	print(score)
 	return 0
 
