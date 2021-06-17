@@ -9,6 +9,7 @@ __version__ = '0.0.1'
 ## imports ##
 import sys # module to interface our program with the operating system
 import networkx as nx
+from networkx.classes import graph
 from Morphlings import Plates
 import random
 import pprint
@@ -20,15 +21,30 @@ def S3(G1, G2, aln):
 	edges_1 = set(G1.edges())
 	edges_2 = set(G2.edges())
 	c = 0
-
 	for e in edges_1:
-		if G2.has_edge(aln[e[0]], aln[e[1]]):
-			c += 1
-		elif G2.has_edge(aln[e[1]], aln[e[0]]):
+		if G2.has_edge(aln[e[0]], aln[e[1]]) or G2.has_edge(aln[e[1]], aln[e[0]]):
 			c += 1
 
 	score = c / ( len(edges_1) - c + len(edges_2))
 	
+	return score
+
+def ics_score(G1, G2, aln):
+	""" Calculate Edge Correctness score for incomplete data """
+	edges_1 = set(G1.edges())
+	
+	c = 0
+	subnodes = []
+	for e in edges_1:
+		if G2.has_edge(aln[e[0]], aln[e[1]]) or G2.has_edge(aln[e[1]], aln[e[0]]) \
+			and G1.is_L_or_R(e[0]) == G1.is_L_or_R(aln(e[0])) \
+			and G1.is_L_or_R(e[1]) == G1.is_L_or_R(aln(e[1])):
+			c += 1
+			subnodes.append(aln[e[0]])
+			subnodes.append(aln[e[1]])
+	subG1 = G2.subgraph(subnodes)
+	sublen = subG1.size()
+	score = c /( sublen + len(edges_1) - c)
 	return score
 
 def Node_sim(G1, G2, node1, node2, aln):
@@ -76,14 +92,14 @@ def extend_aln(G1, G2, aln, n1, n2, leftovers=False):
 			n2.remove(aln[node])
 			
 			if G1.is_L_or_R(node) and G2.is_L_or_R(aln[node]) and not leftovers:
-				aln[G1.reflect_n(node)] = G1.reflect_n(aln[node])
-				try: # if node has a reflection it will be removed too
-					n2.remove(G2.reflect_n(aln[node]))
-				except:
-					pass
+				reflection = G1.reflect_n(aln[node])
+				if reflection in n2:
+					aln[G1.reflect_n(node)] = reflection
+					n2.remove(reflection)
+				
 	return aln
 
-def ran_align(G1, G2, source=[["body", "body"]]):
+def complete_ran_align(G1, G2, source=[["body", "body"]]):
 	""" Randomly realign some nodes and check for improvement """
 	# start alignment with the known node correspondance(s) from source
 	aln = dict.fromkeys(G1.nodes())
@@ -109,11 +125,39 @@ def ran_align(G1, G2, source=[["body", "body"]]):
 	n2 = [node for node in G2.nodes() if node not in aln.values()]
 
 	aln = extend_aln(G1, G2, aln, n1, n2, leftovers=True)
+
+	# For complete data choose alignment with best symmetric substructure score
+	return S3(G1, G2, aln), aln
+
+def incomplete_ran_align(G1, G2, source=[["body", "body"]]):
+	""" Randomly realign some nodes and check for improvement """
+	# start alignment with the known node correspondance(s) from source
+	aln = dict.fromkeys(G1.nodes())
+	for i in source:
+		aln[i[0]] = i[1]
+	
+	# make independent alignment from each node in source
+	n1 = nx.single_source_shortest_path_length(G1, source[0][0])
+	n2 = nx.single_source_shortest_path_length(G2, source[0][1])
+
+	max_radius = min([max(n1.values()), max(n2.values())])
+	radius = 1
+
+	while radius <= max_radius:
+		A_neighbs = [k for k in n1 if n1[k] == radius] 
+		B_neighbs = [k for k in n2 if n2[k] == radius] 
+		random.shuffle(A_neighbs)
+		random.shuffle(B_neighbs)
+		aln = extend_aln(G1, G2, aln, A_neighbs, B_neighbs)
+		radius +=1
+	
 	n1 = [node for node in G1.nodes() if not aln[node]]
 	n2 = [node for node in G2.nodes() if node not in aln.values()]
 
-	# choose alignment with best symmetric substructure score
-	return S3(G1, G2, aln), aln
+	aln = extend_aln(G1, G2, aln, n1, n2, leftovers=True)
+
+	# For complete data choose alignment with best symmetric substructure score
+	return ics_score(G1, G2, aln), aln
 
 def GrEvAl(Graph1, Graph2, repeat = 10, source=[["body", "body"]]):
 	""" Grow an alignment from source, 
@@ -121,21 +165,38 @@ def GrEvAl(Graph1, Graph2, repeat = 10, source=[["body", "body"]]):
 
 	G1 = Graph1.copy()
 	G2 = Graph2.copy()
-	# Make the graphs the same size so that a global alignment can be made
-	if G1.number_of_nodes() > G2.number_of_nodes():
-		G1, G2 = G2, G1
-		
-	
 	best_score = 0
 	best_aln = None
+	if G1.number_of_nodes() > G2.number_of_nodes():
+		G1, G2 = G2, G1
 	
-	for i in range(repeat):
-		score, aln = ran_align(G1.copy(), G2.copy(), source)
-		if score > best_score:
-			best_score = score
-			best_aln = aln
+
+	if G1.graph['completeness'] + G2.graph['completeness'] == 2:
+		# Make the graphs the same size so that a global alignment can be made
+		if G1.number_of_nodes() > G2.number_of_nodes():
+			G1, G2 = G2, G1
+		
+		
+		for i in range(repeat):
+			score, aln = complete_ran_align(G1.copy(), G2.copy(), source)
+			if score > best_score:
+				best_score = score
+				best_aln = aln
+		
+		return best_score, best_aln
 	
-	return best_score, best_aln
+	else:
+		
+		for i in range(repeat):
+			G1, G2 = G2, G1
+			score, aln = incomplete_ran_align(G1.copy(), G2.copy(), source)
+			if score > best_score:
+				best_score = score
+				best_aln = aln
+		
+		return best_score, best_aln
+
+
 
 ### Main ###
 def main(argv):

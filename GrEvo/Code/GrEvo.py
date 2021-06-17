@@ -20,15 +20,21 @@ from Glob import GrEvAl
 from Morphlings import Plates
 
 ### Evo (hill climb) algorithm ###
-def measurer(G1, G2):
+def measurer(G1, G2, ret_aln = False):
 	""" if isomorphic score is 0, else use S3 from a GrEvAl alignment """
 	if nx.is_isomorphic(G1,G2):
 		return 0
 	score, aln = GrEvAl(G1.copy(), G2.copy())
-	if score == 1:
+
+	if score == 1 and G1.graph['completeness'] + G2.graph['completeness'] == 2:
+		print(G1.edges())
+		print(G2.edges())
 		print(aln)
+
 		sys.exit() 
 	score = 1 - score
+	if ret_aln:
+		return score, aln
 	return score
 
 def recorder(move, score, print_ = True):
@@ -40,7 +46,7 @@ def recorder(move, score, print_ = True):
 		print(Line)
 	return Line
 
-def searcher(G1, G2, size, attempts, dead_ends, Generation, old_score):
+def searcher(G1, G2, size, attempts, dead_ends, old_score):
 	""" finds the best next move for a given Morphling """
 	breadth = 0
 	best_G = 0
@@ -48,16 +54,15 @@ def searcher(G1, G2, size, attempts, dead_ends, Generation, old_score):
 	best_score = float(1)
 	stuck = 0
 	trying = 0
-	rad = G1.LCR(G2)
 
 	while breadth < size or best_score >= old_score:
 		# Make a random move and measurer the effect
-		morph, move = G1.perturber(radius=rad)
+		morph, move = G1.perturber()
 
 		if nx.is_isomorphic(morph, G2):
 			return 0, move, morph
 		
-		score = measurer(G1=morph, G2=G2)
+		score, aln = measurer(G1=morph, G2=G2, ret_aln=True)
 		breadth += 1
 
 		# Escape dead end and record its graph
@@ -65,7 +70,7 @@ def searcher(G1, G2, size, attempts, dead_ends, Generation, old_score):
 			return old_score, None, G1
 		
 		# Check if graph is isomorphic with a previous dead end 
-		# and if so ignore this attempt
+		# and if so ignore this attempt 
 		try_again = False 
 		for i in dead_ends:
 			if nx.is_isomorphic(morph, i):
@@ -90,7 +95,7 @@ def searcher(G1, G2, size, attempts, dead_ends, Generation, old_score):
 	
 	return best_score, best_move, best_G
 
-def climber(G1, G2, sample_size = 100, file = "test.txt", attempts = 10, goal = 4):
+def climber(G1, G2, sample_size, attempts, goal):
 	""" Apply perturber, if score improved record and recurse """
 	Generation = 0
 	moves1 = []
@@ -113,8 +118,8 @@ def climber(G1, G2, sample_size = 100, file = "test.txt", attempts = 10, goal = 
 			best_score = old_score
 
 		best_score, best_move, best_G = searcher(G1=g1s[Generation], 
-			G2=G2, size=size, attempts=attempts, dead_ends=dead_ends, 
-			Generation=Generation, old_score = best_score)
+			G2=G2, size=size, attempts=attempts, dead_ends=dead_ends,
+			 old_score = best_score)
 		
 		if best_score == 0:
 			size = sample_size * (Generation + 1)
@@ -141,10 +146,14 @@ def climber(G1, G2, sample_size = 100, file = "test.txt", attempts = 10, goal = 
 
 ### Business End ###
 def main(argv):
-	G1 = Plates.from_edgelist(argv[1])
-	G2 = Plates.from_edgelist(argv[2])
 	
 	if argv[3] == "manual":
+		G1 = Plates.from_edgelist(argv[1])
+		G2 = Plates.from_edgelist(argv[2])
+		G1.graph['completeness'] = 1
+		G2.graph['completeness'] = 1
+		
+		
 		if len(argv) == 6:
 			move=int(argv[5])
 		else:
@@ -156,12 +165,21 @@ def main(argv):
 		morph.__str__("display_test.png")
 	
 	else:
-		breadth = int(argv[3])
-		Results_file = argv[4]
-		attempts = int(argv[5])
-		goal = int(argv[6])
+		G1 = Plates.from_edgelist(argv[1])
+		G2 = Plates.from_edgelist(argv[2])
+		G1.graph['completeness'] = int(argv[7])
+		G2.graph['completeness'] = int(argv[8])
 
-		G3, moves = climber(G1, G2, sample_size=breadth, file=Results_file, attempts=attempts, goal=goal)
+		if G1.graph['completeness'] < G2.graph['completeness']:
+			print("Evolving from " + argv[2] + " due to it's greater completeness")
+			G1, G2 = G2, G1
+
+		G3, moves = climber(G1, G2, 
+			sample_size = int(argv[3]), 
+			attempts = int(argv[5]), 
+			goal =  int(argv[6]))
+		
+		Results_file = argv[4]
 
 		Gen= 0
 		for i in G3:

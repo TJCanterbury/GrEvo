@@ -14,13 +14,13 @@ import networkx as nx
 import gressure as gr
 import matplotlib.pyplot as plt
 import csv
+import re
 
 ## Classes ##
 class Morphling(nx.Graph):
 	""" Adds useful functions to the nx.Graph class """
 	def __init__(self, data=None, **attr):
 		nx.Graph.__init__(self, data, **attr)
-	
 	# General graph functions
 	def num_edges(graph):
 		""" Returns from a normal distribution an integer for the
@@ -111,15 +111,16 @@ class Morphling(nx.Graph):
 			node = str(int(node) + 1)
 
 		if (np.random.randint(0,2) or reflect) and not middle:
-			node = "L" + node
-			graph.add_node(node)
-			
-			return graph, node
+			new_node = "L" + node
+			while graph.has_node(new_node):
+				new_node = "L" + str(int(new_node[1:]) + 1)
+			graph.add_node(new_node)
+			node = new_node
 
 		else:
 			graph.add_node(node)
 
-			return graph, node
+		return graph, node
 
 	def choose_ran_node(graph, exclude = ["body"]):
 		""" choose random node that is not of a list of excluded nodes """
@@ -178,7 +179,7 @@ class Plates(Morphling):
 	def __init__(self, data=None, **attr):
 		Morphling.__init__(self, data, **attr)
 	
-	def perturber(graph, radius, move = None, Node = None, stuck = False):
+	def perturber(graph, move = None, Node = None, stuck = False):
 		""" Make random move """
 		movement = None
 		try_again = True
@@ -258,6 +259,21 @@ class Plates(Morphling):
 
 		return set(filtered)
 
+	def LR_Ratio(graph, Node):
+		""" find the ratio of left to right neighbours for a given node """
+		Neighbours = set(graph.neighbors(Node)) - set(graph.reflect_n(Node))
+		L = sum(node[0] == "L" for node in Neighbours)
+		R = sum(node[0] == "R" for node in Neighbours)
+
+		if L > R:
+			return "L"
+
+		if L < R:
+			return "R"
+		
+		else:
+			return None
+
 	def char_grows(graph, node = None):
 		""" plate grows, so node gains edges """
 		if node == None:
@@ -310,8 +326,7 @@ class Plates(Morphling):
 		""" New plate emerges, new node with mean edges of 3 """
 		graph, node1 = graph.add_ran_node()
 		node2 = graph.reflect_n(node1)
-		graph.add_node(node1)
-		graph.add_node(node2)
+
 		graph.add_edge(node1, Node)
 		graph.add_edge(node2, graph.reflect_n(Node))
 		
@@ -319,17 +334,33 @@ class Plates(Morphling):
 			n = graph.number_of_nodes()
 			while n >= graph.number_of_nodes():
 				# Add typical number of edges
-				n = graph.num_edges()
+				n = graph.num_edges() 
+			n -= 1
+			
 			if not graph.is_L_or_R(node1):
 				n /= 2
 				n = int(n)
 			# reflected nodes
 			graph, b1, b2 = graph.add_n_edges_to_node(n, node1)
-			
-			Node += ", " + ', '.join(b1) + ". Node_2: " + node2 +\
-				 " new edge(s): " + graph.reflect_n(Node) + ", " + ', '.join(b2)
 		
-		movement = "char_gain- Node_1: " + node1 + " new edge(s): " + Node + "."
+		if graph.LR_Ratio(node1):
+			new_node1 = graph.LR_Ratio(node1) + graph.add_ran_node(reflect=True)[1][1:]
+			new_node2 = graph.reflect_n(new_node1)
+			
+			mapping = {node1:new_node1, node2:new_node2}
+			
+			graph = nx.relabel_nodes(graph, mapping)
+			node1 = new_node1
+			node2 = new_node2
+
+		if node1 != node2:
+			movement = "char_gain- Node_1: " + node1 + " new edge(s): " + Node + ", " +  ', '.join(b1) + \
+				". Node_2: " + node2 + " new edge(s): " + graph.reflect_n(Node) + ", " + \
+				', '.join(b2) + "."
+			
+		else:
+			movement = "char_gain- Node_1: " + node1 + " new edge(s): " + \
+				', '.join(b1) + ", " + Node + ", " + graph.reflect_n(Node) + "."
 		
 		return graph, movement
 	
@@ -430,12 +461,12 @@ class Plates(Morphling):
 		graph, node = graph.add_ran_node()
 		v1 = node
 		v2 = graph.reflect_n(node)
-		ud = int(graph.degree(str(u1)))
+		ud = graph.degree(u1)
 	
 		if ud > 1:
 			# Collect 50% of adjacencies
-			neighbs = set(np.random.choice(list(graph.neighbors(u1)), size=np.random.randint(1, ud)))
-			neighbs = list(neighbs)
+			neighbs = np.random.choice( list(graph.neighbors(u1)), size=np.random.randint(0, ud), replace=False )
+
 			for a in neighbs:
 				a2 = graph.reflect_n(a)
 				# Give adjacencies to new node
@@ -460,7 +491,8 @@ class Plates(Morphling):
 			graph.add_edge(u1, v1)
 			graph.add_edge(u2, v2)
 		
-		movement = "char_split- from node(s): " + u1 + ', ' + u2 + " new node(s): " + v1 + ", " + v2 + "."
+		movement = "char_split- from node(s): " + u1 + ', ' + u2 + \
+			" new node(s): " + v1 + ", " + v2 + "."
 	
 		return graph, movement
 	
@@ -617,7 +649,8 @@ class Plates(Morphling):
 def main(argv):
 	""" Test perturber """
 	G1 = Plates.from_edgelist(argv[1])
-	morph, move = G1.perturber(Node=argv[3], move=int(argv[4]), radius=1)
+	morph, move = G1.perturber(Node=argv[2], move=int(argv[3]), radius=1)
+	print(move)
 	morph.__str__("display_test.png")
 	
 	return 0
