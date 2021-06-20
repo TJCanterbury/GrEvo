@@ -53,3 +53,9 @@ char_squeein- node: R16 moved between nodes: R12-R19 and node:L16 moved between 
 char_grows- Added edges: R12 - 2; L12 - 2 Score: 0.1428571428571429
 char_moves- node: 3. Edge change: char_shrinks- removed edges: 3 - L8; 3 - R8 ---> char_grows- Added edges: 3 - 2; 3 - 2 Score: 0.11764705882352944
 char_moves- node: R16. Edge change: char_shrinks- removed edges: R16 - R8; L16 - L8 ---> char_grows- Added edges: R16 - R21; L16 - L21 Score: 0
+G1 Start Distance Score: 0.5263157894736843
+char_moves- node: 3. Edge change: char_shrinks- removed edges: 3 - R8; 3 - L8 ---> char_grows- Added edges: 3 - 2; 3 - 2 Score: 0.33333333333333337
+char_gain- Node_1: R17 new edge(s): R19, R16, body. Node_2: L17 new edge(s): L19, L16, body. Score: 0.1515151515151515
+char_grows- Added edges: R16 - R21; L16 - L21 Score: 0.09090909090909094
+char_grows- Added edges: 2 - L12, R12; 2 - L12, R12 Score: 0.030303030303030276
+char_shrinks- removed edges: R8 - L8; L8 - R8 Score: 0

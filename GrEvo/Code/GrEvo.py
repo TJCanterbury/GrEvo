@@ -57,7 +57,7 @@ def searcher(G1, G2, size, attempts, dead_ends, old_score):
 
 	while breadth < size or best_score >= old_score:
 		# Make a random move and measurer the effect
-		morph, move = G1.perturber()
+		morph, move = G1.mutator()
 
 		if nx.is_isomorphic(morph, G2):
 			return 0, move, morph
@@ -95,8 +95,8 @@ def searcher(G1, G2, size, attempts, dead_ends, old_score):
 	
 	return best_score, best_move, best_G
 
-def climber(G1, G2, sample_size, attempts, goal):
-	""" Apply perturber, if score improved record and recurse """
+def climber(G1, G2, sample_size=1000, attempts=2, goal=20):
+	""" Apply mutator, if score improved record and recurse """
 	Generation = 0
 	moves1 = []
 	g1s = [G1]
@@ -146,7 +146,7 @@ def climber(G1, G2, sample_size, attempts, goal):
 
 ### Business End ###
 def main(argv):
-	
+
 	if argv[3] == "manual":
 		G1 = Plates.from_edgelist(argv[1])
 		G2 = Plates.from_edgelist(argv[2])
@@ -158,7 +158,7 @@ def main(argv):
 			move=int(argv[5])
 		else:
 			move = None
-		morph, move = G1.perturber(Node=argv[4], move=move)
+		morph, move = G1.mutator(Node=argv[4], move=move)
 		score = measurer(morph, G2)
 		recorder(move, score)
 

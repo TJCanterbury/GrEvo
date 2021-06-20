@@ -179,7 +179,7 @@ class Plates(Morphling):
 	def __init__(self, data=None, **attr):
 		Morphling.__init__(self, data, **attr)
 	
-	def perturber(graph, move = None, Node = None, stuck = False):
+	def mutator(graph, move = None, Node = None, stuck = False):
 		""" Make random move """
 		movement = None
 		try_again = True
@@ -275,7 +275,7 @@ class Plates(Morphling):
 			return None
 
 	def char_grows(graph, node = None):
-		""" plate grows, so node gains edges """
+		""" Plate grows, so node gains edges """
 		if node == None:
 			node = np.random.choice(graph.nodes())
 
@@ -289,7 +289,7 @@ class Plates(Morphling):
 		return graph, movement
 	
 	def char_shrinks(graph, node = None):
-		"""plate shrinks, so loses edges. If leaf node remove """
+		""" Plate shrinks, so loses edges. If leaf node remove """
 		if node == None:
 			node = np.random.choice(graph.nodes())
 		
@@ -310,7 +310,7 @@ class Plates(Morphling):
 		return graph, movement
 	
 	def char_moves(graph, node = None):
-		""" plate moves so edges are replaced """
+		""" Plate moves so edges are replaced """
 		if node == None:
 			node = str(np.random.choice(graph.nodes()))
 		
@@ -323,7 +323,7 @@ class Plates(Morphling):
 		return graph, movement
 	
 	def char_gain(graph, Node = None):
-		""" New plate emerges, new node with mean edges of 3 """
+		""" New plate emerges, new node with mean number edges """
 		graph, node1 = graph.add_ran_node()
 		node2 = graph.reflect_n(node1)
 
@@ -647,9 +647,9 @@ class Plates(Morphling):
 
 ### Business End ###
 def main(argv):
-	""" Test perturber """
+	""" Test mutator """
 	G1 = Plates.from_edgelist(argv[1])
-	morph, move = G1.perturber(Node=argv[2], move=int(argv[3]), radius=1)
+	morph, move = G1.mutator(Node=argv[2], move=int(argv[3]), radius=1)
 	print(move)
 	morph.__str__("display_test.png")
 	

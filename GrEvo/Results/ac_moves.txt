@@ -1,0 +1,6 @@
+G1 Start Distance Score: 0.5714285714285714
+char_gain- Node_1: R17 new edge(s): R21, R8, 2. Node_2: L17 new edge(s): L21, L8, 2. Score: 0.3076923076923077
+char_gain- Node_1: R20 new edge(s): R21, R17. Node_2: L20 new edge(s): L21, L17. Score: 0.20512820512820518
+char_squeein- node: R16 moved between nodes: R12-R19 and node:L16 moved between nodes: L12-L19 Score: 0.10810810810810811
+char_grows- Added edges: R21 - R16; L21 - L16 Score: 0.05405405405405406
+char_squeein- node: 2 moved between nodes: R8-L8 and node:2 moved between nodes: L8-R8 Score: 0
