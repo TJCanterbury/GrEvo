@@ -1,0 +1,6 @@
+G1 Start Distance Score: 0.3397435897435897
+char_expansion- from edge(s): L17-4, R17-4 new node(s): L27, R27. Score: 0.1857142857142857
+char_squeeout- node: 4 squeezed out from between: R27-R3 and node:4 squeezed out from between: L27-L3 Score: 0.15714285714285717
+char_squeein- node: L14 moved between nodes: 4-L14 and node:R14 moved between nodes: 4-R14 Score: 0.13030303030303028
+char_squeein- node: 2 moved between nodes: R3-L3 and node:2 moved between nodes: L3-R3 Score: 0.115625
+char_squeeout- node: R3 squeezed out from between: 2-4 and node:L3 squeezed out from between: 2-4 Score: 0

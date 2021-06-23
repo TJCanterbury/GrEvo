@@ -1,0 +1,6 @@
+G1 Start Distance Score: 0.5777777777777777
+char_merge- Eater nodes: R16, L16. Eaten nodes: R17, L17. Score: 0.34285714285714286
+char_loss- node: 4, 4. Score: 0.18181818181818177
+char_gain- Node_1: R17 new edge(s): R9, L12, R8. Node_2: L17 new edge(s): L9, L8, R12. Score: 0.11428571428571432
+char_shrinks- removed edges: R12 - 2; L12 - 2 Score: 0.06060606060606055
+char_shrinks- removed edges: R12 - L17; L12 - R17 Score: 0
