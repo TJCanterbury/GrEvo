@@ -104,3 +104,23 @@ char_split- from node(s): R8, L8 new node(s): 14, 14. Score: 0.303030303030303
 char_grows- Added edges: R12 - R8; L12 - L8 Score: 0.24242424242424243
 char_grows- Added edges: R16 - R21; L16 - L21 Score: 0.18181818181818177
 char_gain- Node_1: R17 new edge(s): R16, body, R19. Node_2: L17 new edge(s): L16, L19, body. Score: 0
+G1 Start Distance Score: 0.575
+char_moves- node: R8. Edge change: char_shrinks- removed edges: R8 - L8; L8 - R8 ---> char_grows- Added edges: R8 - R19; L8 - L19 Score: 0.34285714285714286
+char_split- from node(s): R21, L21 new node(s): L14, R14. Score: 0.2857142857142857
+char_squeeout- node: R19 squeezed out from between: body-R16 and node:L19 squeezed out from between: body-L16 Score: 0.22857142857142854
+char_moves- node: 3. Edge change: char_shrinks- removed edges: 3 - R12; 3 - L12 ---> char_grows- Added edges: 3 - 2; 3 - 2 Score: 0.1515151515151515
+char_squeeout- node: R14 squeezed out from between: L8-L21 and node:L14 squeezed out from between: R8-R21 Score: 0.09090909090909094
+G1 Start Distance Score: 0.575
+char_moves- node: 3. Edge change: char_shrinks- removed edges: 3 - R8; 3 - L8 ---> char_grows- Added edges: 3 - 2; 3 - 2 Score: 0.3529411764705882
+char_expansion- from edge(s): 3-L19, 3-R19 new node(s): L14, R14. Score: 0.2777777777777778
+char_moves- node: R12. Edge change: char_shrinks- removed edges: R12 - R19; L12 - L19 ---> char_grows- Added edges: R12 - 2; L12 - 2 Score: 0.17647058823529416
+char_grows- Added edges: R21 - R16; L21 - L16 Score: 0.11764705882352944
+char_grows- Added edges: R16 - R14; L16 - L14 Score: 0.05882352941176472
+char_shrinks- removed edges: R8 - L8; L8 - R8 Score: 0.030303030303030276
+char_split- from node(s): 2, 2 new node(s): 16, 16. Score: 0
+G1 Start Distance Score: 0.575
+char_grows- Added edges: R21 - R16; L21 - L16 Score: 0.36111111111111116
+char_split- from node(s): R8, L8 new node(s): 14, 14. Score: 0.2647058823529411
+char_grows- Added edges: R8 - R12; L8 - L12 Score: 0.20588235294117652
+char_shrinks- removed edges: R8 - L8; L8 - R8 Score: 0.18181818181818177
+char_gain- Node_1: R17 new edge(s): R16, body, R19. Node_2: L17 new edge(s): L16, body, L19. Score: 0

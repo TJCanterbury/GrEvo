@@ -172,10 +172,18 @@ def main(argv):
 
 		G3, moves, aln, parsimony = climber(G1, G2, 
 			sample_size = int(argv[3]), 
-			attempts = int(argv[5]), 
-			goal =  int(argv[6]))
+			attempts = int(argv[4]), 
+			goal =  int(argv[5]))
 		
-		Results_file = argv[4]
+		Results_file = argv[6]
+
+		parsimony_file = Results_file + "_pars.txt"
+		with open(parsimony_file, "a") as pars:
+			pars.write(parsimony)
+		
+		aln_file = Results_file + "_aln.txt"
+		with open(aln_file, "a") as alnn:
+			alnn.write(aln)
 
 		Gen= 0
 		for i in G3:

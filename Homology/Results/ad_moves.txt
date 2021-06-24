@@ -175,3 +175,22 @@ char_gain- Node_1: 18 new edge(s): R8, L8, 2, 2. Score: 0.19047619047619047
 char_grows- Added edges: 3 - R20, L20; 3 - R20, L20 Score: 0.1428571428571429
 char_moves- node: R19. Edge change: char_shrinks- removed edges: R19 - R12; L19 - L12 ---> char_grows- Added edges: R19 - R20; L19 - L20 Score: 0.050000000000000044
 char_squeein- node: 2 moved between nodes: R8-L8 and node:2 moved between nodes: L8-R8 Score: 0
+G1 Start Distance Score: 0.5681818181818181
+char_gain- Node_1: L17 new edge(s): 3, L19. Node_2: R17 new edge(s): 3, R19. Score: 0.40476190476190477
+char_gain- Node_1: L18 new edge(s): 3, L12, L16, R17. Node_2: R18 new edge(s): 3, L17, R16, R12. Score: 0.2790697674418605
+char_gain- Node_1: 18 new edge(s): 3, R8, L8. Score: 0.2093023255813954
+char_grows- Added edges: R16 - R14; L16 - L14 Score: 0.16279069767441856
+char_grows- Added edges: R17 - R14; L17 - L14 Score: 0.11627906976744184
+char_squeein- node: 2 moved between nodes: L8-R8 and node:2 moved between nodes: R8-L8 Score: 0.0714285714285714
+char_shrinks- removed edges: R19 - R12; L19 - L12 Score: 0.025000000000000022
+char_shrinks- removed edges: R17 - L17; L17 - R17 Score: 0
+G1 Start Distance Score: 0.5681818181818181
+char_gain- Node_1: L14 new edge(s): 3, . Node_2: R14 new edge(s): 3, . Score: 0.45238095238095233
+char_gain- Node_1: L17 new edge(s): R14, L14, body, 3. Node_2: R17 new edge(s): L14, R14, body, 3. Score: 0.34090909090909094
+char_squeein- node: 2 moved between nodes: R8-L8 and node:2 moved between nodes: L8-R8 Score: 0.3023255813953488
+char_shrinks- removed edges: R17 - L14; L17 - R14 Score: 0.2682926829268293
+char_squeeout- node: 3 squeezed out from between: R19-R14 and node:3 squeezed out from between: L19-L14 Score: 0.2195121951219512
+char_grows- Added edges: R16 - R14; L16 - L14 Score: 0.1707317073170732
+char_gain- Node_1: 18 new edge(s): L8, R8, 2, 2. Score: 0.09756097560975607
+char_grows- Added edges: R17 - R16; L17 - L16 Score: 0.04878048780487809
+char_squeein- node: 3 moved between nodes: body-L19 and node:3 moved between nodes: body-R19 Score: 0

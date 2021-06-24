@@ -8,3 +8,14 @@ char_loss- node: L20, R20. Score: 0.21621621621621623
 char_squeein- node: R26 moved between nodes: R30-3 and node:L26 moved between nodes: L30-3 Score: 0.11428571428571432
 char_grows- Added edges: R18 - R30; L18 - L30 Score: 0.05714285714285716
 char_squeein- node: R21 moved between nodes: 2-3 and node:L21 moved between nodes: 2-3 Score: 0
+G1 Start Distance Score: 0.4444444444444444
+char_loss- node: R20, L20. Score: 0.21621621621621623
+char_grows- Added edges: R32 - R26; L32 - L26 Score: 0.16216216216216217
+char_shrinks- removed edges: 3 - R30; 3 - L30 Score: 0.11428571428571432
+char_grows- Added edges: R30 - R18; L30 - L18 Score: 0.05714285714285716
+char_squeein- node: R21 moved between nodes: 2-3 and node:L21 moved between nodes: 2-3 Score: 0
+G1 Start Distance Score: 0.4444444444444444
+char_loss- node: R30, L30. Score: 0.17142857142857137
+char_grows- Added edges: R20 - R26; L20 - L26 Score: 0.11428571428571432
+char_grows- Added edges: R32 - R20; L32 - L20 Score: 0.05714285714285716
+char_squeein- node: R21 moved between nodes: 2-3 and node:L21 moved between nodes: 2-3 Score: 0

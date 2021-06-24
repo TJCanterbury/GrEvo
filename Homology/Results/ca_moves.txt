@@ -48,3 +48,13 @@ char_grows- Added edges: R21 - L21; L21 - R21 Score: 0.11571428571428566
 char_gain- Node_1: 29 new edge(s): L21, . Node_2: 29 new edge(s): R21, . Score: 0.11025641025641031
 char_merge- Eater nodes: L20, R20. Eaten nodes: L25, R25. Score: 0.08012820512820507
 char_grows- Added edges: R32 - 2; L32 - 2 Score: 0
+G1 Start Distance Score: 0.5365853658536586
+char_merge- Eater node: 2. eaten nodes: L18, R18. Score: 0.32258064516129037
+char_loss- node: L25, R25. Score: 0.2222222222222222
+char_squeein- node: R26 moved between nodes: R30-3 and node:L26 moved between nodes: L30-3 Score: 0.07999999999999996
+char_squeein- node: R21 moved between nodes: 2-3 and node:L21 moved between nodes: 2-3 Score: 0
+G1 Start Distance Score: 0.46153846153846156
+char_merge- Eater node: 2. eaten nodes: R18, L18. Score: 0.32258064516129037
+char_squeein- node: R26 moved between nodes: R30-3 and node:L26 moved between nodes: L30-3 Score: 0.2068965517241379
+char_squeein- node: R21 moved between nodes: 2-3 and node:L21 moved between nodes: 2-3 Score: 0.1428571428571429
+char_loss- node: R25, L25. Score: 0

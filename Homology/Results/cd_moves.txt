@@ -6,3 +6,19 @@ char_squeein- node: L26 moved between nodes: L25-L35 and node:R26 moved between 
 char_squeeout- node: 3 squeezed out from between: L25-L30 and node:3 squeezed out from between: R25-R30 Score: 0.08496732026143794
 char_grows- Added edges: L32 - L26; R32 - R26 Score: 0.05718954248366015
 char_grows- Added edges: 3 - R35, L35; 3 - R35, L35 Score: 0
+G1 Start Distance Score: 0.5294117647058824
+char_loss- node: R21, L21. Score: 0.34883720930232553
+char_gain- Node_1: L19 new edge(s): 3, L30, L26, R30. Node_2: R19 new edge(s): 3, R26, L30, R30. Score: 0.24444444444444446
+char_gain- Node_1: 18 new edge(s): R18, L18, 2, 2. Score: 0.1777777777777778
+char_shrinks- removed edges: 3 - L30; 3 - R30 Score: 0.13953488372093026
+char_grows- Added edges: R16 - R32; L16 - L32 Score: 0.09302325581395354
+char_shrinks- removed edges: R26 - R18; L26 - L18 Score: 0.04878048780487809
+char_shrinks- removed edges: R16 - L30; L16 - R30 Score: 0
+G1 Start Distance Score: 0.5849056603773585
+char_expansion- from edge(s): 2-R21, 2-L21 new node(s): L19, R19. Score: 0.38
+char_squeeout- node: 2 squeezed out from between: R18-R19 and node:2 squeezed out from between: L18-L19 Score: 0.33999999999999997
+char_moves- node: R25. Edge change: char_shrinks- removed edges: R25 - R20; L25 - L20 ---> char_grows- Added edges: R25 - R32; L25 - L32 Score: 0.30612244897959184
+char_loss- node: R19, L19. Score: 0.2093023255813954
+char_moves- node: R21. Edge change: char_shrinks- removed edges: R21 - 2; L21 - 2 ---> char_grows- Added edges: R21 - R20; L21 - L20 Score: 0.12195121951219512
+char_shrinks- removed edges: R25 - R18; L25 - L18 Score: 0.07692307692307687
+char_gain- Node_1: 18 new edge(s): R18, L18, 2, 2. Score: 0

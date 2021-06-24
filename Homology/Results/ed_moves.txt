@@ -7,3 +7,30 @@ char_squeein- node: R8 moved between nodes: 26-R35 and node:L8 moved between nod
 char_squeein- node: 2 moved between nodes: L9-R9 and node:2 moved between nodes: R9-L9 Score: 0.056372549019607865
 char_squeeout- node: R9 squeezed out from between: 2-26 and node:L9 squeezed out from between: 2-26 Score: 0.04248366013071897
 char_squeeout- node: L31 squeezed out from between: L22-26 and node:R31 squeezed out from between: R22-26 Score: 0
+G1 Start Distance Score: 0.679245283018868
+char_grows- Added edges: R9 - L22; L9 - R22 Score: 0.5306122448979591
+char_expansion- from edge(s): 26-L16, 26-R16 new node(s): L17, R17. Score: 0.47058823529411764
+char_squeeout- node: R17 squeezed out from between: L16-26 and node:L17 squeezed out from between: R16-26 Score: 0.43137254901960786
+char_shrinks- removed edges: R17 - L16; L17 - R16 Score: 0.40816326530612246
+char_gain- Node_1: 18 new edge(s): R22, L22, R9, L9. Score: 0.3921568627450981
+char_squeeout- node: R16 squeezed out from between: 26-R8 and node:L16 squeezed out from between: 26-L8 Score: 0.3529411764705882
+char_grows- Added edges: R17 - R15; L17 - L15 Score: 0.3137254901960784
+char_grows- Added edges: 26 - R9, L9; 26 - R9, L9 Score: 0.27450980392156865
+char_squeein- node: 26 moved between nodes: R22-L9 and node:26 moved between nodes: L22-R9 Score: 0.22448979591836737
+char_moves- node: 18. Edge change: char_shrinks- removed edges: 18 - L22; 18 - R22 ---> char_grows- Added edges: 18 - 2; 18 - 2 Score: 0.17021276595744683
+char_shrinks- removed edges: R16 - L9; L16 - R9 Score: 0.1333333333333333
+char_shrinks- removed edges: R16 - R22; L16 - L22 Score: 0.09302325581395354
+char_shrinks- removed edges: R16 - R9; L16 - L9 Score: 0.04878048780487809
+char_squeein- node: 26 moved between nodes: L16-R16 and node:26 moved between nodes: R16-L16 Score: 0.025000000000000022
+char_squeein- node: 26 moved between nodes: R9-L9 and node:26 moved between nodes: L9-R9 Score: 0
+G1 Start Distance Score: 0.7037037037037037
+char_squeein- node: 26 moved between nodes: R16-L16 and node:26 moved between nodes: L16-R16 Score: 0.4565217391304348
+char_grows- Added edges: R8 - 26; L8 - 26 Score: 0.4130434782608695
+char_squeein- node: R5 moved between nodes: R8-R9 and node:L5 moved between nodes: L8-L9 Score: 0.34090909090909094
+char_expansion- from edge(s): 26-L5, 26-R5 new node(s): L17, R17. Score: 0.28260869565217395
+char_squeeout- node: R8 squeezed out from between: R17-R15 and node:L8 squeezed out from between: L17-L15 Score: 0.23913043478260865
+char_squeein- node: 2 moved between nodes: R9-L9 and node:2 moved between nodes: L9-R9 Score: 0.19999999999999996
+char_squeein- node: R17 moved between nodes: R5-R8 and node:L17 moved between nodes: L5-L8 Score: 0.16279069767441856
+char_gain- Node_1: 18 new edge(s): 2, R9, L9. Score: 0.09302325581395354
+char_squeein- node: R16 moved between nodes: R9-R16 and node:L16 moved between nodes: L9-L16 Score: 0.04878048780487809
+char_squeein- node: 26 moved between nodes: L9-R16 and node:26 moved between nodes: R9-L16 Score: 0

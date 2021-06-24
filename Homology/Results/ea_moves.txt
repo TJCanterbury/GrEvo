@@ -1,0 +1,7 @@
+G1 Start Distance Score: 0.33333333333333337
+char_loss- node: R8, L8. Score: 0.18518518518518523
+char_moves- node: R9. Edge change: char_shrinks- removed edges: R9 - L16; L9 - R16 ---> char_grows- Added edges: R9 - 26; L9 - 26 Score: 0.040000000000000036
+char_shrinks- removed edges: R16 - L16; L16 - R16 Score: 0
+G1 Start Distance Score: 0.4722222222222222
+char_loss- node: R16, L16. Score: 0.07692307692307687
+char_squeein- node: 26 moved between nodes: L22-L9 and node:26 moved between nodes: R22-R9 Score: 0

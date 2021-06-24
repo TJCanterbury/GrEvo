@@ -10,11 +10,11 @@ __version__ = '0.0.1'
 import sys # module to interface our program with the operating system
 import itertools as it
 import numpy as np
+import pandas as pd
 import networkx as nx
 import gressure as gr
 import matplotlib.pyplot as plt
 import csv
-from numpy import genfromtxt
 
 ## Classes ##
 class Morphling(nx.Graph):
@@ -178,18 +178,11 @@ class Morphling(nx.Graph):
 			csv_reader = csv.reader(infile, delimiter=' ')
 			return cls(csv_reader)
 	
-	def array_to_attr(graph, row):
-		""" set node attribute for a given row of an array """
-		graph.nodes[row[0]][row[1]] = row[2]	
-		return 0	
-
 	def attr_from_csv(graph, file):
 		""" Set attributes from csv file, each row being 'node key value' """
-		attr = genfromtxt(file, dtype=str, delimiter=' ')
-		if len(attr.shape) > 1:
-			np.apply_along_axis(graph.array_to_attr, 1, attr)
-		else:
-			graph.nodes[attr[0]][attr[1]] = attr[2]
+		attrs = pd.read_csv(file, sep=" ", index_col=0)
+		attr = attrs.to_dict(orient='index')
+		nx.set_node_attributes(graph, attr)
 		return 0
 
 	def __str__(self, file="display.png"):

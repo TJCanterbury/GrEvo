@@ -4,3 +4,17 @@ char_squeein- node: 2 moved between nodes: R6-3 and node:2 moved between nodes: 
 char_grows- Added edges: R12 - body; L12 - body Score: 0.16666666666666663
 char_squeein- node: R9 moved between nodes: 2-R6 and node:L9 moved between nodes: 2-L6 Score: 0.05882352941176472
 char_shrinks- removed edges: 3 - R14; 3 - L14 Score: 0
+G1 Start Distance Score: 0.6415094339622642
+char_squeein- node: 2 moved between nodes: R4-3 and node:2 moved between nodes: L4-3 Score: 0.4347826086956522
+char_loss- node: R9, L9. Score: 0.30000000000000004
+char_squeein- node: R8 moved between nodes: 3-R14 and node:L8 moved between nodes: 3-L14 Score: 0.21052631578947367
+char_moves- node: R12. Edge change: char_shrinks- removed edges: R12 - 3; L12 - 3 ---> char_grows- Added edges: R12 - R18; L12 - L18 Score: 0.11111111111111116
+char_shrinks- removed edges: 1 - R4; 1 - L4 Score: 0
+G1 Start Distance Score: 0.6415094339622642
+char_squeein- node: 2 moved between nodes: 3-L4 and node:2 moved between nodes: 3-R4 Score: 0.4347826086956522
+char_loss- node: R12, L12. Score: 0.30000000000000004
+char_moves- node: R8. Edge change: char_shrinks- removed edges: R8 - 3; L8 - 3 ---> char_grows- Added edges: R8 - R18; L8 - L18 Score: 0.21052631578947367
+char_merge- Eater node: 2. eaten node: 1. Score: 0.1428571428571429
+char_squeeout- node: R14 squeezed out from between: body-R9 and node:L14 squeezed out from between: body-L9 Score: 0.08571428571428574
+char_shrinks- removed edges: 3 - R14; 3 - L14 Score: 0.030303030303030276
+char_split- from node(s): 2, 2 new node(s): 16, 16. Score: 0

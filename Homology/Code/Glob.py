@@ -146,7 +146,7 @@ def ran_align(G1, G2, source=[["body", "body"]]):
 		# so as to obtimise for embedding instead of matching the source to the target
 		return standard_S3(G1, G2, aln), aln
 
-def GrEvAl(Graph1, Graph2, repeat = 50, source=[["body", "body"]]):
+def GrEvAl(Graph1, Graph2, repeat = 20, source=[["body", "body"]]):
 	""" Grow an alignment from source, 
 	the known node correspondance such as the body """
 
