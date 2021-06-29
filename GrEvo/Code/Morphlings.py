@@ -14,7 +14,6 @@ import networkx as nx
 import gressure as gr
 import matplotlib.pyplot as plt
 import csv
-import re
 
 ## Classes ##
 class Morphling(nx.Graph):

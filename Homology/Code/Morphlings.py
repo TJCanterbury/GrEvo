@@ -25,15 +25,10 @@ class Morphling(nx.Graph):
 	def num_edges(graph):
 		""" Returns from a normal distribution an integer for the
 		number of edges to add """
-		my_degrees = graph.degree()
-		degree_values = [v for k, v in my_degrees]
-		sum_G = sum(degree_values)
-
-		mean = (sum_G / graph.number_of_nodes())
-		randomInts = np.random.normal(loc=mean, size=1).astype(int)
+		randomInts = np.random.normal(loc=0, scale=3, size=1).astype(int)
 		
 		while randomInts < 0:
-			randomInts = np.random.normal(loc=mean, size=1).astype(int)
+			randomInts = np.random.normal(loc=0, size=1).astype(int)
 		
 		return int(randomInts)
 
@@ -66,31 +61,40 @@ class Morphling(nx.Graph):
 		return node
 
 	def copy_attrs(graph, source, sink):
-		# Give new nodes the parent nodes' attributes
+		""" Give new nodes the parent nodes' attributes """
 		attrs = {sink: graph.nodes[source]}
 		nx.set_node_attributes(graph, attrs)
 
 	def node_merge(graph, u, v):
+		""" Merge 2 nodes """
 		neighbs = list(graph.neighbors(v))
-		us = [(u, n) for n in neighbs if n == u]
+		us = [(u, n) for n in neighbs if n != u]
 		graph.add_edges_from(us)
 		graph.copy_attrs(v, u)
 		graph.remove_node(v)
+
+	def nodes_merge(graph, u, lv):
+		""" Merge multiple nodes with a given node"""
+		neighbs = []
+		for i in lv:
+			neighbs += list(graph.neighbors(i))
+			graph.copy_attrs(i, u)
+			graph.remove_node(i)
+		us = [(u, n) for n in neighbs if n not in lv]
+		graph.add_edges_from(us)
 
 	def add_n_edges_to_node(graph, n, node):
 		""" adds n random edges to a given node """
 		
 		target = graph.degree(node) + n
-		c1 = list()
-		c2 = list()
 
 		if target > graph.number_of_nodes()-1:
-			return graph, c1, c2
+			return 0
 		node2 = graph.reflect_n(node)
 		
 		# Reflect all actions
 		a1 = set(graph.neighbors(node))
-		a2 = set(graph.neighbors(node2))
+		
 		
 		while graph.degree(node) < target:
 			# identify second degree neighbours to connect with
@@ -98,7 +102,7 @@ class Morphling(nx.Graph):
 			second_neighbs = [k for k in neighbs if neighbs[k] == 2]
 
 			if not second_neighbs:
-				v = graph.choose_ran_node(exclude = [node, graph.reflect_n(node)])
+				v = graph.choose_ran_node(exclude = [node] + list(a1))
 			else:
 				# pick one
 				v = np.random.choice(second_neighbs)
@@ -107,13 +111,7 @@ class Morphling(nx.Graph):
 			graph.add_edge(node, str(v))
 			graph.add_edge(node2, graph.reflect_n(str(v)))
 		
-		b1 = set(graph.neighbors(node))
-		b2 = set(graph.neighbors(node2))
-		
-		c1 = list(b1 - a1)
-		c2 = list(b2 - a2)
-		
-		return c1, c2
+		return 0
 
 	def add_ran_node(graph, reflect=False, middle=False):
 		""" Add node """
@@ -232,30 +230,30 @@ class Plates(Morphling):
 				move = np.random.choice(moves)
 
 			if move == 0: # grows
-				movement = G.char_grows(Node)
+				G.char_grows(Node)
 			if move == 1: # shrinks
-				movement = G.char_shrinks(Node)
+				G.char_shrinks(Node)
 			if move == 2: # moves
-				movement = G.char_moves(Node)
+				G.char_moves(Node)
 			if move == 3: # gain
-				movement = G.char_gain(Node)
+				G.char_gain(Node)
 			if move == 4: # loss
-				movement = G.char_loss(Node)
+				G.char_loss(Node)
 			if move == 5: # merge
-				movement = G.char_merge(Node)
+				G.char_merge(Node)
 			if move == 6: # split
-				movement = G.char_split(Node)
+				G.char_split(Node)
 			if move == 7: # Graph expansion (replace edge with node)
-				movement = G.char_expansion(Node)
+				G.char_expansion(Node)
 			if move == 8: # squeeze node between 2 others
-				movement = G.char_squeein(Node)
+				G.char_squeein(Node)
 			if move == 9: # move node out from between 2 nodes
-				movement = G.char_squeeout(Node)
+				G.char_squeeout(Node)
 
 			neighbs = nx.single_source_shortest_path_length(G, 'body')
 			neighbs = [k for k in neighbs]
 			# Ensure still attached to body
-			if len(neighbs) > 1 and movement and conserve == G.homologs():
+			if len(neighbs) > 1 and conserve == G.homologs():
 				try_again = False
 			else:
 				G = graph.copy()
@@ -268,7 +266,7 @@ class Plates(Morphling):
 		# remove solitary nodes
 		remove = [node for node,degree in dict(G.degree()).items() if degree == 0]
 		G.remove_nodes_from(remove)
-		
+		movement = move
 		return G, movement
 
 	### Basic Morph Functions ### 
@@ -302,15 +300,10 @@ class Plates(Morphling):
 		""" Plate grows, so node gains edges """
 		if node == None:
 			node = np.random.choice(graph.nodes())
-
-		node2 = graph.reflect_n(node)
 	
-		b1, b2 = graph.add_n_edges_to_node(1, node)
+		graph.add_n_edges_to_node(1, node)
 	
-		edges =  [node + " - " + ', '.join(b1), node2 + " - " +  ', '.join(b2)]
-		movement =  "char_grows- Added edges: " + edges[0] + "; " + edges[1]
-	
-		return movement
+		return 0
 	
 	def char_shrinks(graph, node = None):
 		""" Plate shrinks, so loses edges. If leaf node remove """
@@ -328,23 +321,18 @@ class Plates(Morphling):
 		
 		#remove collected edges
 		graph.remove_edges_from(edges)
-		edges = [' - '.join(list(elem)) for elem in edges]
-		movement =  "char_shrinks- removed edges: " + edges[0] + "; " + edges[1]
 	
-		return movement
+		return 0
 	
 	def char_moves(graph, node = None):
 		""" Plate moves so edges are replaced """
 		if node == None:
 			node = str(np.random.choice(graph.nodes()))
 		
-		m1 = graph.char_grows(node)
-		m2 = graph.char_shrinks(node)
+		graph.char_grows(node)
+		graph.char_shrinks(node)
 	
-		movement = "char_moves- node: " + node + \
-			". Edge change: " + m2 + " ---> " + m1
-	
-		return movement
+		return 0
 	
 	def char_gain(graph, Node = None):
 		""" New plate emerges, new node with mean number edges """
@@ -365,7 +353,7 @@ class Plates(Morphling):
 				n /= 2
 				n = int(n)
 			# reflected nodes
-			b1, b2 = graph.add_n_edges_to_node(n, node1)
+			graph.add_n_edges_to_node(n, node1)
 		
 		if graph.LR_Ratio(node1):
 			new_node1 = graph.LR_Ratio(node1) + graph.add_ran_node(reflect=True)[1:]
@@ -374,19 +362,8 @@ class Plates(Morphling):
 			mapping = {node1:new_node1, node2:new_node2}
 			
 			graph = nx.relabel_nodes(graph, mapping)
-			node1 = new_node1
-			node2 = new_node2
-
-		if node1 != node2:
-			movement = "char_gain- Node_1: " + node1 + " new edge(s): " + Node + ", " +  ', '.join(b1) + \
-				". Node_2: " + node2 + " new edge(s): " + graph.reflect_n(Node) + ", " + \
-				', '.join(b2) + "."
-			
-		else:
-			movement = "char_gain- Node_1: " + node1 + " new edge(s): " + \
-				', '.join(b1) + ", " + Node + ", " + graph.reflect_n(Node) + "."
 		
-		return movement
+		return 0
 	
 	def char_loss(graph, Node = None):
 		""" plate lost, node lost along with edges, if not leaf node the node should be replaced with an edge """
@@ -421,10 +398,8 @@ class Plates(Morphling):
 		if graph.is_L_or_R(Node):
 			graph.remove_node(graph.reflect_n(Node))
 		graph.remove_node(Node)
-		
-		movement = "char_loss- node: " + Node + ", " + graph.reflect_n(Node) + "."
 	
-		return movement
+		return 0
 	
 	def char_merge(graph, u = None):
 		""" 2 plates become one, 2 adjacent nodes become the same node, union of edges """
@@ -433,47 +408,35 @@ class Plates(Morphling):
 			u = str(np.random.choice(graph.nodes()))
 		
 		v = 'body'
+		neighbs = list(graph.neighbors(u))
+		if graph.is_L_or_R(u):
+			neighbs += [graph.reflect_n(u)]
 		while v == 'body':
-			v = str(np.random.choice(list(graph.neighbors(u))))
+			v = str(np.random.choice(neighbs))
 		
 		if u == graph.reflect_n(v):
 			node = u[1:]
 			graph.add_node(node)
-			graph.node_merge(node, u)
-			graph.node_merge(node, v)
+			graph.nodes_merge(node, [u, v])
 			
-			movement = "char_merge- Eater node: " + node + "." + \
-				" eaten node: " + u + ", " + v + "."
 	
 		elif not graph.is_L_or_R(u) and not graph.is_L_or_R(v): # 2 middle nodes merge
 			graph.node_merge(u, v)
-			
-			movement = "char_merge- Eater node: " + u + "." + " eaten node: " + v + "."
 		
 		elif not graph.is_L_or_R(u) and graph.is_L_or_R(v): # a middle node merges with 2 side nodes
 			graph.node_merge(u, v)
 			graph.node_merge(u, graph.reflect_n(v))
-			
-			movement = "char_merge- Eater node: " + u + "." + " eaten nodes: " + v + ', ' +\
-				 graph.reflect_n(v) + "."
 	
 		elif graph.is_L_or_R(u) and not graph.is_L_or_R(v): # 2 side nodes merge with a middle node
 			graph.node_merge(v, u)
 			graph.node_merge(v, graph.reflect_n(u))
-			
-			movement = "char_merge- Eater node: " + v + ". " + \
-				"eaten nodes: " + u + ', ' + graph.reflect_n(u) + "."
 	
 		elif graph.is_L_or_R(u) and graph.is_L_or_R(v): # 2 side nodes merge, 
 											# as do their relfections
 			graph.node_merge(u, v)
 			graph.node_merge(graph.reflect_n(u), graph.reflect_n(v))
-		
-			movement = \
-				"char_merge- Eater nodes: " + u + ", " + graph.reflect_n(u) + \
-				". Eaten nodes: " + v + ", " + graph.reflect_n(v) + "."
 				
-		return movement
+		return 0
 	
 	def char_split(graph, u1 = None):
 		""" 0ne plate becomes 2, half the instances of a node 
@@ -529,11 +492,8 @@ class Plates(Morphling):
 			
 			if graph.is_L_or_R(v1) and not graph.is_L_or_R(u1):
 				graph.remove_node(u1)
-
-		movement = "char_split- from node(s): " + u1 + ', ' + u2 + \
-			" new node(s): " + v1 + ", " + v2 + "."
 	
-		return movement
+		return 0
 	
 	def char_expansion(graph, u1 = None):
 		""" Add node to edge """
@@ -565,9 +525,6 @@ class Plates(Morphling):
 					graph.add_edge(v1, i)
 				for j in reflected_common_neighbs:
 					graph.add_edge(v2, j)
-
-			movement = "char_expansion- from edge(s): " + u1 + "-" + n1 + ', ' + u2 +  "-" + n2 + \
-				" new node(s): " + v1 + ", " + v2 + "."
 		
 		else:
 			# New nodes:
@@ -575,9 +532,6 @@ class Plates(Morphling):
 	
 			graph.add_edge(u1, v1)
 			graph.add_edge(n1, v1)
-	
-			movement = "char_expansion- from edge(s): " + u1 + "-" + n1 + ', ' + u2 +  "-" + n2 + \
-				" new node(s): " + v1 + "."
 	
 		# Remove old edges
 		try:
@@ -589,7 +543,7 @@ class Plates(Morphling):
 		except:
 			pass
 		
-		return movement
+		return 0
 	
 	def char_squeein(graph, node=None):
 		""" similar to expansion but moves an existing node in, instead of creating a new one """
@@ -598,37 +552,37 @@ class Plates(Morphling):
 			neighbs = set(graph.neighbors(node))
 			neighbs -= graph.filter_nodes("L")
 			if not neighbs:
-				return graph, None
+				return 0
 			neighb1 = np.random.choice(list(neighbs))
 			neighbs2 = set(graph.neighbors(neighb1))
 			neighbs2 -= graph.filter_nodes("L")
 			neighbs2 -= set(node)
 			if not neighbs2:
-				return graph, None
+				return 0
 			neighb2 = np.random.choice(list(neighbs2))
 
 		if graph.is_L_or_R(node) == 1: #L
 			neighbs = set(graph.neighbors(node))
 			neighbs -= graph.filter_nodes("R")
 			if not neighbs:
-				return graph, None
+				return 0
 			neighb1 = np.random.choice(list(neighbs))
 			neighbs2 = set(graph.neighbors(neighb1))
 			neighbs2 -= graph.filter_nodes("R")
 			neighbs2 -= set(node)
 			if not neighbs2:
-				return graph, None
+				return 0
 			neighb2 = np.random.choice(list(neighbs2))
 
 		if not graph.is_L_or_R(node): #M
 			neighbs = set(graph.neighbors(node))
 			if not neighbs:
-				return graph, None
+				return 0
 			neighb1 = np.random.choice(list(neighbs))
 			neighbs2 = set(graph.neighbors(neighb1)) & neighbs
 			neighbs2 -= set(node)
 			if not neighbs2:
-				return graph, None
+				return 0
 			neighb2 = np.random.choice(list(neighbs2))
 		
 		co_neighbs = set(graph.neighbors(neighb1)) & set(graph.neighbors(neighb2))
@@ -652,10 +606,8 @@ class Plates(Morphling):
 			graph.remove_edge(r_neighb1, r_neighb2)
 		except:
 			pass
-		
-		movement = "char_squeein- node: " + node + " moved between nodes: " + neighb1 + "-" + neighb2 + " and node:"  + r_node + " moved between nodes: " + r_neighb1 + "-" + r_neighb2 
 
-		return movement
+		return 0
 	
 	def char_squeeout(graph, node=None): 
 		""" reverse of squeein """
@@ -671,18 +623,15 @@ class Plates(Morphling):
 		neighbs -= set(removenodes)
 
 		if not neighbs:
-			return graph, None
+			return 0
 		neighb2 = np.random.choice(list(neighbs))
-		r_node = graph.reflect_n(node)
 		r_neighb1 = graph.reflect_n(neighb1)
 		r_neighb2 = graph.reflect_n(neighb2)
 
 		graph.add_edge(neighb1, neighb2)
 		graph.add_edge(r_neighb1, r_neighb2)
 		
-		movement = "char_squeeout- node: " + node + " squeezed out from between: " + neighb1 + "-" + neighb2 + " and node:"  + r_node + " squeezed out from between: " + r_neighb1 + "-" + r_neighb2 
-
-		return movement
+		return 0
 
 	def add_symmetry(graph):
 		for node in graph.nodes():

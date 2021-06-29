@@ -62,10 +62,14 @@ def char_sim(G1, G2, node1, node2):
 	""" Biological distance between characters """
 	if not max(len(G1.nodes[node1]),len(G2.nodes[node2])) :
 		return 1
+		
 	pars = 0
 	for i in set(G1.nodes[node1]) | set(G2.nodes[node2]):
 	    pars += G1.nodes[node1][i] != G2.nodes[node2][i]
-	score = pars / max(len(G1.nodes[node1]),len(G2.nodes[node2])) 
+
+	pars += G1.degree(node1) != G2.degree(node2)
+
+	score = pars / (max(len(G1.nodes[node1]),len(G2.nodes[node2])) + 1)
 	score = 1 - score
 	return score 
 
@@ -73,12 +77,26 @@ def Node_sim(G1, G2, node1, node2, aln):
 	""" Determine node similairty based on symmetry,
 	and alignment """
 	D_1 = G1.degree(node1)
+	D_2 = G2.degree(node2)
 	N_1 = G1.neighbors(node1)
 	N_2 = G2.neighbors(node2)
+	Sym_1 = G1.is_L_or_R(node1)
+	Sym_2 = G2.is_L_or_R(node2)
+
+	if Sym_1 == Sym_2:
+		score = 0.5
+	else:
+		score = 0
+
+	if not D_1 or not D_2:
+		score = 0.5
+		if Sym_1 == Sym_2:
+			score += 0.25
+		return score
 	Aligned_neighbs = [ neighb for neighb in N_1 if neighb in aln and aln[neighb] in N_2 ]
-	topo_score = len( Aligned_neighbs ) / D_1
+	score += len( Aligned_neighbs ) / D_1
 	bio_score = char_sim(G1, G2, node1, node2)
-	score = (topo_score + bio_score) / 2
+	score = (score + bio_score) / 2
 	return score
 
 def extend_aln(G1, G2, aln, n1, n2):

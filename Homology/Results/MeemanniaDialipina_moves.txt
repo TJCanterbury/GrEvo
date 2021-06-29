@@ -1,0 +1,11 @@
+G1 Start Distance Score: 0.48484848484848486
+char_moves- node: R4. Edge change: char_shrinks- removed edges: R4 - R5; L4 - L5 ---> char_grows- Added edges: R4 - 1; L4 - 1 Score: 0.27586206896551724
+char_gain- Node_1: R14 new edge(s): R6, R4. Node_2: L14 new edge(s): L6, L4. Score: 0.13793103448275867
+char_squeeout- node: 1 squeezed out from between: R4-duct and node:1 squeezed out from between: L4-duct Score: 0.06896551724137934
+char_grows- Added edges: R3 - R6; L3 - L6 Score: 0
+G1 Start Distance Score: 0.48484848484848486
+char_moves- node: R4. Edge change: char_shrinks- removed edges: R4 - R5; L4 - L5 ---> char_grows- Added edges: R4 - 1; L4 - 1 Score: 0.27586206896551724
+char_gain- Node_1: R14 new edge(s): R5, R6, R4. Node_2: L14 new edge(s): L5, L4, L6. Score: 0.19354838709677424
+char_grows- Added edges: duct - L4, R4; duct - L4, R4 Score: 0.12903225806451613
+char_grows- Added edges: R3 - R6; L3 - L6 Score: 0.06451612903225812
+char_shrinks- removed edges: R12 - L5; L12 - R5 Score: 0

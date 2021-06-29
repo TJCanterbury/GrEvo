@@ -69,30 +69,48 @@ def find_filenames( path_to_dir, suffix="_final_stats.txt" ):
 
 	return files
 
-def dist_matrix(G_Data, C_Data, Comp_Data, repeats):
+def dist_matrix(G_Data, C_Data, Comp_Data, repeats, file, overwrite=False):
 	""" Build parsimony lookup table for use in tree evaluation """
 	G_files = find_filenames(G_Data, ".txt")
 	Comp_files = find_filenames(Comp_Data, ".txt")
-	C_files = find_filenames(C_Data, ".csv")
+	C_files = find_filenames(C_Data, ".txt")
 	Graphs = {}
 	
 	for G in G_files:
 		Graphs[G] = build_morphling(G_files[G], C_files[G])
 	
-	Pars_table = pd.DataFrame(columns=Graphs.keys(), index=Graphs.keys())
+	if os.path.isfile(file):
+		Pars_table = pd.read_csv(file)
+	else:
+		Pars_table = pd.DataFrame(0, columns=Graphs.keys(), index=Graphs.keys())
+	print(Pars_table)
 	combins = list(it.combinations(G_files.keys(), 2))
 	for i in combins:
-		print(Pars_table)
-		print(i)
-		Pars_table.loc[i[0], i[1]] = hh_climb(Graphs[i[0]], Graphs[i[1]], i[0]+i[1], repeats)
-		Pars_table.loc[i[1], i[0]] = Pars_table.loc[i[0], i[1]]
+		if overwrite:
+			print(Pars_table)
+			print(i)
+			score = hh_climb(Graphs[i[0]], Graphs[i[1]], i[0]+i[1], repeats)
+			if Pars_table.loc[i[0], i[1]] and score < Pars_table.loc[i[0], i[1]]: # Overwrite old worse scores
+				Pars_table.loc[i[0], i[1]] = score
+				Pars_table.loc[i[1], i[0]] = Pars_table.loc[i[0], i[1]]
+			
+			elif not Pars_table.loc[i[0], i[1]]: # Fill gaps
+				Pars_table.loc[i[0], i[1]] = score
+				Pars_table.loc[i[1], i[0]] = Pars_table.loc[i[0], i[1]]
+			Pars_table.to_csv(file, header=True)
 
-	return Pars_table
+		elif not Pars_table.loc[i[0], i[1]]:
+			print(Pars_table)
+			print(i)
+			Pars_table.loc[i[0], i[1]] = hh_climb(Graphs[i[0]], Graphs[i[1]], i[0]+i[1], repeats)
+			Pars_table.loc[i[1], i[0]] = Pars_table.loc[i[0], i[1]]
+			Pars_table.to_csv(file, header=True)
+
+	return 0
 
 ### Business End ###
 def main(argv):
-	pars = dist_matrix(argv[1], argv[2], argv[3], int(argv[4]))
-	pars.to_csv(argv[5])
+	dist_matrix(argv[1], argv[2], argv[3], int(argv[4]), argv[5])
 	return 0
 
 if __name__ == "__main__": 

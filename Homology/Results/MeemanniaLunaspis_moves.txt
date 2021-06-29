@@ -1,0 +1,11 @@
+G1 Start Distance Score: 0.7234042553191489
+char_gain- Node_1: R14 new edge(s): R6, R4, R3. Node_2: L14 new edge(s): L6, L4, L3. Score: 0.5957446808510638
+char_squeein- node: 1 moved between nodes: L3-R3 and node:1 moved between nodes: R3-L3 Score: 0.5434782608695652
+char_grows- Added edges: duct - L5, R5; duct - L5, R5 Score: 0.43181818181818177
+char_gain- Node_1: 14 new edge(s): L3, R3, 1, 1. Score: 0.4
+char_split- from node(s): R5, L5 new node(s): 15, 15. Score: 0.37209302325581395
+char_split- from node(s): 1, 1 new node(s): L16, R16. Score: 0.2790697674418605
+char_moves- node: R6. Edge change: char_shrinks- removed edges: R6 - L12; L6 - R12 ---> char_grows- Added edges: R6 - 15; L6 - 15 Score: 0.19512195121951215
+char_split- from node(s): 14, 14 new node(s): L17, R17. Score: 0.125
+char_moves- node: R17. Edge change: char_shrinks- removed edges: R17 - L17; L17 - R17 ---> char_grows- Added edges: R17 - L12; L17 - R12 Score: 0.05128205128205132
+char_gain- Node_1: 18 new edge(s): , R16, L16. Score: 0

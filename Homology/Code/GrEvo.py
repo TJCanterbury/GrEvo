@@ -32,7 +32,7 @@ def measurer(G1, G2, ret_aln = False):
 def recorder(move, score, print_ = True):
 	""" Store moves that improve portrait divergence score for future optimisation """
 
-	Line = move + " Score: " + str(score)+"\n"
+	Line = "Move: " + str(move) + " Score: " + str(score)+"\n"
 
 	if print_ == True:
 		print(Line)
@@ -50,7 +50,6 @@ def searcher(G1, G2, size, attempts, dead_ends, old_score):
 	while breadth < size or best_score >= old_score:
 		# Make a random move and measurer the effect
 		morph, move = G1.mutator()
-
 		
 		score, aln = measurer(G1=morph, G2=G2, ret_aln=True)
 		breadth += 1
@@ -75,7 +74,7 @@ def searcher(G1, G2, size, attempts, dead_ends, old_score):
 			continue
 		
 		# keep the latest best score/move/graph
-		if score < best_score and not move == None:# and np.random.randint(0, Generation+2):
+		if score < best_score and not move == None:
 			best_score = score
 			best_G = morph
 			best_move = move
@@ -89,7 +88,7 @@ def searcher(G1, G2, size, attempts, dead_ends, old_score):
 	print(best_aln)
 	return best_score, best_move, best_G, best_aln
 
-def climber(G1, G2, sample_size=1000, attempts=2, goal=20):
+def climber(G1, G2, sample_size=1000, attempts=3, goal=100):
 	""" Apply mutator, if score improved record and recurse """
 	Generation = 0
 	moves1 = []
@@ -115,14 +114,7 @@ def climber(G1, G2, sample_size=1000, attempts=2, goal=20):
 			G2=G2, size=size, attempts=attempts, dead_ends=dead_ends,
 			 old_score = best_score)
 		
-		if best_score == 0:
-			Generation += 1
-			best_G.__str__()
-			g1s.append(best_G.copy())
-			moves1.append(recorder(best_move, best_score))
-			return g1s, moves1, best_aln, Generation
-
-		elif best_move:
+		if best_aln:
 			Generation += 1
 			size = sample_size * (Generation + 1)
 			best_G.__str__()
@@ -137,6 +129,8 @@ def climber(G1, G2, sample_size=1000, attempts=2, goal=20):
 			moves1.append("G1 " + recorder(move, old_score))
 			size = sample_size
 			best_score = old_score
+	
+	return g1s, moves1, best_aln, Generation
 
 ### Business End ###
 def main(argv):
