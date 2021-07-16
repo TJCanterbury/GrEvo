@@ -1,8 +1,0 @@
-G1 Start Distance Score: 0.5882352941176471
-char_grows- Added edges: 5 - R8, L8; 5 - R8, L8 Score: 0.42553191489361697
-char_grows- Added edges: R9 - 5; L9 - 5 Score: 0.3111111111111111
-char_split- from node(s): R8, L8 new node(s): L18, R18. Score: 0.2666666666666667
-char_squeein- node: 5 moved between nodes: L17-body and node:5 moved between nodes: R17-body Score: 0.18604651162790697
-char_moves- node: R9. Edge change: char_shrinks- removed edges: R9 - R12; L9 - L12 ---> char_grows- Added edges: R9 - R8; L9 - L8 Score: 0.09756097560975607
-char_grows- Added edges: 2 - L9, R9; 2 - L9, R9 Score: 0.04878048780487809
-char_shrinks- removed edges: R12 - 4; L12 - 4 Score: 0

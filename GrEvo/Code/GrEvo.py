@@ -22,16 +22,8 @@ from Morphlings import Plates
 ### Evo (hill climb) algorithm ###
 def measurer(G1, G2, ret_aln = False):
 	""" if isomorphic score is 0, else use S3 from a GrEvAl alignment """
-	if nx.is_isomorphic(G1,G2):
-		return 0
 	score, aln = GrEvAl(G1.copy(), G2.copy())
 
-	if score == 1 and G1.graph['completeness'] + G2.graph['completeness'] == 2:
-		print(G1.edges())
-		print(G2.edges())
-		print(aln)
-
-		sys.exit() 
 	score = 1 - score
 	if ret_aln:
 		return score, aln
@@ -40,7 +32,7 @@ def measurer(G1, G2, ret_aln = False):
 def recorder(move, score, print_ = True):
 	""" Store moves that improve portrait divergence score for future optimisation """
 
-	Line = move + " Score: " + str(score)+"\n"
+	Line = "Move: " + str(move) + " Score: " + str(score)+"\n"
 
 	if print_ == True:
 		print(Line)
@@ -58,16 +50,16 @@ def searcher(G1, G2, size, attempts, dead_ends, old_score):
 	while breadth < size or best_score >= old_score:
 		# Make a random move and measurer the effect
 		morph, move = G1.mutator()
-
-		if nx.is_isomorphic(morph, G2):
-			return 0, move, morph
 		
 		score, aln = measurer(G1=morph, G2=G2, ret_aln=True)
 		breadth += 1
 
+		if score == 0 or nx.is_isomorphic(morph, G2):
+			return 0, move, morph, aln
+
 		# Escape dead end and record its graph
 		if stuck >= attempts:    
-			return old_score, None, G1
+			return old_score, None, G1, None
 		
 		# Check if graph is isomorphic with a previous dead end 
 		# and if so ignore this attempt 
@@ -82,20 +74,21 @@ def searcher(G1, G2, size, attempts, dead_ends, old_score):
 			continue
 		
 		# keep the latest best score/move/graph
-		if score < best_score and not move == None:# and np.random.randint(0, Generation+2):
+		if score < best_score and not move == None:
 			best_score = score
 			best_G = morph
 			best_move = move
+			best_aln = aln
 
 		# Record how stuck we are on this generation
 		if breadth > size:
 			stuck += 1
 			breadth = 0
 			print(stuck)
-	
-	return best_score, best_move, best_G
+	print(best_aln)
+	return best_score, best_move, best_G, best_aln
 
-def climber(G1, G2, sample_size=1000, attempts=2, goal=20):
+def climber(G1, G2, sample_size=1000, attempts=3, goal=100):
 	""" Apply mutator, if score improved record and recurse """
 	Generation = 0
 	moves1 = []
@@ -117,24 +110,20 @@ def climber(G1, G2, sample_size=1000, attempts=2, goal=20):
 			size = sample_size
 			best_score = old_score
 
-		best_score, best_move, best_G = searcher(G1=g1s[Generation], 
+		best_score, best_move, best_G, best_aln = searcher(G1=g1s[Generation], 
 			G2=G2, size=size, attempts=attempts, dead_ends=dead_ends,
 			 old_score = best_score)
 		
-		if best_score == 0:
-			size = sample_size * (Generation + 1)
-			best_G.__str__()
-			g1s.append(best_G.copy())
-			moves1.append(recorder(best_move, best_score))
-			return g1s, moves1
-
-		elif best_move:
+		if best_aln:
 			Generation += 1
 			size = sample_size * (Generation + 1)
 			best_G.__str__()
 			g1s.append(best_G.copy())
 			moves1.append(recorder(best_move, best_score))
 		
+		elif len(dead_ends) >= 3:
+			return Generation * 10
+
 		else:
 			dead_ends.append(best_G) 
 			Generation = 0
@@ -143,6 +132,8 @@ def climber(G1, G2, sample_size=1000, attempts=2, goal=20):
 			moves1.append("G1 " + recorder(move, old_score))
 			size = sample_size
 			best_score = old_score
+	
+	return Generation
 
 ### Business End ###
 def main(argv):
@@ -167,31 +158,16 @@ def main(argv):
 	else:
 		G1 = Plates.from_edgelist(argv[1])
 		G2 = Plates.from_edgelist(argv[2])
-		G1.graph['completeness'] = int(argv[7])
-		G2.graph['completeness'] = int(argv[8])
+		G1.graph['completeness'] = 1
+		G2.graph['completeness'] = 1
 
 		if G1.graph['completeness'] < G2.graph['completeness']:
 			print("Evolving from " + argv[2] + " due to it's greater completeness")
 			G1, G2 = G2, G1
 
-		G3, moves = climber(G1, G2, 
-			sample_size = int(argv[3]), 
-			attempts = int(argv[5]), 
-			goal =  int(argv[6]))
-		
-		Results_file = argv[4]
+		parsimony = climber(G1, G2, sample_size=int(argv[3]))
 
-		Gen= 0
-		for i in G3:
-			printer = "../Results/" + "morphling_" + Results_file + \
-				  "_" + str(Gen) + ".png"
-			i.__str__(printer)
-			Gen += 1
-		
-		moves_results = "../Results/" + Results_file + "_moves.txt"
-		for i in moves:
-			with open(moves_results, "a") as myfile:
-				myfile.write(i)
+		print(parsimony)
 	
 	return 0
 

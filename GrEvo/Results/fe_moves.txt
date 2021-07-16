@@ -1,6 +1,0 @@
-G1 Start Distance Score: 0.45238095238095233
-char_shrinks- removed edges: 4 - L3; 4 - R3 Score: 0.19999999999999996
-char_grows- Added edges: R14 - L3; L14 - R3 Score: 0.1428571428571429
-char_shrinks- removed edges: R9 - R7; L9 - L7 Score: 0.09090909090909094
-char_squeein- node: R7 moved between nodes: 2-R7 and node:L7 moved between nodes: 2-L7 Score: 0.032258064516129004
-char_grows- Added edges: R14 - L14; L14 - R14 Score: 0

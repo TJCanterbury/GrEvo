@@ -1,6 +1,0 @@
-G1 Start Distance Score: 0.2941176470588235
-char_merge- Eater nodes: R10, L10. Eaten nodes: R7, L7. Score: 0.07692307692307687
-char_shrinks- removed edges: R10 - R9; L10 - L9 Score: 0
-G1 Start Distance Score: 0.2941176470588235
-char_merge- Eater node: 2. eaten nodes: R7, L7. Score: 0.07692307692307687
-char_shrinks- removed edges: R10 - R9; L10 - L9 Score: 0
