@@ -1,0 +1,13 @@
+1 body
+duct Lorb
+R3 R6
+L3 L6
+R4 Rorb
+L4 L5
+R5 R4
+L5 L4
+R6 R3
+L6 L3
+body 2
+Lorb Lduct
+Rorb Rduct

@@ -1,0 +1,17 @@
+R4=L6 i Rorb=L3
+R6=L7 i R4=L6
+R5=L9 i R6=L7
+R5=L9 i R4=L6
+body=L10 i R5=L9
+body=L10 i R6=L7
+L5=R6 i L6=R3
+L4=R7 i L5=R6
+L4=R7 i L6=R3
+Lorb=R8 i L4=R7
+L3=R9 i L4=R7
+L3=R9 i L5=R6
+R3=R11 i L3=R9
+R3=R11 i L5=R6
+R3=R11 i R4=L6
+1=R12 i R3=R11
+duct=body i 1=R12

@@ -1,0 +1,13 @@
+1 2
+duct 27
+R3 1
+L3 L9
+R4 R3
+L4 R22
+R5 R9
+L5 R16
+R6 L8
+L6 26
+body L16
+Lorb R23
+Rorb R5

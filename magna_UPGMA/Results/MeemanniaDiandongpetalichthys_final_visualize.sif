@@ -1,0 +1,17 @@
+1=2 i duct=1
+L3=3 i 1=2
+L4=L8 i L6=L7
+L4=L8 i Lorb=L6
+L4=L8 i L3=3
+L5=L9 i L4=L8
+L5=L9 i L6=L7
+L5=L9 i body=body
+L5=L9 i L3=3
+R3=R4 i L3=3
+R3=R4 i 1=2
+R4=R7 i R3=R4
+R6=R8 i R4=R7
+R5=R9 i R6=R8
+R5=R9 i R4=R7
+R5=R9 i body=body
+R5=R9 i L3=3

@@ -1,0 +1,16 @@
+1 L10
+2 L12
+3 R12
+4 R6
+5 L6
+body L3
+Lduct 5
+Rduct R8
+Leye R11
+Reye L11
+R6 L9
+R7 L8
+R8 L7
+L6 R3
+L7 R1
+L8 2

@@ -1,0 +1,15 @@
+1 L8
+2 5
+Lorb body
+Rorb L7
+L3 R8
+R3 L6
+R4 Leye
+R5 3
+R6 2
+body Reye
+L4 Rduct
+L5 R6
+L6 1
+Rduct Lduct
+Lduct R7

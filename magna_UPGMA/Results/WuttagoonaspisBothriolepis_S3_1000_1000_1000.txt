@@ -1,0 +1,16 @@
+1 2
+2 3
+L8 Reye
+R8 4
+R21 Leye
+R12 L6
+L21 1
+L12 R6
+L19 R8
+3 5
+L16 R7
+body body
+R16 L7
+R19 L8
+L20 Rduct
+R20 Lduct

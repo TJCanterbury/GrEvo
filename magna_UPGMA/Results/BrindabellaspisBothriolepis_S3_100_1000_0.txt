@@ -1,0 +1,16 @@
+1 L25
+2 R21
+3 R25
+4 body
+5 3
+body R32
+Lduct R11
+Rduct L32
+Leye R15
+Reye L14
+R6 R31
+R7 R30
+R8 R26
+L6 R6
+L7 L6
+L8 L31

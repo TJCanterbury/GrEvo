@@ -38,31 +38,24 @@ def list_vals(files):
     i = 1
     for file in files:
         label = os.path.splitext(file)[0]
+        labels=re.findall('[A-Z][^A-Z]*', label)
+        l1 = labels[0]
+        l2=labels[1].split("_")[0]
         filep = "../Results/" + file
         s = get_s(filep)
-        data.loc[i-1, 0] = label[0]
-        data.loc[i-1, 1] = label[1]
-        data.loc[i-1, 2] = 1 - s
+        data.loc[i-1, 0] = l1
+        data.loc[i-1, 1] = l2
+        data.loc[i-1, 2] = s
         i += 1
     print(data)
     return data
 
 def make_mat(data):
     """ Turn list into adjacency matrix for use in UPGMA """
+    
+    data = data.pivot(index=0,columns=1)
 
-    letters = []
-    for i in range(6):
-        letter = ['a', 'b', 'c', 'd', 'e', 'f'][i]
-        letters.append(letter)
-    G = networkx.OrderedGraph()
-    edgeList = data.values.tolist()
-
-    G.add_nodes_from(letters)
-    for i in range(len(edgeList)):
-        G.add_edge(edgeList[i][0], edgeList[i][1], weight=edgeList[i][2])
-    A = networkx.adjacency_matrix(G).A
-    print(G.nodes)
-    return A
+    return data
 
 def main(argv):
     """ Produce distance matrix from the MAGNA derived edge correctness """
@@ -70,10 +63,7 @@ def main(argv):
     path = argv[1] # path to outputs of MAGNA
     files = find_filenames(path)
     data = list_vals(files)
-    matrix = make_mat(data)
-    print(matrix)
-    np.savetxt(argv[2], matrix, delimiter=',') # argv[2] is the file location you want to put the distance matrix
-
+    data.to_csv(argv[2])
     return 0
 
 if __name__ == "__main__": 

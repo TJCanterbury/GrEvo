@@ -1,0 +1,13 @@
+1 R3
+duct Rduct
+R3 2
+L3 R4
+R4 1
+L4 R6
+R5 L4
+L5 L6
+R6 L3
+L6 body
+body L5
+Lorb Rorb
+Rorb Lorb

@@ -24,8 +24,8 @@ fi
 
 if [ $specify = n ] ; then
     alpha="0.5"
-    population="1000"
-    generations="1000"
+    population="100"
+    generations="50"
     threads="10" 
 fi
 
@@ -36,7 +36,7 @@ Rscript --vanilla char_dists.R $path $alpha $population $generations $threads
 sh MAGNA_it.sh
 
 #### Build Distance matrix for taxa from alignment, WARNING: If more taxa are added this will need editing!!
-python3 /home/tristan/Documents/Masters/Code/Dists.py ../Results/ ../Results/Dist_matrix.csv
+python3 Dists.py ../Results/ ../Results/Dist_matrix.csv
 
 #### Build tree from distance matrix using UPGMA, save the tree yourself ####
-python3 UPGMA.py ../Results/Dist_matrix.csv
+#python3 UPGMA.py ../Results/Dist_matrix.csv

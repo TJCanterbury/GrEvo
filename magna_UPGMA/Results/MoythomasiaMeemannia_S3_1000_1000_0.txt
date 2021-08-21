@@ -1,0 +1,13 @@
+1 body
+duct R11
+R3 L8
+L3 R8
+R4 L10
+L4 R3
+R5 L5
+L5 L4
+R6 R13
+L6 2
+body L3
+Lorb R7
+Rorb R9

@@ -1,0 +1,14 @@
+R1 L23
+L1 R22
+2 body
+L3 R15
+R3 R16
+body R23
+L4 L22
+L6 2
+L5 L15
+L7 L5
+R4 R8
+R6 R5
+R5 R9
+R7 27

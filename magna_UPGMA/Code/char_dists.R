@@ -65,41 +65,13 @@ dist_matrix <- function(a, b, names, path){
     for (i in 1:nrow(x)) {
         for (j in 1:nrow(y)) {
 
-            if (x[i, 4] && y[j, 4]) { #Eyes
-                data[i, j] <- 1
-            }
-            else if (x[i, 5] && y[j, 5]) { #Body
-                data[i, j] <- 1
-            }
-            else if (x[i, 3] && y[j, 3]) { #Middle
-                data[i, j] <- 0.5
-                
-                if (x[i, 2] == y[j, 2]) { #Size
-                    data[i, j] <- data[i, j] + 0.25
-                }
-            }
-            else if (x[i, 6] && y[j, 6]) { #Left
-                data[i, j] <- 0.5
-                
-                if (x[i, 2] == y[j, 2]) { #Size
-                    data[i, j] <- data[i, j] + 0.25
-                }
-            }
-            else if (x[i, 7] && y[j, 7]) { #right
-                data[i, j] <- 0.5
-                
-                if (x[i, 2] == y[j, 2]) { #Size
-                    data[i, j] <- data[i, j] + 0.25
-                }
-            }
-            else {
-                data[i, j] <- 0
-            }
+            data[i, j] <- 0
+            
 
         }
     }
     
-    dist_string <- paste(path, names[1], names[2], ".txt", sep = "")
+    dist_string <- paste("../Results/", names[1], names[2], ".txt", sep = "")
     result_string <- paste("../Results/", names[1], names[2], sep = "")
     
     title = paste(nrow(x), nrow(y), sep = " ")
@@ -119,6 +91,7 @@ file_order <- function(data1, data2, names, path){
     #reorder pair, smallest first
     Q <- names[1]
     T <- names[2]
+    
     dif <- nrow(data2) - nrow(data1)
     if (dif < 0){
         Q <- names[2]
