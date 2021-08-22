@@ -1,6 +1,10 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
+
 ### Imports ###
+library(tidyverse)
+library(ggplot2)
+library(scales)
 
 ### Functions ###
 
@@ -19,8 +23,6 @@ SYGR = merge(SYPA,GREV, by = c('X', 'variable'))
 SYGR = merge(SYGR,MAGNA, by = c('X', 'variable'))
 colnames(SYGR)[1:2] <- c("X1", "X2")
 head(SYGR)
-library(tidyverse)
-library(ggplot2)
 
 SYGR <- SYGR %>% add_row(X1 = "Dicksonosteus", X2 = "Dicksonosteus", GREVO = 0, SYPA = 1, MAGNA = 1, .before = 1) %>%
     add_row(X1 = "Lunaspis", X2 = "Lunaspis", GREVO = 0, SYPA = 1, MAGNA = 1, .before = 1) %>%
@@ -50,7 +52,6 @@ SYPAA <- SYGR %>%
     MAGNA_U = mean(MAGNA) + sd(MAGNA)*z)
 print(SYPAA)
 
-library(scales)
 #plot
 col1 <- "darkgreen"
 col2 <- "blue"

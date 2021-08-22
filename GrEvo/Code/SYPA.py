@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """ Align 2 networks with the new alignment algortihm SYPA 
-(Symmetrically aligned anatomical paths) """
+(Symmetrically aligned anatomical paths) and new alignment score CSS (Complete Symmetry Score) """
 
 __appalnme__ = 'SYPA.py'
 __author__ = 'Tristan JC (tjc19@ic.ac.uk)'
@@ -15,7 +15,7 @@ import random
 import pprint
 
 ### Align ###
-def S3(G1, G2, aln):
+def CSS(G1, G2, aln):
 	""" Calculate symmetric substructure score but including all edges of target graph in denominator
 	instead of aligned subgraph, with our goal being isomorphism instead of embedding of the source graph
 	into the target. """
@@ -31,7 +31,7 @@ def S3(G1, G2, aln):
 	
 	return score
 
-def standard_S3(G1, G2, aln):
+def S3(G1, G2, aln):
 	""" Calculate symmetric substructure score described by Saraph and Milenković
 	(Saraph V. Milenković T. (2014) MAGNA: maximizing accuracy in global network alignment. Bioinformatics, 30, 2931–2940.) """
 	edges_1 = set(G1.edges())
@@ -180,11 +180,11 @@ def ran_align(G1, G2, source=[["body", "body"]]):
 
 	if G1.graph['completeness'] + G2.graph['completeness'] == 2:
 		# For complete data choose alignment with best symmetric substructure score
-		return S3(G1, G2, aln), aln
+		return CSS(G1, G2, aln), aln
 	else:
 		# For incomplete data choose alignment with best symmetric substructure score
 		# so as to obtimise for embedding instead of matching the source to the target
-		return standard_S3(G1, G2, aln), aln
+		return S3(G1, G2, aln), aln
 
 def check_global(aln):
 	""" Check that an alignment gives a one to one mapping (very important it does) """
