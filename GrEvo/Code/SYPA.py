@@ -199,7 +199,7 @@ def check_global(aln):
 	
 	return 0
 
-def SYPA(G1, G2, repeat = 20, source=[["body", "body"]]):
+def SYPA(G1, G2, repeat = 25, source=[["body", "body"]]):
 	""" Grow an alignment from source, 
 	the known node correspondance such as the body """
 

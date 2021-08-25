@@ -54,10 +54,12 @@ class mutant():
 		Score, Aln = measurer(Graph, G2)
 		return cls(Score, Graph, Move, Aln)
 
-	def __str__(self):
-		self.Graph.__str__()
-		return str(self.Aln) +"\n"+ str(self.Score)+"\n"+ \
-			str(self.Move)+"\n"
+	def plot(self, Pars):
+		file = str(Pars)+".png"
+		self.Graph.__str__(file)
+		print(str(self.Aln) +"\n"+ str(self.Score)+"\n"+ \
+			str(self.Move)+"\n")
+		return 0
 
 def tissue_par(G1, G2, node1, node2):
 	""" Tissue difference between characters """		
@@ -98,6 +100,12 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 	parsimony = 0
 	reset = 20000
 	G1_reset = G1.copy()
+	improved=False
+
+	if printer:
+		print(old_aln)
+		print(best_score)
+		print("\n")
 
 	while best_score != 0 and parsimony <= goal:
 		# Make a random move and measurer the effect
@@ -110,7 +118,7 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 			G1 = M.Graph
 			parsimony += 1
 			if printer:
-				print(best_M)
+				best_M.plot(Pars=parsimony)
 			break
 		
 		# New state becomes current state if score improved
@@ -123,8 +131,9 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 			G1 = best_M.Graph
 			parsimony += 1
 			Generation = 0
+			improved=False
 			if printer:
-				print(best_M)
+				best_M.plot(Pars=parsimony)
 		
 		if Generation > reset:
 			print(G1_name + " X " + G2_name + ": " + "Failed, but will try again. Got stuck at: parsimony = " \
