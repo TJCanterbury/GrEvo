@@ -209,7 +209,7 @@ class Plates(Morphling):
 				neighbs = [k for k in neighbs if  k[0] != "L"]
 				Node = np.random.choice(neighbs)
 			
-			#conserve = G.homologs()
+			conserve = len(G.homologs())
 
 			if move == None:
 				moves = list(range(0, 10))
@@ -227,7 +227,7 @@ class Plates(Morphling):
 			neighbs = [k for k in neighbs]
 			
 			# Ensure still attached to body
-			if len(neighbs) == G.number_of_nodes() and G.has_node("body"):
+			if len(neighbs) == G.number_of_nodes() and G.has_node("body") and conserve == len(G.homologs()):
 				try_again = False
 			else:
 				Node = None

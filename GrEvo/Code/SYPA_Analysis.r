@@ -10,11 +10,11 @@ library(scales)
 
 ## Main ##
 GREV = read.csv("../Results/by70_sim_by4_steep_mat.csv")
-SYPA = read.csv("SYPA_S3_25_Scores.csv")
+SYPA = read.csv("../Results/SYPA_S3_25_Scores.csv")
 library(reshape2)
 GREV = melt(GREV,varnames=c('X1', 'X2'), value.name = "GREVO")
 SYPA = melt(SYPA,varnames=c('X1', 'X2'), value.name = "SYPA")
-MAGNA = read.csv("Dist100Mag.csv", header=TRUE)
+MAGNA = read.csv("../Results/Dist100Mag.csv", header=TRUE)
 head(MAGNA)
 head(SYPA)
 head(GREV)
@@ -56,7 +56,12 @@ print(SYPAA)
 col1 <- "darkgreen"
 col2 <- "blue"
 
-png("SYGGGR2.png")
+png("SYGGGR2.png",
+  width     = 5,
+  height    = 5,
+  units     = "in",
+  res       = 600,
+  pointsize = 9)
 plot(SYGR$GREVO, SYGR$SYPA, col = col1, pch = 20, 
 xlab="GrEvo Estimated Parsimony Score", ylab="Alignment Score", ylim=c(0,1),
 xlim=c(0, 18))

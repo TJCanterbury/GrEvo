@@ -10,7 +10,7 @@ __version__ = '0.0.1'
 import sys
 from Morphlings import Plates
 import networkx as nx
-from SYPA import SYPA
+from SYPA2 import SYPA
 from Morphlings import Plates
 
 
@@ -151,15 +151,14 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 ### Business End ###
 ### Business End ###
 def main(argv):
-
-	G1 = Plates.from_edgelist(argv[1])
-	G2 = Plates.from_edgelist(argv[2])
+	G1 = Plates.from_edgelist(argv[1]+"G_Data.txt")
+	G2 = Plates.from_edgelist(argv[2]+"G_Data.txt")
 	G1.graph['completeness'] = 1
 	G2.graph['completeness'] = 1
-	G1.attr_from_csv(argv[3])
-	G2.attr_from_csv(argv[4])
+	G1.attr_from_csv(argv[1]+"C_Data.txt")
+	G2.attr_from_csv(argv[2]+"C_Data.txt")
 
-	Generation, parsimony = Steep_GrEv(G1, G2, goal=float(argv[5]), Breadth=float(argv[6]), printer=True)
+	Generation, parsimony = Steep_GrEv(G1, G2, goal=float(argv[3]), Breadth=float(argv[4]), printer=True)
 	print(Generation)
 	print(parsimony)
 	
