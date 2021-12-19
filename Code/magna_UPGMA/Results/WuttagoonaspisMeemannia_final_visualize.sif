@@ -1,0 +1,17 @@
+L4=R12 i Lorb=R21
+1=L21 i L3=L8
+R3=L12 i 1=L21
+R3=L12 i L3=L8
+R5=L19 i R3=L12
+L5=3 i R5=L19
+L5=3 i R3=L12
+L5=3 i L4=R12
+L5=3 i L3=L8
+R4=L16 i R5=L19
+R4=L16 i R3=L12
+body=body i L5=3
+body=body i R5=L19
+L6=R19 i body=body
+L6=R19 i L5=3
+L6=R19 i L4=R12
+R6=L20 i R5=L19

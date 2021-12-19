@@ -1,0 +1,16 @@
+generation 0
+score 0.170213
+node_score 0.000000
+EC_score 0.484848
+ICS_score 0.533333
+S3_score 0.340426
+node_correctness 0.000000
+
+generation 100
+score 0.312500
+node_score 0.000000
+EC_score 0.757576
+ICS_score 0.781250
+S3_score 0.625000
+node_correctness 0.000000
+

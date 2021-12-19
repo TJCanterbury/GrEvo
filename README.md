@@ -1,33 +1,8 @@
-# Welcome to Grevo (graph evolution) repository
+# GrEvo the Graph Evolver is a work in progress
 
-### Disclaimer 
-MI-GRAAL, MI-GRAALRunner.py, list2leda, ncount, portrait_divergence.py, magnapp_cli_linux64 and much of the UPGMA function are not my own but can be found online readily.
+## Use:
 
-## Directory Structure:
- 
- Directory       | Description
- ------------- | -------------
- mi-graal_UPGMA | MI-GRAAL is used as a distance measure to generate a distance matrix and from this a UPGMA evaluated phylogeny is generated.
- magna_UPGMA | magna is used as a distance measure to generate a distance matrix and from this a UPGMA evaluated phylogeny is generated.
- GrEvo | Used to randomize and evolve graphs from one topology to another. Will be used to measure parsimony.
+Enter the 2 graphs, the one you want to start at and the one you want to evolve to, how many perturbations of the first graph to try each generation of the climbing algorithm, a results file name for storing the steps taken... if it ever completes and the number of attempts before a graph is determined a dead end and finally the max number of steps you'll allow (for instance if you know it can be done in 4 moves you could set the limit to 4 moves).
 
-## Requirements:
-### System:
-Tested on Ubuntu 20.04.2 LTS
-
-### Languages:
-- Python 3.8.5  
-    Imports:  
-    - Networkx
-    - NumPy
-    - Pandas
-    - itertools
-    - os
-    - Biopython
-    - matplotlib
-    - io
-    - re
-    - sys
-- R 3.6.3  
-    Imports:  
-    - tidyverse
+to run all graph comparisons run the following from the Code directory:
+python3 Pars_GrEv.py ../Data/G_Data/ ../Data/C_Data/ ../Data/Completeness.csv 1 ../Results/test.csv 10 parallel 0

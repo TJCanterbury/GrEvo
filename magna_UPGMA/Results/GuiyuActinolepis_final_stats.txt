@@ -1,8 +1,0 @@
-generation final
-score 0.337209
-node_score 0.000000
-EC_score 0.763158
-ICS_score 0.852941
-S3_score 0.674419
-node_correctness 0.052632
-

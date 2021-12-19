@@ -1,0 +1,14 @@
+R1 L6
+L1 L5
+2 L4
+L3 L3
+R3 R6
+body Rorb
+L4 2
+L6 1
+L5 Lorb
+L7 Lduct
+R4 R5
+R6 R3
+R5 Rduct
+R7 body

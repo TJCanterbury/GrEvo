@@ -1,0 +1,16 @@
+1 L18
+2 L7
+3 R3
+body L3
+L4 L10
+L5 R18
+L6 4
+L7 body
+L8 L17
+L9 L9
+R4 R7
+R5 R17
+R6 1
+R7 R9
+R8 R10
+R9 R14

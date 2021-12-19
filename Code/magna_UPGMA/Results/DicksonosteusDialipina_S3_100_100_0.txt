@@ -1,0 +1,15 @@
+1 2
+2 1
+Lorb R9
+Rorb L15
+L3 L9
+R3 L22
+R4 R15
+R5 R23
+R6 R22
+body L23
+L4 body
+L5 27
+L6 R8
+Rduct 26
+Lduct R16

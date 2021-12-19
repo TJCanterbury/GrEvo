@@ -1,0 +1,42 @@
+#NEXUS 
+
+Begin trees;  [Treefile saved Wed Aug 18 11:13:46 2021]
+[!
+>Consensus of 2592 trees
+>
+>Source of trees from which consensus(es) calculated...
+>Heuristic search settings:
+>  Optimality criterion = parsimony
+>    Character-status summary:
+>      15 characters are excluded
+>      Of the remaining 270 included characters:
+>        8 characters are of type 'ord' (Wagner)
+>        261 characters are of type 'unord'
+>        1 character is of user-defined type "skullnet"
+>        All characters have equal weight
+>        24 characters are constant (proportion = 0.0888889)
+>        Informativeness of 1 variable character could not be determined
+>        Of the remainder...
+>          34 variable characters are parsimony-uninformative
+>          Number of (included) parsimony-informative characters = 211 (or more)
+>    Gaps are treated as "missing"
+>    Multistate taxa interpreted as uncertainty
+>  Branch-swapping algorithm: tree-bisection-reconnection (TBR) with no reconnection limit
+>    Initial swapping on 704 trees already in memory
+>    Steepest descent option not in effect
+>  'Maxtrees' setting = 1000000 (will not be increased)
+>  Branches collapsed (creating polytomies) if minimum branch length is zero ("amb-")
+>  'MulTrees' option in effect
+>  Keeping only trees compatible with constraint-tree "Default Symmetrical Tree+"
+>  Ancestor "standard" included in analysis
+>  Trees are rooted
+>
+>Heuristic search completed
+>  Total number of rearrangements tried = 143545248
+>  Score of best tree(s) found = 647
+>  Number of trees retained = 2592
+>  Time used = 00:10:00 (CPU time = 00:09:57.5)
+]
+	tree Strict = [&R] ((Galeaspida,Osteostraci),(((((((((((Acanthodes,Homalacanthus),Cheiracanthus),Cassidiceps,Euthacanthus,(Mesacanthus,Promesacanthus)),(Ischnacanthus,Poracanthodes)),(((((((((((Akmonistion,Cladoselache,Cobelodus),(((Chondrenchelys,Debeerius),Helodus),(Hamiltonichthys,Onychoselache),Tristychius)),(Orthacanthus,Tamiobatis)),Cladodoides),Doliodus),Pucapampella),Obtusacanthus),Gyracanthides),Lupopsyrus),(Brachyacanthus,Climatius,Parexus,Ptomacanthus,V_waynensis),(Brochoadmones,Kathemacanthus)),Latviacanthus),(Diplacanthus,Gladiobranchus)),Tetanopsyrus),Culmacanthus),((((((Cheirolepis,Moythomasia),Meemannia),Dialipina),Eusthenopteron),(Guiyu,Psarolepis)),Entelognathus)),(Buchanosteus,(Cowralepis,Eurycaraspis,Lunaspis),Dicksonosteus)),Romundina),(Bothriolepis,Pterichthyodes),Brindabellaspis));
+	tree Adams = [&R] (((Galeaspida,Osteostraci),(((((((((((Acanthodes,Homalacanthus),Cheiracanthus),Cassidiceps,Euthacanthus,(Mesacanthus,Promesacanthus)),(Ischnacanthus,Poracanthodes)),(((((((((((Akmonistion,Cladoselache,Cobelodus),(((Chondrenchelys,Debeerius),Helodus),(Hamiltonichthys,Onychoselache),Tristychius)),(Orthacanthus,Tamiobatis)),Cladodoides),Doliodus),Pucapampella),Obtusacanthus),Gyracanthides),Lupopsyrus),(((Brachyacanthus,Parexus),Climatius),Ptomacanthus,V_waynensis),(Brochoadmones,Kathemacanthus)),Latviacanthus),(Diplacanthus,Gladiobranchus)),Tetanopsyrus),Culmacanthus),((((((Cheirolepis,Moythomasia),Meemannia),Dialipina),Eusthenopteron),(Guiyu,Psarolepis)),Entelognathus)),(Buchanosteus,(Cowralepis,Eurycaraspis,Lunaspis),Dicksonosteus)),Romundina),(Bothriolepis,Pterichthyodes),Brindabellaspis)));
+end;

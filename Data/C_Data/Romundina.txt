@@ -1,0 +1,23 @@
+character size tissue_type homolog
+body 5 body 1
+5 2 tess 0
+4 2 tess 0
+2 1 tess 0
+duct 1 duct 0
+1 2 tess 0
+L6 3 orb 2
+L9 1 tess 0
+L8 2 tess 0
+L12 2 tess 0
+L14 1 tess 0
+L171 tess 0
+L16 2 tess 0
+L18 1 duct 0
+R6 3 orb 3
+R9 1 tess 0
+R8 2 tess 0
+R12 2 tess 0
+R14 1 tess 0
+R171 tess 0
+R16 2 tess 0
+R18 1 duct 0

@@ -1,0 +1,14 @@
+R1 L6
+L1 L7
+2 Leye
+L3 R8
+R3 5
+body body
+L4 1
+L6 R7
+L5 R6
+L7 L8
+R4 4
+R6 3
+R5 Reye
+R7 Rduct

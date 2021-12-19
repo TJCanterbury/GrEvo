@@ -1,0 +1,13 @@
+1 1
+duct L7
+R3 Leye
+L3 R6
+R4 L6
+L4 Reye
+R5 5
+L5 R8
+R6 L8
+L6 R7
+body 2
+Lorb body
+Rorb 4
