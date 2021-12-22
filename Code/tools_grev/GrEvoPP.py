@@ -2,7 +2,7 @@
 
 """ Steepest ascent hill climb from one graph to another with bio/Morphology data """
 
-__appname__ = 'Steepest_GrEvo.py'
+__appname__ = 'GrEvoPP.py'
 __author__ = 'Tristan JC (tjc19@ic.ac.uk)'
 __version__ = '0.0.1'
 
@@ -10,7 +10,7 @@ __version__ = '0.0.1'
 import sys
 import networkx as nx
 from SYPA2 import SYPA
-from Morphlings import Plates
+from MorphsPP import Placoderm
 
 
 ### Evo (hill climb) algorithm ###
@@ -55,8 +55,8 @@ class mutant():
 		return cls(Score, Graph, Move, Aln)
 
 	def plot(self, Pars):
-		file = str(Pars)+".png"
-		self.Graph.__str__(file)
+		file = '../Results/' + self.Graph['dir'] + str(Pars)+".png"
+		self.draw(file)
 		print(str(self.Aln) +"\n"+ str(self.Score)+"\n"+ \
 			str(self.Move)+"\n")
 		return 0
@@ -106,6 +106,7 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 		print(old_aln)
 		print(best_score)
 		print("\n")
+		G1.plot(Pars=parsimony)
 
 	while best_score != 0 and parsimony <= goal:
 		# Make a random move and measurer the effect
@@ -151,12 +152,8 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 ### Business End ###
 ### Business End ###
 def main(argv):
-	G1 = Plates.from_edgelist(argv[1]+"G_Data.txt")
-	G2 = Plates.from_edgelist(argv[2]+"G_Data.txt")
-	G1.graph['completeness'] = 1
-	G2.graph['completeness'] = 1
-	G1.attr_from_csv(argv[1]+"C_Data.txt")
-	G2.attr_from_csv(argv[2]+"C_Data.txt")
+	G1 = Placoderm.From_Dir(argv[1], int(argv[4]))
+	G2 = Placoderm.From_Dir(argv[2], int(argv[4]))
 
 	Generation, parsimony = Steep_GrEv(G1, G2, goal=float(argv[3]), Breadth=float(argv[4]), printer=True)
 	print(Generation)

@@ -20,145 +20,50 @@ class Morphling(nx.Graph):
 	""" Adds useful functions to the nx.Graph class """
 	def __init__(self, data=None, **attr):
 		nx.Graph.__init__(self, data, **attr)
+	
 	# General graph functions
-	def num_edges(graph):
+	def ran_degree(self):
 		""" Returns from a normal distribution an integer for the
 		number of edges to add """
 		randomInts = np.random.normal(loc=0, scale=3, size=1).astype(int)
-		max_degree = sorted(graph.degree, key=lambda x: x[1], reverse=True)[0][1]
+		max_degree = sorted(self.degree, key=lambda x: x[1], reverse=True)[0][1]
 		while randomInts < 0 or randomInts > max_degree:
 			randomInts = np.random.normal(loc=0, size=1).astype(int)
 		
 		return int(randomInts)
 
-	@staticmethod
-	def is_L_or_R(node):
-		""" returns 0 for middle, 1 for left, 2 for right """
-		if node[0] == 'L':
-			# If on left side add copy on right side
-			return 1
-		
-		# Check if on right side
-		elif node[0] == 'R':
-			# If on right side add copy on left side
-			return 2
-		
-		else:
-			return 0
-
-	@staticmethod
-	def reflect_n(node, one = True):
-		""" returns the reflected node label """
-
-		if one:
-			if node[0] == "L":
-				return "R" + node[1:]
-			elif node[0] == "R":
-				return "L" + node[1:]
-			else:
-				return node
-
-		else:
-			nodes = list(node)
-			r_nodes = []
-			for v in nodes:
-				if v[0] == "L":
-					r_nodes.append("R" + v[1:])
-				elif v[0] == "R":
-					r_nodes.append("L" + v[1:])
-				else:
-					r_nodes.append(v)
-
-			return r_nodes
-
-	def copy_attrs(graph, source, sink):
+	def copy_attrs(self, source, sink):
 		""" Give new nodes the parent nodes' attributes """
-		attrs = {sink: graph.nodes[source]}
-		nx.set_node_attributes(graph, attrs)
+		attrs = {sink: self.nodes[source]}
+		nx.set_node_attributes(self, attrs)
 
-	def node_merge(graph, u, v):
-		""" Merge 2 nodes """
-		neighbs = list(graph.neighbors(v))
-		us = [(u, n) for n in neighbs if n != u]
-		graph.add_edges_from(us)
-		graph.copy_attrs(v, u)
-		graph.remove_node(v)
-
-	def nodes_merge(graph, u, lv):
-		""" Merge multiple nodes with a given node"""
-		neighbs = []
-		for i in lv:
-			neighbs += list(graph.neighbors(i))
-			graph.copy_attrs(i, u)
-			graph.remove_node(i)
-		us = [(u, n) for n in neighbs if n not in lv]
-		graph.add_edges_from(us)
-
-	def add_n_edges_to_node(graph, n, node):
-		""" adds n random edges to a given node """
-		
-		target = graph.degree(node) + n
-
-		if target > graph.number_of_nodes()-1:
-			return 0
-		node2 = graph.reflect_n(node)
-		
-		# Reflect all actions
-		a1 = set(graph.neighbors(node))
-		
-		
-		while graph.degree(node) < target:
-			# identify second degree neighbours to connect with
-			v = graph.choose_ran_node(exclude = [node] + list(a1))
-			# add edge between target node and 2nd degree neighbour, and reflect
-			graph.add_edge(node, str(v))
-			graph.add_edge(node2, graph.reflect_n(str(v)))
-		
-		return 0
-
-	def New_Node_Name(graph, reflect=False, middle=False):
-		""" Create new node name """
-		node = str(graph.number_of_nodes() + 1)
-		while graph.has_node(node):
-			node = str(int(node) + 1)
-
-		if (np.random.randint(0,2) or reflect) and not middle:
-			new_node = "L" + node
-			while graph.has_node(new_node):
-				new_node = "L" + str(int(new_node[1:]) + 1)
-			node = new_node
-
-		return node
-
-	def choose_ran_node(graph, exclude = ["body"]):
+	def choose_ran_node(self, exclude = ["body"]):
 		""" choose random node that is not of a list of excluded nodes """
 		v = exclude[0]
 
 		while v in exclude:
-			v = np.random.choice(graph.nodes())
+			v = np.random.choice(self.nodes())
 
 		return v
 
-	def homologs(graph):
+	def homologs(self):
 		""" return number of unique homologies """
-		ua = nx.get_node_attributes(graph, "homolog")
+		ua = nx.get_node_attributes(self, "homolog")
 		return set(ua.values())
 
-	@classmethod
-	def from_edgelist(cls, filex):
-		""" derives Morphling from edgelist format """
-		with open(filex) as infile:
-			csv_reader = csv.reader(infile, delimiter=' ')
-			return cls(csv_reader)
+	def Find_V(self, attr='Sym', attrValue = 0):
+		""" Find vertices with given node attr value """
+		nodes = [x for x,y in self.nodes(data=True) if y[attr]==attrValue]
+		return nodes
 	
-	def attr_from_csv(graph, file):
-		""" Set attributes from csv file, each row being 'node key value' """
-		attrs = pd.read_csv(file, sep=" ", index_col=0)
-		attr = attrs.to_dict(orient='index')
-		nx.set_node_attributes(graph, attr)
-		return 0
+	def coneighbours(self, nodes):
+		""" returns set of common neighbours between 2 nodes """
+		cneighbs = set(self._adj[nodes[0]])
+		for v in nodes:
+			cneighbs = cneighbs & set(self._adj[v])
+		return cneighbs
 
-	def __str__(self, file="display.jpeg"):
+	def draw(self, file="display.jpeg"):
 		""" Saves Morphling graph to a given image file """
 		d = dict(self.degree)
 		plt.figure(figsize=(7,7))
@@ -169,45 +74,214 @@ class Morphling(nx.Graph):
 		plt.close()
 		return 0
 
-class Plates(Morphling):
+class biMorph(Morphling):
+	""" Adds useful bilateral symmetry functions to the morphling class """
+	def __init__(self, directed=False, prune=False, vorder=None):
+		Morphling.__init__(self, directed=False, prune=False, vorder=None)
+	
+	def Set_Node_Symmetry(self, node):
+		""" Assign symmetry VertexProperty values to node """
+		sym = int(node) % 10
+		self.nodes[node]['Sym'] = sym
+		self.nodes[node]['Group'] = int(node) - self.nodes[node]['Sym']
+		self.nodes[node]['Bro'] = self.find_brother(node)
+	
+	def Initialise_Symmetry(self):
+		""" Set symmetry for all nodes """
+		for v in self.nodes():
+			self.Set_Node_Symmetry(v)
+	
+	def DetectNeighbSymmetry(self, v):
+		""" Detect Symmetry based on neighbour symmetry """
+		sym = 0
+		for w in self._adj[v]:
+			if self.nodes[w]['Sym'] == 1:
+				sym -= 1
+			elif self.nodes[w]['Sym'] == 2:
+				sym += 1
+		if sym > 0:
+			return 2
+		if sym < 0: 
+			return 1
+		return 0
+	
+	def FixNodeSymmetryValue(self, v):
+		""" Set or correct Symmetry of a node """
+		self.nodes[v]['Sym'] = self.DetectNeighbSymmetry(v)
+
+	def Brother_V(self, node):
+		""" return index of nodes reflection """
+		return self.nodes[node]['Bro']
+
+	def find_brother(self, node):
+		""" return index of nodes reflection """
+		sym = self.nodes[node]['Sym']
+		if sym > 0:
+			if sym > 1:
+				antId = int(node) - 1
+			else:
+				antId = int(node) + 1
+			return antId
+		else:
+			return node
+		
+	def ReflectNodes(self, nodes):
+		""" return the reflected node names """
+		antinodes = []
+		for v in nodes:
+			antinodes.append(self.Brother_V(v))
+		return antinodes
+
+	def add_v_pair(self):
+		""" add pair of nodes """
+		pairid = np.max(self.nodes())+10
+		pairid -= pairid % 10
+		v = pairid+1
+		u = pairid+2
+		self.add_node(v)
+		self.add_node(u)
+		self.nodes[v]['Sym'] = 1
+		self.nodes[u]['Sym'] = 2
+		self.nodes[v]['Group'] = pairid
+		self.nodes[u]['Group'] = pairid
+		self.nodes[u]['Bro'] = v
+		self.nodes[v]['Bro'] = u
+		return v, u
+
+	def add_v(self):
+		""" add middle node """
+		v = np.max(self.nodes())+10
+		v -= v % 10
+		self.add_node(v)
+		self.nodes[v]['Sym'] = 0
+		self.nodes[v]['Group'] = v
+		self.nodes[v]['Bro'] = v
+		return v
+
+	def add_e_pair(self, u, v):
+		""" add edge symmetrically """
+		self.add_edge(u, v)
+		av = self.Brother_V(v)
+		au = self.Brother_V(u)
+		self.add_edge(au, av)
+
+	def remove_v_pair(self, v):
+		""" symmetrically remove pair of nodes """
+		try:
+			self.remove_node(self.Brother_V(v))
+		except:
+			pass
+		try:
+			self.remove_node(v)
+		except:
+			pass
+
+	def remove_v_from(self, nodes):
+		""" remove listed nodes from g """
+		for v in nodes:
+			self.remove_v_pair(v)
+
+	def remove_e_pair(self, u, v):
+		""" symmetrically remove edge pair """
+		u2 = self.Brother_V(u)
+		v2 = self.Brother_V(v)
+		self.remove_edge(u,v)
+		try:
+			self.remove_edge(u2,v2)
+		except:
+			pass
+
+	def remove_e_from(self, edges):
+		""" remove edges from edgelist """
+		for e in edges:
+			self.remove_e_pair(e[0], e[1])
+		return
+
+	def add_e_from(self, edges):
+		""" add edges from edgelist """
+		for e in edges:
+			self.add_e_pair(e[0], e[1])
+
+	def add_n_e_to_v(self, v, n=1):
+		""" adds n random edges to a given node """
+		degree = self.degree(v)
+		target = degree + n
+
+		if target > self.number_of_nodes()-1:
+			return 0
+		
+		# Reflect all actions
+		a1 = set(self._adj[v])
+		
+		
+		while self.degree(v) < target:
+			# identify second degree neighbours to connect with
+			u = self.choose_ran_node(exclude = [v] + list(a1))
+			# add edge between target node and 2nd degree neighbour, and reflect
+			self.add_e_pair(v, u)
+		
+		return 0
+
+	def v_merge(self, u, v):
+		""" Merge 2 node pairs """
+		neighbs = list(self._adj[v])
+		us = [(u, n) for n in neighbs if n != u]
+		self.add_e_from(us)
+		self.remove_v_pair(v)
+
+	def New_v_Name(self, reflect=False, middle=False):
+		""" Create new random node (50% change middle or paired) """
+		indices = []
+		if reflect:
+			indices += list(self.add_v_pair())
+		elif middle:
+			indices.append(self.add_v())
+		elif np.random.randint(0,2):
+			indices += list(self.add_v_pair())
+		else:
+			indices.append(self.add_v())
+
+		return indices
+
+class Placoderm(biMorph):
 	""" Morphling moves for a network of tectonic plate like characters, 
 	with physical contact between characters giving an edge """
 	def __init__(self, data=None, **attr):
-		Morphling.__init__(self, data, **attr)
+		biMorph.__init__(self, data, **attr)
 
-	def mutate(G, Node, move):
+	def mutate(self, Node, move):
 		""" Choose and perform move """
 		Move_dict = {
-			0:G.char_grows,
-			1:G.char_shrinks,
-			2:G.char_moves,
-			3:G.char_gain,
-			4:G.char_loss,
-			5:G.char_merge,
-			6:G.char_split,
-			7:G.char_expansion,
-			8:G.char_squeein,
-			9:G.char_squeeout
+			0:self.char_grows,
+			1:self.char_shrinks,
+			2:self.char_moves,
+			3:self.char_gain,
+			4:self.char_loss,
+			5:self.char_merge,
+			6:self.char_split,
+			7:self.char_expansion,
+			8:self.char_squeein,
+			9:self.char_squeeout
 		}
 		Move_dict[move](Node)
 		return 0
 
-	def mutator(graph, common_homologs, move = None, Node = None, stuck = False):
+	def mutator(self, common_homologs, move = None, Node = None, stuck = False):
 		""" Make random move """
 		movement = None
 		try_again = True
 
 		while try_again == True:
 			#Copy of graph:
-			G = graph.copy()
+			G = self.copy()
 
 			#Variables and Constraints
 			G_Size = G.number_of_nodes()
 
 			if Node == None:
-				neighbs = nx.single_source_shortest_path_length(G, 'body')
-				neighbs = [k for k in neighbs if  k[0] != "L"]
-				Node = np.random.choice(neighbs)
+				#neighbs = nx.single_source_shortest_path_length(G, 'body')
+				#neighbs = [k for k in neighbs if  k[0] != "L"]
+				Node = np.random.choice(list(G.nodes()))
 
 			if move == None:
 				moves = list(range(10))
@@ -220,11 +294,8 @@ class Plates(Morphling):
 				
 			G.mutate(Node, move)
 			
-			neighbs = nx.single_source_shortest_path_length(G, np.random.choice(list(G.nodes())))
-			neighbs = [k for k in neighbs]
-			
 			# Ensure still attached to body
-			if len(neighbs) == G.number_of_nodes() and G.has_node("body") and common_homologs == G.homologs():
+			if common_homologs == G.homologs():
 				try_again = False
 			else:
 				Node = None
@@ -239,380 +310,243 @@ class Plates(Morphling):
 		movement = move
 		return G, movement
 
-	### Basic Morph Functions ### 
-	def filter_nodes(graph, Initial = None):
-		""" returns set of nodes that start with the given letter (L or R) or else, all middle nodes """
-		tb_filtered = list(graph.nodes())
-		if Initial:
-			filtered = [node for node in tb_filtered if node[0] == Initial]
-		
-		else:
-			filtered = [node for node in tb_filtered if node[0] != "R" and node[0] != "L"]
-
-		return set(filtered)
-
-	def LR_Ratio(graph, Node):
-		""" find the ratio of left to right neighbours for a given node """
-		Neighbours = set(graph.neighbors(Node)) - set(graph.reflect_n(Node))
-		L = sum(node[0] == "L" for node in Neighbours)
-		R = sum(node[0] == "R" for node in Neighbours)
-
-		if L > R:
-			return "L"
-
-		if L < R:
-			return "R"
-		
-		else:
-			return None
-
-	def char_grows(graph, node = None):
+	def char_grows(self, node = None):
 		""" Plate grows, so node gains edges """
-		if node == None:
-			node = np.random.choice(graph.nodes())
+		self.add_n_e_to_v(node, 1)
 	
-		graph.add_n_edges_to_node(1, node)
-	
-		return 0
-	
-	def char_shrinks(graph, node = None):
+	def char_shrinks(self, node = None):
 		""" Plate shrinks, so loses edges. If leaf node remove """
-		if node == None:
-			node = np.random.choice(graph.nodes())
-		
-		# Pick neighbours of node, symmetrically
-		nodes = [node, graph.reflect_n(node)]
+		v = np.random.choice(list(self._adj[node]))
+		self.remove_e_pair(v, node)
 	
-		v = np.random.choice(list(graph.neighbors(node)))
-		vs = [v, graph.reflect_n(v)]
-		edges = [(nodes[0], vs[0]), (nodes[1], vs[1])]
-		
-		#remove collected edges
-		graph.remove_edges_from(edges)
-	
-		return 0
-	
-	def char_moves(graph, node = None):
+	def char_moves(self, node = None):
 		""" Plate moves so edges are replaced """
-		if node == None:
-			node = str(np.random.choice(graph.nodes()))
-		
-		graph.char_grows(node)
-		graph.char_shrinks(node)
+		self.char_grows(node)
+		self.char_shrinks(node)
 	
-		return 0
-	
-	def char_gain(graph, Node = None):
+	def char_gain(self, Node = None):
 		""" New plate emerges, new node with mean number edges """
-		node1 = graph.New_Node_Name()
-		node2 = graph.reflect_n(node1)
-
-		graph.add_edge(node1, Node)
-		graph.add_edge(node2, graph.reflect_n(Node))
+		node1 = self.New_v_Name()[0]
+		self.add_e_pair(node1, Node)
 		
-		if graph.number_of_nodes() > 2:
-			n = graph.number_of_nodes()
-			while n >= graph.number_of_nodes():
+		if self.number_of_nodes() > 2:
+			n = self.number_of_nodes()
+			while n >= self.number_of_nodes():
 				# Add typical number of edges
-				n = graph.num_edges() 
+				n = self.ran_degree() 
 			n -= 1
 			
-			if not graph.is_L_or_R(node1):
+			if self.nodes[node1]['Sym'] == 0:
 				n /= 2
 				n = int(n)
 			# reflected nodes
-			graph.add_n_edges_to_node(n, node1)
+			self.add_n_e_to_v(node1, n=n)
 		
 		# Correct symmetry label
-		if graph.LR_Ratio(node1):
-			new_node1 = graph.LR_Ratio(node1) + graph.New_Node_Name(reflect=True)[1:]
-			new_node2 = graph.reflect_n(new_node1)
-			
-			mapping = {node1:new_node1, node2:new_node2}
-			
-			graph = nx.relabel_nodes(graph, mapping)
-		
+		self.FixNodeSymmetryValue(node1)
+		try:
+			self.FixNodeSymmetryValue(node1)
+		except:
+			pass
 		return 0
 	
-	def char_loss(graph, Node = None):
+	def char_loss(self, Node = None):
 		""" plate lost, node lost along with edges, if not leaf node the node should be replaced with an edge """
-		
-		neighbs = nx.single_source_shortest_path_length(graph, 'body')
-		neighbs = [k for k in neighbs if neighbs[k] > 1]
-		if neighbs:
-			Node = np.random.choice(neighbs)
-		else:
-			Node = np.random.choice(graph.nodes())
-		degree = graph.degree(Node)
+		degree = self.degree(Node)
 	
 		if degree > 1:
 			
-			neighbs = np.random.choice(list(graph.neighbors(Node)), \
-				np.random.randint(0, graph.number_of_nodes()))
-			ref_neighbs = [graph.reflect_n(node) for node in neighbs]
-			graph.add_edges_from(
+			neighbs = np.random.choice(list(self._adj[Node]), \
+				np.random.randint(0, self.number_of_nodes()))
+
+			self.add_e_from(
 				it.product(
 					neighbs,
 					neighbs
 				)
 			)
-	
-			graph.add_edges_from(
-				it.product(
-					ref_neighbs,
-					ref_neighbs
-				)
-			)
-		
-		if graph.is_L_or_R(Node):
-			graph.remove_node(graph.reflect_n(Node))
-		graph.remove_node(Node)
+
+		self.remove_v_pair(Node)
 	
 		return 0
 	
-	def char_merge(graph, u = None):
+	def char_merge(self, u = None):
 		""" 2 plates become one, 2 adjacent nodes become the same node, union of edges """
-		
-		if u == None:
-			u = str(np.random.choice(graph.nodes()))
-		
-		neighbs = list(graph.neighbors(u))
-		if graph.is_L_or_R(u):
-			neighbs += [graph.reflect_n(u)]
-		v = str(np.random.choice(neighbs))
-		
-		if u == graph.reflect_n(v):
-			node = u[1:]
-			graph.add_node(node)
-			graph.nodes_merge(node, [u, v])
+		neighbs = list(self._adj[u])
+		v = np.random.choice(neighbs)
+
+		self.v_merge(u,v)
 	
-		elif not graph.is_L_or_R(u) and not graph.is_L_or_R(v): # 2 middle nodes merge
-			graph.node_merge(u, v)
-		
-		elif not graph.is_L_or_R(u) and graph.is_L_or_R(v): # a middle node merges with 2 side nodes
-			graph.node_merge(u, v)
-			graph.node_merge(u, graph.reflect_n(v))
-	
-		elif graph.is_L_or_R(u) and not graph.is_L_or_R(v): # 2 side nodes merge with a middle node
-			graph.node_merge(v, u)
-			graph.node_merge(v, graph.reflect_n(u))
-	
-		elif graph.is_L_or_R(u) and graph.is_L_or_R(v): # 2 side nodes merge, 
-											# as do their relfections
-			graph.node_merge(u, v)
-			graph.node_merge(graph.reflect_n(u), graph.reflect_n(v))
-				
-		return 0
-	
-	def char_split(graph, u1 = None):
+	def char_split(self, u = None):
 		""" 0ne plate becomes 2, half the instances of a node 
 		are replaced with new node that will be adjacent to old node """
-		if u1 == None:
-			u1 = np.random.choice(graph.nodes())
+		uneighbours = self._adj[u]
+		ud = len(uneighbours)
 		
-		u2 = graph.reflect_n(u1)
-		v1 = graph.New_Node_Name()
-		v2 = graph.reflect_n(v1)
-		graph.add_node(v1)
-		graph.add_node(v2)
-		ud = graph.degree(u1)
-
-		# Give new nodes the parent nodes' attributes
-		attrs = {v1: graph.nodes[u1], v2: graph.nodes[u2]}
-		nx.set_node_attributes(graph, attrs)
-	
-		if ud > 1:
-			if graph.is_L_or_R(v1) and not graph.is_L_or_R(u1):
-				neighbs = list(graph.neighbors(u1))
-				v1s = [(v1, n) for n in neighbs if n[0] != v2[0]]
-				v2s = [(v2, n) for n in neighbs if n[0] != v1[0]]
-				graph.add_edges_from(v1s)
-				graph.add_edges_from(v2s)
-				graph.add_edge(v1, v2)
-
-			
-		
-			# Collect 50% of adjacencies
-			neighbs = np.random.choice( list(graph.neighbors(u1)), size=np.random.randint(0, ud), replace=False )
-
-			for a in neighbs:
-				a2 = graph.reflect_n(a)
-
-				# Give adjacencies to new node
-				graph.add_edge(v1, a)
-				graph.add_edge(v2, a2)
-	
-				# Remove adjacencies from old node0
-				try:
-					graph.remove_edge(u1, a)
-				except:
-					pass
-				try:
-					graph.remove_edge(u2, a2)
-				except:
-					pass
-				
-				#Add edge between split nodes
-				graph.add_edge(u1, v1)
-				graph.add_edge(u2, v2)
-			
-			if graph.is_L_or_R(v1) and not graph.is_L_or_R(u1):
-				graph.remove_node(u1)
-	
-		return 0
-	
-	def char_expansion(graph, u1 = None):
-		""" Add node to edge """
-		u2 = graph.reflect_n(u1)
-		# choose neighbour:
-		neighbs1 = list(graph.neighbors(u1))
-		n1 = np.random.choice(list(neighbs1), size=1)[0]
-		neighbs2 = list(graph.neighbors(n1))
-
-		common_neighbs = set(neighbs1).intersection( set(neighbs2) )
-		if len(common_neighbs) > 0:
-			reflected_common_neighbs = graph.reflect_n(common_neighbs, one=False)
-
-		n2 = graph.reflect_n(n1)
-		
-		if graph.is_L_or_R(n1) or graph.is_L_or_R(u1):
-			# New nodes:
-			v1 = graph.New_Node_Name(reflect=True)
-			v2 = graph.reflect_n(v1)
-	
-			graph.add_edge(u1, v1)
-			graph.add_edge(n1, v1)
-			#reflect
-			graph.add_edge(u2, v2)
-			graph.add_edge(n2, v2)
-
-			if len(common_neighbs) > 0:
-				for i in common_neighbs:
-					graph.add_edge(v1, i)
-				for j in reflected_common_neighbs:
-					graph.add_edge(v2, j)
-		
+		usym = self.nodes[u]['Sym']
+		if usym:
+			v = self.New_v_Name(reflect=True)[0]
 		else:
-			# New nodes:
-			v1 = graph.New_Node_Name(middle=True)
+			v = self.New_v_Name()[0]
+		vsym = self.nodes[v]['Sym']
 	
-			graph.add_edge(u1, v1)
-			graph.add_edge(n1, v1)
-	
-		# Remove old edges
-		try:
-			graph.remove_edge(u1, n1)
-		except:
-			pass
-		try:
-			graph.remove_edge(u2, n2)
-		except:
-			pass
+		if ud > 1: #Real split
+			if not usym and vsym: # 
+				neighbs = self._adj[u]
+				self.remove_v_pair(u)
+				vpair = self.Brother_V(v)
+				self.add_e_pair(v, vpair)
+				v1s = [(v, n) for n in neighbs \
+					if self.nodes[n]['Sym'] == vsym or self.nodes[n]['Sym'] ==0]
+				self.add_e_from(v1s)
+
+			else: # mid to mods or refs to refs
+				# Collect 50% of adjacencies
+				neighbs = np.random.choice( list(uneighbours), size=np.random.randint(0, ud), replace=False )
+				
+				if not vsym:	# Make sure exactly one middle neighbour
+								# if middle node being split into middle 
+								# nodes
+					midss = set(self.Find_V())
+					mids = midss & set(neighbs)
+					if len(mids) > 1:
+						mid = np.random.choice(list(mids))
+						mids -= {mid}
+						neighbs = set(neighbs) - mids
+					elif len(mids) < 1 and len(neighbs)>0:
+						pos_mids = midss & set(uneighbours)
+						if pos_mids:
+							neighbs[0] = np.random.choice(list(pos_mids))
+
+				for a in neighbs:
+					try:
+					# Remove adjacencies from old node0
+						self.remove_e_pair(u, a)
+					except:
+						pass
+					# Give adjacencies to new node
+					self.add_e_pair(v, a)
+
+				#Add edge between split nodes
+				self.add_e_pair(u, v)
+		
+		else:	#Pseudo split, equivalent to char_gain
+			self.add_e_pair(u,v)
 		
 		return 0
 	
-	def char_squeein(graph, node=None):
+	def char_expansion(self, v = None):
+		""" Where 2 characters meet, add new character adjacent to them
+		and their coneighbours """
+		# choose neighbour:
+		u = np.random.choice(list(self._adj[v]))
+		self.remove_e_pair(u,v)
+		if self.nodes[u]['Sym'] + self.nodes[v]['Sym'] != 0:
+			w = self.New_v_Name(reflect=True, middle=True)[0]
+		else:
+			w = self.New_v_Name(middle=True, reflect=False)[0]
+
+		cneighbs = self.coneighbours([u, v])
+		self.add_e_pair(w, u)
+		self.add_e_pair(w, v)
+		pop = len(cneighbs)
+
+		if pop > 0 and np.random.randint(0,3): 
+			for i in cneighbs:
+				self.add_e_pair(w, i)
+
+		return 0
+	
+	def char_squeein(self, node=None):
 		""" similar to expansion but moves an existing node in, instead of creating a new one """
-
-		if graph.is_L_or_R(node) == 2: #R
-			neighbs = set(graph.neighbors(node))
-			neighbs -= graph.filter_nodes("L")
+		sym = self.nodes[node]['Sym']
+		if sym > 0: #L
+			S = set(self.Find_V(attrValue=sym))
+			neighbs = set(self._adj[node])
+			neighbs = S & neighbs
 			if not neighbs:
 				return 0
 			neighb1 = np.random.choice(list(neighbs))
-			neighbs2 = set(graph.neighbors(neighb1))
-			neighbs2 -= graph.filter_nodes("L")
-			neighbs2 -= set(node)
+			neighbs2 = set(self._adj[neighb1])
+			neighbs2 = S & neighbs2
+			neighbs2 -= {node}
 			if not neighbs2:
 				return 0
 			neighb2 = np.random.choice(list(neighbs2))
 
-		if graph.is_L_or_R(node) == 1: #L
-			neighbs = set(graph.neighbors(node))
-			neighbs -= graph.filter_nodes("R")
+		else: #M
+			neighbs = set(self._adj[node])
 			if not neighbs:
 				return 0
 			neighb1 = np.random.choice(list(neighbs))
-			neighbs2 = set(graph.neighbors(neighb1))
-			neighbs2 -= graph.filter_nodes("R")
-			neighbs2 -= set(node)
-			if not neighbs2:
-				return 0
-			neighb2 = np.random.choice(list(neighbs2))
-
-		if not graph.is_L_or_R(node): #M
-			neighbs = set(graph.neighbors(node))
-			if not neighbs:
-				return 0
-			neighb1 = np.random.choice(list(neighbs))
-			neighbs2 = set(graph.neighbors(neighb1)) & neighbs
-			neighbs2 -= set(node)
+			neighbs2 = set(self._adj[neighb1]) & neighbs
+			neighbs2 -= {node}
 			if not neighbs2:
 				return 0
 			neighb2 = np.random.choice(list(neighbs2))
 		
-		co_neighbs = set(graph.neighbors(neighb1)) & set(graph.neighbors(neighb2))
-		graph.add_edge(node, neighb1)
-		graph.add_edge(node, neighb2)
-		graph.remove_edge(neighb1, neighb2)
-
-		#reflect
-		r_node = graph.reflect_n(node)
-		r_neighb1 = graph.reflect_n(neighb1)
-		r_neighb2 = graph.reflect_n(neighb2)
-		graph.add_edge(r_node, r_neighb1)
-		graph.add_edge(r_node, r_neighb2)
+		co_neighbs = set(self._adj[neighb1]) & set(self._adj[neighb2])
+		self.add_e_pair(node, neighb1)
+		self.add_e_pair(node, neighb2)
+		self.remove_e_pair(neighb1, neighb2)
 
 		if co_neighbs:
 			co_neighb = np.random.choice(list(co_neighbs))
-			graph.add_edge(node, co_neighb)
-			graph.add_edge(r_node, graph.reflect_n(co_neighb))
-		
-		try:
-			graph.remove_edge(r_neighb1, r_neighb2)
-		except:
-			pass
+			self.add_e_pair(node, co_neighb)
 
 		return 0
 	
-	def char_squeeout(graph, node=None): 
+	def char_squeeout(self, node=None): 
 		""" reverse of squeein """
+		neighbs = self._adj[node]
+		try:
+			np.random.shuffle(neighbs)
+		except:
+			pass
+		for neighb1 in neighbs:
+			cneighbs = list(self.coneighbours([neighb1, node]))
+			if len(cneighbs) > 1:
+				self.remove_e_pair(node, neighb1)
+				self.add_e_pair(cneighbs[0], cneighbs[1])
+				return 0
+	
+	@classmethod
+	def From_Dir(cls, dir, Completeness = 1):
+		G = Placoderm.from_edgelist(dir)
+		G.graph['completeness'] = Completeness
+		G.graph['dir']=dir
+		G.Initialise_Symmetry()
+		G.attr_from_csv(dir)
+		return G
 
-		neighbs = set(graph.neighbors(node))
-		neighb1 = np.random.choice(list(neighbs))
-		neighbs -= {neighb1}
-		removenodes = []
-		for i in neighbs:
-			if graph.has_edge(i, neighb1):
-				removenodes += i
-
-		neighbs -= set(removenodes)
-
-		if not neighbs:
-			return 0
-		neighb2 = np.random.choice(list(neighbs))
-		r_neighb1 = graph.reflect_n(neighb1)
-		r_neighb2 = graph.reflect_n(neighb2)
-
-		graph.add_edge(neighb1, neighb2)
-		graph.add_edge(r_neighb1, r_neighb2)
-		
+	def attr_from_csv(self, dir):
+		""" import character data from csv, add to properties 
+		and save property titles """
+		attrs = pd.read_csv(dir + "C_Data.txt", sep=" ", index_col=0)
+		attr = attrs.to_dict(orient='index')
+		nx.set_node_attributes(self, attr)
 		return 0
 
-	def add_symmetry(graph):
-		for node in graph.nodes():
-			graph.nodes[node]["Symmetry"] = graph.is_L_or_R(node)
-		return 0
+	@classmethod
+	def from_edgelist(cls, dir):
+		""" derives Morphling from edgelist format """
+		file = dir + "G_Data.txt"
+		G = nx.read_edgelist(file, nodetype=int)
+		G.__class__ = Placoderm
+		return G
+	
 
 ### Business End ###
 def main(argv):
-	""" Test mutator """
-	G1 = Plates.from_edgelist(argv[1])
-	morph, move = G1.mutator( move=int(argv[2]))
-	print(move)
-	print(morph.nodes(data=True))
-	morph.__str__("display_test.jpeg")
+	""" Test mutator """	
+	G1 = Placoderm.From_Dir(argv[1])
 	
+	G1.Initialise_Symmetry()
+	print(G1.nodes.data())
+	G1,a = G1.mutator(move=np.random.choice(range(9)))
+
+	#cProfile.runctx("Profiler(G1)", {'G1':G1, 'Profiler':Profiler}, {})
+	G1.draw()
 	return 0
 
 if __name__ == "__main__": 

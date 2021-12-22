@@ -3,34 +3,97 @@
 """ Align 2 networks with the new alignment algortihm SYPA 
 (Symmetrically aligned anatomical paths) and new alignment score CSS (Complete Symmetry Score) """
 
-__appalnme__ = 'SYPA.py'
+__appalnme__ = 'SYPAPP.py'
 __author__ = 'Tristan JC (tjc19@ic.ac.uk)'
 __version__ = '0.0.1'
 
 ## imports ##
+from itertools import count
 import sys # module to interface our program with the operating system
-from graph_tool.all import *
-from Corphl import biMorph
+import graph_tool.all as gt
+from MorphsPP import Placoderm
 import random
 import pprint
 import numpy as np
+import cProfile
+
+### Classes ###
+class Alignment():
+	def __init__(self, G1, G2):
+		self.aln = {}
+		self.source = G1
+		self.target = G2
+		self.CSS = 0
+		self.s_num_e = G1.num_edges()
+		self.t_num_e = G2.num_edges()
+		self.s_num_v = G1.num_vertices()
+		self.t_num_v = G2.num_vertices()
+
+	def align_node_pair(self, u, v):
+		self.aln[u] = v
+		self.aln[self.target.Brother_Node(u)] = self.target.Brother_Node(v)
+	
+	def edge_translate(self, e):
+		""" Find edge in target graph based on source alignment """
+		e = list(e)
+		u = self.aln[e[0]]
+		v = self.aln[e[1]]
+		return u, v
+
+	def count_edge_match(self):
+		c = 0
+		for e in self.source.edges():
+			u, v = self.edge_translate(e)
+			if self.target.Has_Edge(u, v):
+				c+=1
+		return c
+	
+	def calc_CSS(self):
+		""" Calculate symmetric substructure score but including all edges of target graph in denominator
+		instead of aligned subgraph, with our goal being isomorphism instead of embedding of the source graph
+		into the target. """
+		c = self.count_edge_match()
+
+		score = c / ( self.s_num_e - c + self.t_num_e)
+		return score
+
+	def Node_sim(self, u, v):
+		""" Determine node similairty based on symmetry,
+		and alignment """
+		G1 = self.source
+		G2 = self.target
+
+		Sym_1 = G1.vp.Symmetry[u]
+		Sym_2 = G2.vp.Symmetry[v]
+
+		if Sym_1 == Sym_2:
+			score = 0.5
+		else:
+			return 0
+
+		D_1 = G1.degree(u)
+		
+		N_1 = G1.Neighbours(u)
+		N_2 = G2.Neighbours(v)
+		
+		Aligned_neighbs = 0
+		for neighb in N_1:
+			if neighb in self.aln and self.aln[neighb] in N_2:
+				Aligned_neighbs += 1 
+		score += Aligned_neighbs / D_1
+		return score
+
+	def Ran_aln(self):
+		""" randomly align the inidices of the 2 graphs """
+		source = range(self.s_num_v)
+		target = range(self.t_num_v)
+
+		for v in source:
+			self.aln[v] = target[v]
+			nscore = self.Node_sim(v, v)
+		self.CSS = self.calc_CSS()
 
 ### Alignment Scores ###
-def CSS(G1, G2, aln):
-	""" Calculate symmetric substructure score but including all edges of target graph in denominator
-	instead of aligned subgraph, with our goal being isomorphism instead of embedding of the source graph
-	into the target. """
-	edges_1 = set(G1.edges())
-	edges_2 = set(G2.edges())
-	c = 0
-
-	for e in edges_1:
-		if G2.has_edge(aln[e[0]], aln[e[1]]) or G2.has_edge(aln[e[1]], aln[e[0]]):
-			c += 1
-
-	score = c / ( len(edges_1) - c + len(edges_2))
-	
-	return score
 
 def S3(G1, G2, aln):
 	""" Calculate symmetric substructure score described by Saraph and Milenković
@@ -69,35 +132,6 @@ def Char_sim(G1, G2, node1, node2):
 	score = pars / (max(len(G1.nodes[node1]),len(G2.nodes[node2])) + 1)
 	score = 1 - score
 	return score 
-
-def Node_sim(G1, G2, node1, node2, aln):
-	""" Determine node similairty based on symmetry,
-	and alignment """
-	Sym_1 = G1.vp.Symmetry(node1)
-	Sym_2 = G2.vp.Symmetry(node2)
-
-	if Sym_1 == Sym_2:
-		score = 0.5
-	else:
-		return 0
-
-	D_1 = G1.degree(node1)
-	#D_2 = G2.degree(node2)
-	N_1 = G1.neighbors(node1)
-	N_2 = G2.neighbors(node2)
-	#if not D_1 or not D_2:
-	#	score = 0.5
-	#	if Sym_1 == Sym_2:
-	#		score += 0.25
-	#	return score
-	Aligned_neighbs = 0
-	for neighb in N_1:
-		if neighb in aln and aln[neighb] in N_2:
-			Aligned_neighbs += 1 
-	score += Aligned_neighbs / D_1
-	#bio_score = Char_sim(G1, G2, node1, node2)
-	#score = (score + bio_score) / 2
-	return score
 
 ### Align Homologues ###
 def User_aln(G1, G2, aln):
@@ -289,19 +323,20 @@ def SYPA(G1, G2, repeat = 25):
 
 	return best_score, best_aln
 
+def Profiler(aln):
+	for i in range(int(855650/39)):
+		neighbs = aln.Ran_aln()
 ### Main ###
 def main(argv):
-	G1 = Plates.from_edgelist(argv[1]+"G_Data.txt")
-	G2 = Plates.from_edgelist(argv[2]+"G_Data.txt")
-	G1.graph['completeness'] = int(argv[4])
-	G2.graph['completeness'] = int(argv[4])
-	G1.attr_from_csv(argv[1]+"C_Data.txt")
-	G2.attr_from_csv(argv[2]+"C_Data.txt")
-
-	score, aln = SYPA(G1, G2, repeat=int(argv[3]))
+	G1 = Placoderm.From_Dir(argv[1], int(argv[3]))
+	G2 = Placoderm.From_Dir(argv[2], int(argv[3]))
 	
-	pprint.pprint(aln)
-	print(score)
+	aln = Alignment(G1, G2)
+	aln.Ran_aln()
+	cProfile.runctx("Profiler(aln)", {'aln':aln, 'Profiler':Profiler}, {})
+	
+	#pprint.pprint(aln)
+	#print(score)
 	return 0
 
 if __name__ == "__main__": 

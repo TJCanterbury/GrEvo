@@ -16,3 +16,4 @@ character size tissue_type homolog
 122 1 tess 0
 142 3 tess 0
 82 2 tess 0
+182 1 orb 3

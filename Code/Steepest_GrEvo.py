@@ -10,7 +10,7 @@ __version__ = '0.0.1'
 import sys
 import networkx as nx
 from SYPA2 import SYPA
-from Morphlings import Plates
+from Morphlings import Placoderm
 
 
 ### Evo (hill climb) algorithm ###
@@ -56,7 +56,7 @@ class mutant():
 
 	def plot(self, Pars):
 		file = str(Pars)+".png"
-		self.Graph.__str__(file)
+		self.Graph.draw(file)
 		print(str(self.Aln) +"\n"+ str(self.Score)+"\n"+ \
 			str(self.Move)+"\n")
 		return 0
@@ -143,7 +143,7 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 			reset *= 2
 			G1 = G1_reset.copy()
 			best_score, old_aln = measurer(G1, G2)
-
+	print("last step")
 	parsimony += total_char_par(best_M.Aln, best_M.Graph, G2)
 
 	return Generation, parsimony
@@ -151,12 +151,9 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 ### Business End ###
 ### Business End ###
 def main(argv):
-	G1 = Plates.from_edgelist(argv[1]+"G_Data.txt")
-	G2 = Plates.from_edgelist(argv[2]+"G_Data.txt")
-	G1.graph['completeness'] = 1
-	G2.graph['completeness'] = 1
-	G1.attr_from_csv(argv[1]+"C_Data.txt")
-	G2.attr_from_csv(argv[2]+"C_Data.txt")
+	G1 = Placoderm.From_Dir(argv[1], int(argv[5]))
+	
+	G2 = Placoderm.From_Dir(argv[2], int(argv[5]))
 
 	Generation, parsimony = Steep_GrEv(G1, G2, goal=float(argv[3]), Breadth=float(argv[4]), printer=True)
 	print(Generation)

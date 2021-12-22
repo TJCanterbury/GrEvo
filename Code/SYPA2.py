@@ -10,10 +10,86 @@ __version__ = '0.0.1'
 ## imports ##
 import sys # module to interface our program with the operating system
 import networkx as nx
-from Morphlings import Plates
+from Morphlings import Placoderm
 import random
 import pprint
 import numpy as np
+
+### Classes ###
+class Alignment():
+	def __init__(self, G1, G2):
+		self.aln = {}
+		self.source = G1
+		self.target = G2
+		self.CSS = 0
+		self.s_num_e = G1.num_edges()
+		self.t_num_e = G2.num_edges()
+		self.s_num_v = G1.num_vertices()
+		self.t_num_v = G2.num_vertices()
+
+	def align_node_pair(self, u, v):
+		self.aln[u] = v
+		self.aln[self.target.Brother_Node(u)] = self.target.Brother_Node(v)
+	
+	def edge_translate(self, e):
+		""" Find edge in target graph based on source alignment """
+		e = list(e)
+		u = self.aln[e[0]]
+		v = self.aln[e[1]]
+		return u, v
+
+	def count_edge_match(self):
+		c = 0
+		for e in self.source.edges():
+			u, v = self.edge_translate(e)
+			if self.target.Has_Edge(u, v):
+				c+=1
+		return c
+	
+	def calc_CSS(self):
+		""" Calculate symmetric substructure score but including all edges of target graph in denominator
+		instead of aligned subgraph, with our goal being isomorphism instead of embedding of the source graph
+		into the target. """
+		c = self.count_edge_match()
+
+		score = c / ( self.s_num_e - c + self.t_num_e)
+		return score
+
+	def Node_sim(self, u, v):
+		""" Determine node similairty based on symmetry,
+		and alignment """
+		G1 = self.source
+		G2 = self.target
+
+		Sym_1 = G1.vp.Symmetry[u]
+		Sym_2 = G2.vp.Symmetry[v]
+
+		if Sym_1 == Sym_2:
+			score = 0.5
+		else:
+			return 0
+
+		D_1 = G1.degree(u)
+		
+		N_1 = G1.Neighbours(u)
+		N_2 = G2.Neighbours(v)
+		
+		Aligned_neighbs = 0
+		for neighb in N_1:
+			if neighb in self.aln and self.aln[neighb] in N_2:
+				Aligned_neighbs += 1 
+		score += Aligned_neighbs / D_1
+		return score
+
+	def Ran_aln(self):
+		""" randomly align the inidices of the 2 graphs """
+		source = range(self.s_num_v)
+		target = range(self.t_num_v)
+
+		for v in source:
+			self.aln[v] = target[v]
+			nscore = self.Node_sim(v, v)
+		self.CSS = self.calc_CSS()
 
 ### Alignment Scores ###
 def CSS(G1, G2, aln):
@@ -73,8 +149,15 @@ def Char_sim(G1, G2, node1, node2):
 def Node_sim(G1, G2, node1, node2, aln):
 	""" Determine node similairty based on symmetry,
 	and alignment """
-	Sym_1 = G1.is_L_or_R(node1)
-	Sym_2 = G2.is_L_or_R(node2)
+	try:
+		Sym_1 = G1.nodes[node1]['Sym']
+		Sym_2 = G2.nodes[node2]['Sym']
+	except:
+		print(node1)
+		print(G1.nodes.data())
+		print(node2)
+		print(G2.nodes.data())
+		exit
 
 	if Sym_1 == Sym_2:
 		score = 0.5
@@ -83,8 +166,8 @@ def Node_sim(G1, G2, node1, node2, aln):
 
 	D_1 = G1.degree(node1)
 	#D_2 = G2.degree(node2)
-	N_1 = G1.neighbors(node1)
-	N_2 = G2.neighbors(node2)
+	N_1 = G1._adj[node1]
+	N_2 = G2._adj[node2]
 	#if not D_1 or not D_2:
 	#	score = 0.5
 	#	if Sym_1 == Sym_2:
@@ -104,7 +187,6 @@ def User_aln(G1, G2, aln):
 	""" Align nodes with user defined homology 
 	under the homolog column of the Character data, 
 	provided and encoded as node attributes """
-
 	ua1 = nx.get_node_attributes(G1, "homolog")
 	ua1 = {x:y for x,y in ua1.items() if y!=0}
 	ua2 = nx.get_node_attributes(G2, "homolog")
@@ -142,9 +224,9 @@ def Sym_align_nodes(G1, G2, aln, n1, n2):
 			# remove aligned nodes from subset that are unaligned
 			n2.remove(aln[node])
 			
-			reflection1 = G1.reflect_n(node)
-			reflection2 = G1.reflect_n(aln[node])
-			if reflection1 in n1 and reflection2 in n2 and G1.is_L_or_R(node) and G2.is_L_or_R(aln[node]):
+			reflection1 = G1.Brother_V(node)
+			reflection2 = G2.Brother_V(aln[node])
+			if reflection1 in n1 and reflection2 in n2 and G1.nodes[node]['Sym'] and G2.nodes[aln[node]]['Sym']:
 				aln[reflection1] = reflection2
 				n2.remove(reflection2)
 	
@@ -266,8 +348,6 @@ def SYPA(G1, G2, repeat = 25):
 	else:
 		Complete = False
 	
-	G1.add_symmetry()
-	G2.add_symmetry()
 	best_score = 0
 	best_aln = None
 	
