@@ -53,7 +53,10 @@ class Morphling(nx.Graph):
 
 	def Find_V(self, attr='Sym', attrValue = 0):
 		""" Find vertices with given node attr value """
-		nodes = [x for x,y in self.nodes(data=True) if y[attr]==attrValue]
+		if attr=='Sym':
+			nodes = [x for x in self.nodes() if x%10 == attrValue]
+		else:
+			nodes = [x for x,y in self.nodes(data=True) if y[attr]==attrValue]
 		return nodes
 	
 	def coneighbours(self, nodes):
@@ -95,9 +98,9 @@ class biMorph(Morphling):
 		""" Detect Symmetry based on neighbour symmetry """
 		sym = 0
 		for w in self._adj[v]:
-			if self.nodes[w]['Sym'] == 1:
+			if w%10 == 1:
 				sym -= 1
-			elif self.nodes[w]['Sym'] == 2:
+			elif w%10 == 2:
 				sym += 1
 		if sym > 0:
 			return 2
@@ -107,15 +110,32 @@ class biMorph(Morphling):
 	
 	def FixNodeSymmetryValue(self, v):
 		""" Set or correct Symmetry of a node """
-		self.nodes[v]['Sym'] = self.DetectNeighbSymmetry(v)
+		sym = self.DetectNeighbSymmetry(v)
+		w = v - (v%10) + sym
+		self.nodes[v]['Sym'] = sym
+		self = nx.relabel_nodes(self, {v:w}, copy=False)
 
 	def Brother_V(self, node):
 		""" return index of nodes reflection """
-		return self.nodes[node]['Bro']
+		sym = node % 10
+		if sym > 0:
+			if sym > 1:
+				antId = int(node) - 1
+			else:
+				antId = int(node) + 1
+			return antId
+		else:
+			return node
+		#return self.find_brother(node)
+		#return self.nodes[node]['Bro']
+
+	def Sym(self, node):
+		""" returns symmetry attr of node based on id """
+		return node % 10
 
 	def find_brother(self, node):
 		""" return index of nodes reflection """
-		sym = self.nodes[node]['Sym']
+		sym = node % 10
 		if sym > 0:
 			if sym > 1:
 				antId = int(node) - 1
@@ -294,8 +314,9 @@ class Placoderm(biMorph):
 				
 			G.mutate(Node, move)
 			
-			# Ensure still attached to body
-			if common_homologs == G.homologs():
+			# Ensure common homologues are conserved and that the graph remains
+			# biologically planar
+			if common_homologs == G.homologs() and nx.max_weight_clique(G) <= 4:
 				try_again = False
 			else:
 				Node = None
@@ -336,7 +357,7 @@ class Placoderm(biMorph):
 				n = self.ran_degree() 
 			n -= 1
 			
-			if self.nodes[node1]['Sym'] == 0:
+			if not node1 % 10:
 				n /= 2
 				n = int(n)
 			# reflected nodes
@@ -383,12 +404,12 @@ class Placoderm(biMorph):
 		uneighbours = self._adj[u]
 		ud = len(uneighbours)
 		
-		usym = self.nodes[u]['Sym']
+		usym = u % 10
 		if usym:
 			v = self.New_v_Name(reflect=True)[0]
 		else:
 			v = self.New_v_Name()[0]
-		vsym = self.nodes[v]['Sym']
+		vsym = v % 10
 	
 		if ud > 1: #Real split
 			if not usym and vsym: # 
@@ -397,7 +418,7 @@ class Placoderm(biMorph):
 				vpair = self.Brother_V(v)
 				self.add_e_pair(v, vpair)
 				v1s = [(v, n) for n in neighbs \
-					if self.nodes[n]['Sym'] == vsym or self.nodes[n]['Sym'] ==0]
+					if n % 10 == vsym or n % 10 ==0]
 				self.add_e_from(v1s)
 
 			else: # mid to mods or refs to refs
@@ -441,7 +462,7 @@ class Placoderm(biMorph):
 		# choose neighbour:
 		u = np.random.choice(list(self._adj[v]))
 		self.remove_e_pair(u,v)
-		if self.nodes[u]['Sym'] + self.nodes[v]['Sym'] != 0:
+		if (u + v) % 10:
 			w = self.New_v_Name(reflect=True, middle=True)[0]
 		else:
 			w = self.New_v_Name(middle=True, reflect=False)[0]
@@ -459,7 +480,7 @@ class Placoderm(biMorph):
 	
 	def char_squeein(self, node=None):
 		""" similar to expansion but moves an existing node in, instead of creating a new one """
-		sym = self.nodes[node]['Sym']
+		sym = node % 10
 		if sym > 0: #L
 			S = set(self.Find_V(attrValue=sym))
 			neighbs = set(self._adj[node])

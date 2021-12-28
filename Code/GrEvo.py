@@ -2,15 +2,15 @@
 
 """ Steepest ascent hill climb from one graph to another with bio/Morphology data """
 
-__appname__ = 'Steepest_GrEvo.py'
+__appname__ = 'GrEvo.py'
 __author__ = 'Tristan JC (tjc19@ic.ac.uk)'
 __version__ = '0.0.1'
 
 ## imports ##
 import sys
 import networkx as nx
-from SYPA2 import SYPA
-from Morphlings import Placoderm
+from SyPa import SYPA
+from Morphs2 import Placoderm
 
 
 ### Evo (hill climb) algorithm ###
@@ -19,7 +19,6 @@ def measurer(G1, G2):
 	score, aln = SYPA(G1, G2)
 	if nx.is_isomorphic(G1, G2):
 		0, aln
-	score = 1 - score
 	
 	return score, aln
 
@@ -107,12 +106,12 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 		print(best_score)
 		print("\n")
 
-	while best_score != 0 and parsimony <= goal:
+	while best_score != 1 and parsimony <= goal:
 		# Make a random move and measurer the effect
 		M = mutant.from_SnT(G1=G1, G2=G2)
 		Generation += 1
 
-		if M.Score == 0:
+		if M.Score == 1:
 			best_M = M
 			best_score = best_M.Score
 			G1 = M.Graph
@@ -122,7 +121,7 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 			break
 		
 		# New state becomes current state if score improved
-		if M.Score < best_score and M.Score != best_score:
+		if M.Score > best_score and M.Score != best_score:
 			best_M = M
 			best_score = best_M.Score
 			improved = True
@@ -144,18 +143,17 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 			G1 = G1_reset.copy()
 			best_score, old_aln = measurer(G1, G2)
 	print("last step")
-	parsimony += total_char_par(best_M.Aln, best_M.Graph, G2)
+	#parsimony += total_char_par(best_M.Aln, best_M.Graph, G2)
 
 	return Generation, parsimony
 
 ### Business End ###
 ### Business End ###
 def main(argv):
-	G1 = Placoderm.From_Dir(argv[1], int(argv[5]))
-	
-	G2 = Placoderm.From_Dir(argv[2], int(argv[5]))
+	G1 = Placoderm.From_Dir(argv[1])
+	G2 = Placoderm.From_Dir(argv[2])
 
-	Generation, parsimony = Steep_GrEv(G1, G2, goal=float(argv[3]), Breadth=float(argv[4]), printer=True)
+	Generation, parsimony = Steep_GrEv(G1, G2, goal = 100, Breadth=100, printer=True)
 	print(Generation)
 	print(parsimony)
 	
