@@ -13,14 +13,41 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
-import csv
 
 ## Classes ##
 class Morphling(nx.Graph):
-	""" Adds useful functions to the nx.Graph class """
+	""" Adds useful functions to the nx.Graph class 
+	for comparing anatomical networks with symmetry """
 	def __init__(self, data=None, **attr):
 		nx.Graph.__init__(self, data, **attr)
 	
+	@classmethod
+	def From_Dir(cls, dir, Completeness = 1, n_sym=2):
+		file = dir + "G_Data.txt"
+		G = nx.read_edgelist(file, nodetype=int)
+		G.__class__ = cls
+		G.set_sym_degree(n_sym)
+		G.graph['completeness'] = Completeness
+		G.graph['dir']=dir
+		G.attr_from_csv(dir)
+		return G
+
+	def attr_from_csv(self, dir):
+		""" import character data from csv, add to properties 
+		and save property titles """
+		attrs = pd.read_csv(dir + "C_Data.txt", sep=" ", index_col=0)
+		attr = attrs.to_dict(orient='index')
+		nx.set_node_attributes(self, attr)
+		return 0
+
+	@classmethod
+	def from_edgelist(cls, dir):
+		""" derives Morphling from edgelist format """
+		file = dir + "G_Data.txt"
+		G = nx.read_edgelist(file, nodetype=int)
+		G.__class__ = Morphling
+		return G
+
 	# General graph functions
 	def ran_degree(self):
 		""" Returns from a normal distribution an integer for the
@@ -54,7 +81,7 @@ class Morphling(nx.Graph):
 	def Find_V(self, attr='Sym', attrValue = 0):
 		""" Find vertices with given node attr value """
 		if attr=='Sym':
-			nodes = [x for x in self.nodes() if x%10 == attrValue]
+			nodes = [x for x in self.nodes() if x%self.Sym_Deg == attrValue]
 		else:
 			nodes = [x for x,y in self.nodes(data=True) if y[attr]==attrValue]
 		return nodes
@@ -77,30 +104,33 @@ class Morphling(nx.Graph):
 		plt.close()
 		return 0
 
+	def set_sym_degree(self, n_sym):
+		""" set sym degree """
+		sym = 0
+		deg = 1
+		while sym == 0:
+			deg *= 10
+			sym = n_sym%deg
+		self.Sym_Deg = deg
+
+	def Sym(self, u):
+		""" return symmetry identifyer integer based on node name and
+		symmetry degree """
+		return u % self.Sym_Deg
+
 class biMorph(Morphling):
 	""" Adds useful bilateral symmetry functions to the morphling class """
-	def __init__(self, directed=False, prune=False, vorder=None):
-		Morphling.__init__(self, directed=False, prune=False, vorder=None)
-	
-	def Set_Node_Symmetry(self, node):
-		""" Assign symmetry VertexProperty values to node """
-		sym = int(node) % 10
-		self.nodes[node]['Sym'] = sym
-		self.nodes[node]['Group'] = int(node) - self.nodes[node]['Sym']
-		self.nodes[node]['Bro'] = self.find_brother(node)
-	
-	def Initialise_Symmetry(self):
-		""" Set symmetry for all nodes """
-		for v in self.nodes():
-			self.Set_Node_Symmetry(v)
-	
+	def __init__(self, data, **attr):
+		Morphling.__init__(self, data, **attr)
+		self.Sym_Deg = 10
+
 	def DetectNeighbSymmetry(self, v):
 		""" Detect Symmetry based on neighbour symmetry """
 		sym = 0
 		for w in self._adj[v]:
-			if w%10 == 1:
+			if w%self.Sym_Deg == 1:
 				sym -= 1
-			elif w%10 == 2:
+			elif w%self.Sym_Deg == 2:
 				sym += 1
 		if sym > 0:
 			return 2
@@ -111,13 +141,12 @@ class biMorph(Morphling):
 	def FixNodeSymmetryValue(self, v):
 		""" Set or correct Symmetry of a node """
 		sym = self.DetectNeighbSymmetry(v)
-		w = v - (v%10) + sym
-		self.nodes[v]['Sym'] = sym
+		w = v - v%self.Sym_Deg + sym
 		self = nx.relabel_nodes(self, {v:w}, copy=False)
 
 	def Brother_V(self, node):
 		""" return index of nodes reflection """
-		sym = node % 10
+		sym = node%self.Sym_Deg
 		if sym > 0:
 			if sym > 1:
 				antId = int(node) - 1
@@ -129,13 +158,9 @@ class biMorph(Morphling):
 		#return self.find_brother(node)
 		#return self.nodes[node]['Bro']
 
-	def Sym(self, node):
-		""" returns symmetry attr of node based on id """
-		return node % 10
-
 	def find_brother(self, node):
 		""" return index of nodes reflection """
-		sym = node % 10
+		sym = node%self.Sym_Deg
 		if sym > 0:
 			if sym > 1:
 				antId = int(node) - 1
@@ -154,28 +179,19 @@ class biMorph(Morphling):
 
 	def add_v_pair(self):
 		""" add pair of nodes """
-		pairid = np.max(self.nodes())+10
-		pairid -= pairid % 10
+		pairid = np.max(self.nodes())+self.Sym_Deg
+		pairid -= pairid%self.Sym_Deg
 		v = pairid+1
 		u = pairid+2
 		self.add_node(v)
 		self.add_node(u)
-		self.nodes[v]['Sym'] = 1
-		self.nodes[u]['Sym'] = 2
-		self.nodes[v]['Group'] = pairid
-		self.nodes[u]['Group'] = pairid
-		self.nodes[u]['Bro'] = v
-		self.nodes[v]['Bro'] = u
 		return v, u
 
 	def add_v(self):
 		""" add middle node """
-		v = np.max(self.nodes())+10
-		v -= v % 10
+		v = np.max(self.nodes())+self.Sym_Deg
+		v -= v%self.Sym_Deg
 		self.add_node(v)
-		self.nodes[v]['Sym'] = 0
-		self.nodes[v]['Group'] = v
-		self.nodes[v]['Bro'] = v
 		return v
 
 	def add_e_pair(self, u, v):
@@ -263,74 +279,6 @@ class biMorph(Morphling):
 
 		return indices
 
-class Placoderm(biMorph):
-	""" Morphling moves for a network of tectonic plate like characters, 
-	with physical contact between characters giving an edge """
-	def __init__(self, data=None, **attr):
-		biMorph.__init__(self, data, **attr)
-
-	def mutate(self, Node, move):
-		""" Choose and perform move """
-		Move_dict = {
-			0:self.char_grows,
-			1:self.char_shrinks,
-			2:self.char_moves,
-			3:self.char_gain,
-			4:self.char_loss,
-			5:self.char_merge,
-			6:self.char_split,
-			7:self.char_expansion,
-			8:self.char_squeein,
-			9:self.char_squeeout
-		}
-		Move_dict[move](Node)
-		return 0
-
-	def mutator(self, common_homologs, move = None, Node = None, stuck = False):
-		""" Make random move """
-		movement = None
-		try_again = True
-
-		while try_again == True:
-			#Copy of graph:
-			G = self.copy()
-
-			#Variables and Constraints
-			G_Size = G.number_of_nodes()
-
-			if Node == None:
-				#neighbs = nx.single_source_shortest_path_length(G, 'body')
-				#neighbs = [k for k in neighbs if  k[0] != "L"]
-				Node = np.random.choice(list(G.nodes()))
-
-			if move == None:
-				moves = list(range(10))
-				if G_Size <= 2:              # G can only gain or split
-					moves = [0, 1, 2,		3, 6, 7]
-				elif G.degree(Node) == 0:      # Node must grow or be lost
-					print("boop")
-					moves = [0, 1, 2, 		4, 5, 8]
-				move = np.random.choice(moves)
-				
-			G.mutate(Node, move)
-			
-			# Ensure common homologues are conserved and that the graph remains
-			# biologically planar
-			if common_homologs == G.homologs() and nx.max_weight_clique(G) <= 4:
-				try_again = False
-			else:
-				Node = None
-				move = None
-
-		# remove selfloops
-		G.remove_edges_from(nx.selfloop_edges(G))   
-
-		# remove solitary nodes
-		remove = [node for node,degree in dict(G.degree()).items() if degree == 0]
-		G.remove_nodes_from(remove)
-		movement = move
-		return G, movement
-
 	def char_grows(self, node = None):
 		""" Plate grows, so node gains edges """
 		self.add_n_e_to_v(node, 1)
@@ -357,7 +305,7 @@ class Placoderm(biMorph):
 				n = self.ran_degree() 
 			n -= 1
 			
-			if not node1 % 10:
+			if not node1 % self.Sym_Deg:
 				n /= 2
 				n = int(n)
 			# reflected nodes
@@ -404,12 +352,12 @@ class Placoderm(biMorph):
 		uneighbours = self._adj[u]
 		ud = len(uneighbours)
 		
-		usym = u % 10
+		usym = u % self.Sym_Deg
 		if usym:
 			v = self.New_v_Name(reflect=True)[0]
 		else:
 			v = self.New_v_Name()[0]
-		vsym = v % 10
+		vsym = v % self.Sym_Deg
 	
 		if ud > 1: #Real split
 			if not usym and vsym: # 
@@ -418,7 +366,7 @@ class Placoderm(biMorph):
 				vpair = self.Brother_V(v)
 				self.add_e_pair(v, vpair)
 				v1s = [(v, n) for n in neighbs \
-					if n % 10 == vsym or n % 10 ==0]
+					if n % self.Sym_Deg == vsym or n % self.Sym_Deg ==0]
 				self.add_e_from(v1s)
 
 			else: # mid to mods or refs to refs
@@ -462,7 +410,7 @@ class Placoderm(biMorph):
 		# choose neighbour:
 		u = np.random.choice(list(self._adj[v]))
 		self.remove_e_pair(u,v)
-		if (u + v) % 10:
+		if (u + v) % self.Sym_Deg:
 			w = self.New_v_Name(reflect=True, middle=True)[0]
 		else:
 			w = self.New_v_Name(middle=True, reflect=False)[0]
@@ -480,7 +428,7 @@ class Placoderm(biMorph):
 	
 	def char_squeein(self, node=None):
 		""" similar to expansion but moves an existing node in, instead of creating a new one """
-		sym = node % 10
+		sym = node % self.Sym_Deg
 		if sym > 0: #L
 			S = set(self.Find_V(attrValue=sym))
 			neighbs = set(self._adj[node])
@@ -519,7 +467,7 @@ class Placoderm(biMorph):
 	
 	def char_squeeout(self, node=None): 
 		""" reverse of squeein """
-		neighbs = self._adj[node]
+		neighbs = list(self._adj[node])
 		try:
 			np.random.shuffle(neighbs)
 		except:
@@ -530,32 +478,140 @@ class Placoderm(biMorph):
 				self.remove_e_pair(node, neighb1)
 				self.add_e_pair(cneighbs[0], cneighbs[1])
 				return 0
-	
-	@classmethod
-	def From_Dir(cls, dir, Completeness = 1):
-		G = Placoderm.from_edgelist(dir)
-		G.graph['completeness'] = Completeness
-		G.graph['dir']=dir
-		G.Initialise_Symmetry()
-		G.attr_from_csv(dir)
-		return G
 
-	def attr_from_csv(self, dir):
-		""" import character data from csv, add to properties 
-		and save property titles """
-		attrs = pd.read_csv(dir + "C_Data.txt", sep=" ", index_col=0)
-		attr = attrs.to_dict(orient='index')
-		nx.set_node_attributes(self, attr)
-		return 0
-
-	@classmethod
-	def from_edgelist(cls, dir):
-		""" derives Morphling from edgelist format """
-		file = dir + "G_Data.txt"
-		G = nx.read_edgelist(file, nodetype=int)
-		G.__class__ = Placoderm
-		return G
+class Euathropod(biMorph):
+	""" Morphling moves for a Euarthropods """
+	def __init__(self, data=None, **attr):
+		biMorph.__init__(self, data, **attr)
+		self.Move_dict = {
+			0:self.char_grows,
+			1:self.char_shrinks,
+			2:self.char_moves,
+			3:self.char_gain,
+			4:self.char_loss,
+			5:self.char_merge,
+			6:self.char_split,
+			7:self.char_expansion,
+			8:self.char_squeein,
+			9:self.char_squeeout
+		}
 	
+	def mutator(self, common_homologs, move = None, Node = None, stuck = False):
+		""" Make random move """
+		movement = None
+		try_again = True
+
+		while try_again == True:
+			#Copy of graph:
+			G = self.copy()
+
+			#Variables and Constraints
+			G_Size = G.number_of_nodes()
+
+			if Node == None:
+				#neighbs = nx.single_source_shortest_path_length(G, 'body')
+				#neighbs = [k for k in neighbs if  k[0] != "L"]
+				Node = np.random.choice(list(G.nodes()))
+
+			if move == None:
+				moves = list(range(10))
+				if G_Size <= 2:              # G can only gain or split
+					moves = [0, 1, 2,		3, 6, 7]
+				elif G.degree(Node) == 0:      # Node must grow or be lost
+					print("boop")
+					moves = [0, 1, 2, 		4, 5, 8]
+				move = np.random.choice(moves)
+				
+			G.Move_dict[move](Node)
+			
+			# Ensure still attached to body
+			if common_homologs == G.homologs():
+				try_again = False
+			else:
+				Node = None
+				move = None
+
+		# remove selfloops
+		G.remove_edges_from(nx.selfloop_edges(G))   
+
+		# remove solitary nodes
+		remove = [node for node,degree in dict(G.degree()).items() if degree == 0]
+		G.remove_nodes_from(remove)
+		movement = move
+		return G, movement
+
+class Placoderm(biMorph):
+	""" Morphling moves for a network of tectonic plate like characters, 
+	with physical contact between characters giving an edge """
+	def __init__(self, data=None, **attr):
+		biMorph.__init__(self, data, **attr)
+		self.Move_dict = {
+			0:self.char_grows,
+			1:self.char_shrinks,
+			2:self.char_moves,
+			3:self.char_gain,
+			4:self.char_loss,
+			5:self.char_merge,
+			6:self.char_split,
+			7:self.char_expansion,
+			8:self.char_squeein,
+			9:self.char_squeeout
+		}
+	
+	def mutator(self, common_homologs, move = None, Node = None, stuck = False):
+		""" Make random move """
+		movement = None
+		try_again = True
+
+		while try_again == True:
+			#Copy of graph:
+			G = self.copy()
+
+			#Variables and Constraints
+			G_Size = G.number_of_nodes()
+
+			if Node == None:
+				#neighbs = nx.single_source_shortest_path_length(G, 'body')
+				#neighbs = [k for k in neighbs if  k[0] != "L"]
+				Node = np.random.choice(list(G.nodes()))
+
+			if move == None:
+				moves = list(range(10))
+				if G_Size <= 2:              # G can only gain or split
+					moves = [0, 1, 2,		3, 6, 7]
+				elif G.degree(Node) == 0:      # Node must grow or be lost
+					print("boop")
+					moves = [0, 1, 2, 		4, 5, 8]
+				move = np.random.choice(moves)
+				
+			G.Move_dict[move](Node)
+			
+			# Ensure still attached to body
+			if common_homologs == G.homologs():
+				try_again = False
+			else:
+				Node = None
+				move = None
+
+		# remove selfloops
+		G.remove_edges_from(nx.selfloop_edges(G))   
+
+		# remove solitary nodes
+		remove = [node for node,degree in dict(G.degree()).items() if degree == 0]
+		G.remove_nodes_from(remove)
+		movement = move
+		return G, movement
+
+class radMorph(Morphling):
+	""" Morpling with radial symmetry """
+
+class Echinoderm(radMorph):
+	""" Moveset for Echinoderms, selected from radMorph """
+
+class BranchMorph(Morphling):
+	""" Morplings with repeating patterns but don't follow 
+	a strict pattern, such as branching patterns of fungi 
+	and plants. """
 
 ### Business End ###
 def main(argv):
