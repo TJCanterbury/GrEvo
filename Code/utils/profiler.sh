@@ -1,1 +1,0 @@
-python3 -m cProfile Steepest_GrEvo.py tools_grev/Data/Placoderms/Actinolepis/ tools_grev/Data/Placoderms/Eurycaraspis/ 100 100 1 > cProfile10.txt
