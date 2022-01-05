@@ -9,8 +9,8 @@ __version__ = '0.0.1'
 ## imports ##
 import sys
 import networkx as nx
-from SyPa import SYPA
-from Morphs2 import Placoderm
+from SYPA2 import SYPA
+from MorphsPP import Placoderm
 
 
 ### Evo (hill climb) algorithm ###
@@ -19,6 +19,7 @@ def measurer(G1, G2):
 	score, aln = SYPA(G1, G2)
 	if nx.is_isomorphic(G1, G2):
 		0, aln
+	score = 1 - score
 	
 	return score, aln
 
@@ -54,8 +55,8 @@ class mutant():
 		return cls(Score, Graph, Move, Aln)
 
 	def plot(self, Pars):
-		file = str(Pars)+".png"
-		self.Graph.draw(file)
+		file = '../Results/' + self.Graph['dir'] + str(Pars)+".png"
+		self.draw(file)
 		print(str(self.Aln) +"\n"+ str(self.Score)+"\n"+ \
 			str(self.Move)+"\n")
 		return 0
@@ -105,13 +106,14 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 		print(old_aln)
 		print(best_score)
 		print("\n")
+		G1.plot(Pars=parsimony)
 
-	while best_score != 1 and parsimony <= goal:
+	while best_score != 0 and parsimony <= goal:
 		# Make a random move and measurer the effect
 		M = mutant.from_SnT(G1=G1, G2=G2)
 		Generation += 1
 
-		if M.Score == 1:
+		if M.Score == 0:
 			best_M = M
 			best_score = best_M.Score
 			G1 = M.Graph
@@ -121,7 +123,7 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 			break
 		
 		# New state becomes current state if score improved
-		if M.Score > best_score and M.Score != best_score:
+		if M.Score < best_score and M.Score != best_score:
 			best_M = M
 			best_score = best_M.Score
 			improved = True
@@ -142,18 +144,18 @@ def Steep_GrEv(G1, G2, G1_name="a", G2_name="b", goal=100, Breadth=10000, printe
 			reset *= 2
 			G1 = G1_reset.copy()
 			best_score, old_aln = measurer(G1, G2)
-	print("last step")
-	#parsimony += total_char_par(best_M.Aln, best_M.Graph, G2)
+
+	parsimony += total_char_par(best_M.Aln, best_M.Graph, G2)
 
 	return Generation, parsimony
 
 ### Business End ###
 ### Business End ###
 def main(argv):
-	G1 = Placoderm.From_Dir(argv[1])
-	G2 = Placoderm.From_Dir(argv[2])
+	G1 = Placoderm.From_Dir(argv[1], int(argv[4]))
+	G2 = Placoderm.From_Dir(argv[2], int(argv[4]))
 
-	Generation, parsimony = Steep_GrEv(G1, G2, goal = 100, Breadth=100, printer=True)
+	Generation, parsimony = Steep_GrEv(G1, G2, goal=float(argv[3]), Breadth=float(argv[4]), printer=True)
 	print(Generation)
 	print(parsimony)
 	
