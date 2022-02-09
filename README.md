@@ -1,8 +1,7 @@
 # GrEvo the Graph Evolver is a work in progress
 
-## Use:
-
-Enter the 2 graphs, the one you want to start at and the one you want to evolve to, how many perturbations of the first graph to try each generation of the climbing algorithm, a results file name for storing the steps taken... if it ever completes and the number of attempts before a graph is determined a dead end and finally the max number of steps you'll allow (for instance if you know it can be done in 4 moves you could set the limit to 4 moves).
-
-to run all graph comparisons run the following from the Code directory:
-python3 Pars_GrEv.py ../Data/G_Data/ ../Data/C_Data/ ../Data/Completeness.csv 1 ../Results/test.csv 10 parallel 0
+# Things to do next:
+1. Generate new data given improved efficiency and realism and record all the optimal alignments that resulted in the most parsimonious transformation sequences. Also record the less parsimonious solutions.
+2. Measure robustness of transformations based on canonical costs in parsimony of taking suboptimal transformations based on how the less parsimonious solutions varied from the most parsimonious one.
+3. Measure robustness of homology schemes by taking the final alignments of the simulations as static solutions, rerunning simulations based on these solutions and variations of these solutions, and measuring the canonical cost of these solutions against the optimal solution amongst these solutions and the dynamic solution that was implemented in step 1 (most like the optimal solution).
+4. Apply to other taxa, such as Euarthropods and modern fish
